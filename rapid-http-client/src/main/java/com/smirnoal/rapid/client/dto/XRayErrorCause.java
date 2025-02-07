@@ -17,4 +17,19 @@ public class XRayErrorCause {
         this.exceptions = exceptions;
         this.paths = paths;
     }
+
+    public XRayErrorCause withWorkingDirectory(String workingDirectory) {
+        this.working_directory = workingDirectory;
+        return this;
+    }
+
+    public XRayErrorCause withExceptions(Collection<XRayException> exceptions) {
+        this.exceptions = exceptions;
+        return this;
+    }
+
+    public XRayErrorCause withPaths(Collection<String> paths) {
+        this.paths = paths;
+        return this;
+    }
 }

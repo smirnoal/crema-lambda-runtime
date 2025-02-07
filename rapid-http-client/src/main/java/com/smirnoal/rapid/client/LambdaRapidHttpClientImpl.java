@@ -43,11 +43,11 @@ public class LambdaRapidHttpClientImpl {
                 .build();
     }
 
-    public void initError(LambdaError error) throws IOException {
+    public void initError(LambdaError error) {
         URI endpoint = URI.create(this.baseUrl + "/2018-06-01/runtime/init/error");
         reportLambdaError(endpoint, error);
     }
-    
+
     public InvocationRequest next() {
         HttpResponse<byte[]> response;
         try {
@@ -70,7 +70,7 @@ public class LambdaRapidHttpClientImpl {
 
         return result;
     }
-    
+
     public void reportInvocationSuccess(String requestId, byte[] response) {
         URI endpoint = URI.create(this.invocationEndpoint + requestId + "/response");
         HttpRequest invocationResponseRequest = HttpRequest.newBuilder(endpoint)
@@ -85,12 +85,12 @@ public class LambdaRapidHttpClientImpl {
         }
     }
 
-    public void reportInvocationError(String requestId, LambdaError error) throws IOException {
+    public void reportInvocationError(String requestId, LambdaError error) {
         URI endpoint = URI.create(this.invocationEndpoint + requestId + "/error");
         reportLambdaError(endpoint, error);
     }
-    
-    public void restoreNext() throws IOException {
+
+    public void restoreNext() {
         URI endpoint = URI.create(this.baseUrl + "/2018-06-01/runtime/restore/next");
         HttpRequest request = HttpRequest.newBuilder(endpoint)
                 .GET()
@@ -100,20 +100,20 @@ public class LambdaRapidHttpClientImpl {
         HttpResponse<Void> response;
         try {
             response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.discarding());
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new LambdaRapidClientException(endpoint.toString(), e);
         }
         if (response.statusCode() != HTTP_OK) {
             throw new LambdaRapidClientException(endpoint.toString(), response.statusCode());
         }
     }
-    
-    public void reportRestoreError(LambdaError error) throws IOException {
+
+    public void reportRestoreError(LambdaError error) {
         URI endpoint = URI.create(this.baseUrl + "/2018-06-01/runtime/restore/error");
         reportLambdaError(endpoint, error);
     }
 
-    void reportLambdaError(URI endpoint, LambdaError error) throws IOException {
+    void reportLambdaError(URI endpoint, LambdaError error) {
         HttpRequest.Builder request = HttpRequest.newBuilder(endpoint)
                 .header("User-Agent", USER_AGENT)
                 .header("Content-Type", "application/json");
@@ -125,7 +125,7 @@ public class LambdaRapidHttpClientImpl {
             }
         }
 
-        if(error.errorRequest.errorType != null) {
+        if (error.errorRequest.errorType != null) {
             request.header("Lambda-Runtime-Function-Error-Type", error.errorRequest.errorType);
         }
 

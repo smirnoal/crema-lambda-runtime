@@ -14,4 +14,19 @@ public class ErrorRequest {
         this.errorType = errorType;
         this.stackTrace = stackTrace;
     }
+
+    public ErrorRequest withErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+        return this;
+    }
+
+    public ErrorRequest withErrorType(String errorType) {
+        this.errorType = errorType;
+        return this;
+    }
+
+    public ErrorRequest withStackTrace(String[] stackTrace) {
+        this.stackTrace = stackTrace;
+        return this;
+    }
 }

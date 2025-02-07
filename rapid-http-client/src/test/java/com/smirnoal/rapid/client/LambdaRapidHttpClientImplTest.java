@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class LambdaRapidHttpClientImplTest {
     MockWebServer mockWebServer;
     LambdaRapidHttpClientImpl runtimeClient;
+    private final String EXPECTED_USER_AGENT = "com-smirnoal-java/";
 
     @BeforeEach
     void setUp() {
@@ -50,7 +51,7 @@ class LambdaRapidHttpClientImplTest {
         assertEquals(expectedUrl, actualUrl.toString());
 
         String userAgent = recordedRequest.getHeader("User-Agent");
-        assertThat(userAgent, CoreMatchers.startsWith("com-smirnoal-java/"));
+        assertThat(userAgent, CoreMatchers.startsWith(EXPECTED_USER_AGENT));
 
         String actualBody = recordedRequest.getBody().readUtf8();
         assertEquals(body, actualBody);
@@ -65,10 +66,10 @@ class LambdaRapidHttpClientImplTest {
         String errorMessage = "error message";
         String errorType = "errorType";
 
-        ErrorRequest errorRequest = new ErrorRequest();
-        errorRequest.errorMessage = errorMessage;
-        errorRequest.errorType = errorType;
-        errorRequest.stackTrace = new String[]{"stack trace line 1", "stack trace line 2"};
+        ErrorRequest errorRequest = new ErrorRequest()
+                .withErrorMessage(errorMessage)
+                .withErrorType(errorType)
+                .withStackTrace(new String[]{"stack trace line 1", "stack trace line 2"});
 
         LambdaError error = new LambdaError(errorRequest);
         runtimeClient.reportInvocationError(requestId, error);
@@ -80,7 +81,7 @@ class LambdaRapidHttpClientImplTest {
         assertEquals(expectedUrl, actualUrl.toString());
 
         String userAgent = recordedRequest.getHeader("User-Agent");
-        assertThat(userAgent, CoreMatchers.startsWith("com-smirnoal-java/"));
+        assertThat(userAgent, CoreMatchers.startsWith(EXPECTED_USER_AGENT));
 
         String contentType = recordedRequest.getHeader("Content-Type");
         assertEquals(contentType, "application/json");
@@ -98,22 +99,25 @@ class LambdaRapidHttpClientImplTest {
         String errorMessage = "error message";
         String errorType = "errorType";
 
-        ErrorRequest errorRequest = new ErrorRequest();
-        errorRequest.errorMessage = errorMessage;
-        errorRequest.errorType = errorType;
-        errorRequest.stackTrace = new String[]{"stack trace line 1", "stack trace line 2"};
+        ErrorRequest errorRequest = new ErrorRequest()
+                .withErrorMessage(errorMessage)
+                .withErrorType(errorType)
+                .withStackTrace(new String[]{"stack trace line 1", "stack trace line 2"});
 
-        XRayErrorCause xRayErrorCause = new XRayErrorCause();
-        xRayErrorCause.working_directory = "/var/task";
-        xRayErrorCause.exceptions = List.of(
+        List<XRayException> exceptions = List.of(
                 new XRayException("xray_exception_message",
                         "xray_exception_type",
                         List.of(new StackElement("label", "path", 110))
                 )
         );
-        xRayErrorCause.paths = List.of("path1", "path2");
 
-        LambdaError error = new LambdaError(errorRequest, xRayErrorCause);
+        XRayErrorCause xRayErrorCause = new XRayErrorCause()
+                .withWorkingDirectory("/var/task")
+                .withExceptions(exceptions)
+                .withPaths(List.of("path1", "path2"));
+
+        LambdaError error = new LambdaError(errorRequest)
+                .withXRayErrorCause(xRayErrorCause);
 
         runtimeClient.reportInvocationError(requestId, error);
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
@@ -123,15 +127,15 @@ class LambdaRapidHttpClientImplTest {
         assertEquals(expectedUrl, actualUrl.toString());
 
         String userAgent = recordedRequest.getHeader("User-Agent");
-        assertThat(userAgent, CoreMatchers.startsWith("com-smirnoal-java/"));
+        assertThat(userAgent, CoreMatchers.startsWith(EXPECTED_USER_AGENT));
 
         String contentType = recordedRequest.getHeader("Content-Type");
         assertEquals(contentType, "application/json");
 
-        String actualErrorType = recordedRequest.getHeader("Lambda-Runtime-Function-Error-Type");
+        String actualErrorType = recordedRequest.getHeader("lambda-runtime-function-error-type");
         assertEquals(errorType, actualErrorType);
 
-        String actualErrorCause = recordedRequest.getHeader("Lambda-Runtime-Function-XRay-Error-Cause");
+        String actualErrorCause = recordedRequest.getHeader("lambda-runtime-function-xray-error-cause");
         String expected = """
                 {
                   "working_directory": "/var/task",
@@ -206,7 +210,7 @@ class LambdaRapidHttpClientImplTest {
         assertEquals(expectedUrl, actualUrl.toString());
 
         String userAgent = recordedRequest.getHeader("User-Agent");
-        assertThat(userAgent, CoreMatchers.startsWith("com-smirnoal-java/"));
+        assertThat(userAgent, CoreMatchers.startsWith(EXPECTED_USER_AGENT));
 
         String contentType = recordedRequest.getHeader("Content-Type");
         assertEquals(contentType, "application/json");

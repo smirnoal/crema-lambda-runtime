@@ -45,7 +45,7 @@ class NextInvocationTest {
     }
 
     @Test
-    void waitForNextInvocation_basic() throws InterruptedException {
+    void next_basic() throws InterruptedException {
         mockWebServer.enqueue(response);
 
         InvocationRequest result = runtimeClient.next();
@@ -69,7 +69,7 @@ class NextInvocationTest {
     }
 
     @Test
-    void waitForNextInvocation_delay() {
+    void next_delay() {
         int runtimeDeadlineMs = 5000;
         response.addHeader("lambda-runtime-deadline-ms", runtimeDeadlineMs);
         mockWebServer.enqueue(response);
@@ -79,7 +79,7 @@ class NextInvocationTest {
     }
 
     @Test
-    void waitForNextInvocation_traceId() {
+    void next_traceId() {
         String traceId = UUID.randomUUID().toString();
         response.addHeader("lambda-runtime-trace-id", traceId);
         mockWebServer.enqueue(response);
@@ -89,7 +89,7 @@ class NextInvocationTest {
     }
 
     @Test
-    void waitForNextInvocation_clientContext() {
+    void next_clientContext() {
         String clientContext = UUID.randomUUID().toString();
         response.addHeader("lambda-runtime-client-context", clientContext);
         mockWebServer.enqueue(response);
@@ -99,7 +99,7 @@ class NextInvocationTest {
     }
 
     @Test
-    void waitForNextInvocation_cognito() {
+    void next_cognito() {
         String cognitoIdentity = UUID.randomUUID().toString();
         response.addHeader("lambda-runtime-cognito-identity", cognitoIdentity);
         mockWebServer.enqueue(response);
@@ -109,7 +109,7 @@ class NextInvocationTest {
     }
 
     @Test
-    void waitForNextInvocation_functionArnAbsent() {
+    void next_functionArnAbsent() {
         MockResponse invalidResponse = new MockResponse();
         invalidResponse.addHeader("lambda-runtime-aws-request-id", requestId);
         mockWebServer.enqueue(invalidResponse);
@@ -119,7 +119,7 @@ class NextInvocationTest {
     }
 
     @Test
-    void waitForNextInvocation_requestIdAbsent() {
+    void next_requestIdAbsent() {
         MockResponse invalidResponse = new MockResponse();
         invalidResponse.addHeader("lambda-runtime-invoked-function-arn", functionArn);
         mockWebServer.enqueue(invalidResponse);

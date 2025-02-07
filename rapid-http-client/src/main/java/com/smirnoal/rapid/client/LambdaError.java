@@ -6,9 +6,9 @@ import com.smirnoal.rapid.client.dto.XRayErrorCause;
 
 public class LambdaError {
 
-    public final ErrorRequest errorRequest;
+    public ErrorRequest errorRequest;
 
-    public final XRayErrorCause xRayErrorCause;
+    public XRayErrorCause xRayErrorCause;
 
     public LambdaError(ErrorRequest errorRequest, XRayErrorCause xRayErrorCause) {
         this.errorRequest = errorRequest;
@@ -17,5 +17,10 @@ public class LambdaError {
 
     public LambdaError(ErrorRequest errorRequest) {
         this(errorRequest, null);
+    }
+
+    public LambdaError withXRayErrorCause(XRayErrorCause xRayErrorCause) {
+        this.xRayErrorCause = xRayErrorCause;
+        return this;
     }
 }
