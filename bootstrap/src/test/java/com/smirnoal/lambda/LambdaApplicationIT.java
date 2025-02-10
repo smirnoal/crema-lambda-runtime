@@ -11,6 +11,15 @@ class LambdaApplicationIT {
     public void echoTest() {
         String handler = "com.smirnoal.lambda.handlers.EchoMain";
         String jsonPayload = "Hello Lambda";
+        String expected = new StringBuilder(jsonPayload).reverse().toString();
+        String result = ColdLambdaContainer.invokeLambda(handler, jsonPayload);
+        assertEquals(expected, result);
+    }
+
+    @Test
+    public void throwsTest() {
+        String handler = "com.smirnoal.lambda.handlers.ThrowsHandler";
+        String jsonPayload = "Hello Lambda";
         String result = ColdLambdaContainer.invokeLambda(handler, jsonPayload);
         assertEquals(jsonPayload, result);
     }

@@ -63,7 +63,7 @@
                         <configuration>
                             <outputDirectory>${project.build.directory}/lib</outputDirectory>
                             <excludeTransitive>true</excludeTransitive>
-                            <excludeScope>test</excludeScope>
+<!--                            <excludeScope>test</excludeScope>-->
                         </configuration>
                     </execution>
                 </executions>
