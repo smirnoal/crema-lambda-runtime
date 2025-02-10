@@ -14,12 +14,8 @@ public class LambdaApplication {
     private LambdaRapidHttpClientImpl runtimeApiClient;
     private LambdaHandler handler;
 
-    public LambdaApplication() {
-    }
-
-    public LambdaApplication withHandler(LambdaHandler lambdaHandler) {
+    public LambdaApplication(LambdaHandler lambdaHandler) {
         this.handler = lambdaHandler;
-        return this;
     }
 
     public LambdaApplication withRuntimeApiClient(LambdaRapidHttpClientImpl runtimeApiClient) {

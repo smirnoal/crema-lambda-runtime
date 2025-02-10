@@ -13,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -58,7 +57,7 @@ class LambdaRapidHttpClientImplTest {
     }
 
     @Test
-    void postInvocationError_noXRay() throws IOException, InterruptedException {
+    void postInvocationError_noXRay() throws InterruptedException {
         MockResponse mockResponse = new MockResponse();
         mockResponse.setResponseCode(202);
         mockWebServer.enqueue(mockResponse);
@@ -91,7 +90,7 @@ class LambdaRapidHttpClientImplTest {
     }
 
     @Test
-    void postInvocationError_withXRay() throws IOException, InterruptedException {
+    void postInvocationError_withXRay() throws InterruptedException {
         MockResponse mockResponse = new MockResponse();
         mockResponse.setResponseCode(202);
         mockWebServer.enqueue(mockResponse);
@@ -187,7 +186,7 @@ class LambdaRapidHttpClientImplTest {
     }
 
     @Test
-    void postInitError() throws IOException, InterruptedException {
+    void postInitError() throws InterruptedException {
         MockResponse mockResponse = new MockResponse();
         mockResponse.setResponseCode(202);
         mockWebServer.enqueue(mockResponse);

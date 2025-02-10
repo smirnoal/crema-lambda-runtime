@@ -47,7 +47,7 @@ class RestoreNextTest {
     }
 
     @Test
-    void restoreNext_wrongStatus() throws InterruptedException {
+    void restoreNext_wrongStatus()  {
         MockResponse response = new MockResponse();
         response.setResponseCode(202);
         mockWebServer.enqueue(response);

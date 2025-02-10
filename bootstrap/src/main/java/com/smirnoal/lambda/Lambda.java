@@ -6,7 +6,9 @@ public final class Lambda {
     }
 
     /**
-     * https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html#configuration-envvars-runtime
+     * <a href="https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html#configuration-envvars-runtime">
+     *     Reserved environment variables
+     * </a>
      */
     public static final class Environment {
         private Environment() {
