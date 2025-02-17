@@ -1,8 +1,13 @@
 package com.smirnoal.lambda;
 
 
+import com.smirnoal.rapid.client.LambdaError;
 import com.smirnoal.rapid.client.LambdaRapidHttpClientImpl;
+import com.smirnoal.rapid.client.converters.LambdaErrorConverter;
+import com.smirnoal.rapid.client.converters.XRayErrorCauseConverter;
+import com.smirnoal.rapid.client.dto.ErrorRequest;
 import com.smirnoal.rapid.client.dto.InvocationRequest;
+import com.smirnoal.rapid.client.dto.XRayErrorCause;
 
 import java.util.Objects;
 
@@ -12,7 +17,7 @@ import static com.smirnoal.lambda.Lambda.Constants.LAMBDA_TRACE_HEADER_PROP;
 public class LambdaApplication {
 
     private LambdaRapidHttpClientImpl runtimeApiClient;
-    private LambdaHandler handler;
+    private final LambdaHandler handler;
 
     public LambdaApplication(LambdaHandler lambdaHandler) {
         this.handler = lambdaHandler;
@@ -25,11 +30,8 @@ public class LambdaApplication {
 
     public void run() {
 
-        Objects.requireNonNull(handler, "Please specify handler");
-
         if (runtimeApiClient == null) {
-            runtimeApiClient = new LambdaRapidHttpClientImpl(
-                    Lambda.Environment.AWS_LAMBDA_RUNTIME_API);
+            runtimeApiClient = new LambdaRapidHttpClientImpl(Lambda.Environment.AWS_LAMBDA_RUNTIME_API);
         }
 
         while (true) {
@@ -37,12 +39,14 @@ public class LambdaApplication {
             setXrayTraceId(request.xrayTraceId);
             Lambda.context = new EventContext(request);
 
-            byte[] result;
             try {
-                result = handler.handle(request.content);
+                byte[] result = handler.handle(request.content);
                 runtimeApiClient.reportInvocationSuccess(request.id, result);
             } catch (Throwable t) {
-                //
+                ErrorRequest errorRequest = LambdaErrorConverter.fromThrowable(t);
+                XRayErrorCause xRayErrorCause = XRayErrorCauseConverter.fromThrowable(t);
+                LambdaError lambdaError = new LambdaError(errorRequest, xRayErrorCause);
+                runtimeApiClient.reportInvocationError(request.id, lambdaError);
             }
         }
     }

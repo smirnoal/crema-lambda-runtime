@@ -1,6 +1,11 @@
 package com.smirnoal.lambda.testcontainers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.output.OutputFrame;
+import org.testcontainers.containers.output.Slf4jLogConsumer;
+import org.testcontainers.containers.output.ToStringConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
@@ -11,6 +16,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.time.Duration;
 
 import static java.net.HttpURLConnection.HTTP_OK;
@@ -18,10 +24,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ColdLambdaContainer implements AutoCloseable {
-
+    final Logger logger = LoggerFactory.getLogger(ColdLambdaContainer.class);
     private static final DockerImageName JAVA_17_LAMBDA_IMAGE = DockerImageName.parse("public.ecr.aws/lambda/java:17");
+    private static final int CONTAINER_HTTP_PORT = 8080;
+    private static final String TASK_LIB_DIR = "/var/task/lib/";
     final GenericContainer<?> lambdaContainer;
-
 
     public static String invokeLambda(String handler, String jsonPayload) {
         try (var lambdaContainer = new ColdLambdaContainer(handler)) {
@@ -35,37 +42,54 @@ public class ColdLambdaContainer implements AutoCloseable {
         this.lambdaContainer = createContainer(handler);
         lambdaContainer.start();
         assertTrue(lambdaContainer.isRunning());
+
+        Slf4jLogConsumer logConsumer = new Slf4jLogConsumer(logger);
+        lambdaContainer.followOutput(logConsumer);
+
+//        ToStringConsumer toStringConsumer = new ToStringConsumer();
+//        lambdaContainer.followOutput(toStringConsumer, OutputFrame.OutputType.STDOUT);
+//        lambdaContainer.followOutput(toStringConsumer, OutputFrame.OutputType.STDERR);
     }
 
     private static GenericContainer<?> createContainer(String handler) {
         //    https://java.testcontainers.org/features/container_logs/
+
         var container = new GenericContainer<>(JAVA_17_LAMBDA_IMAGE)
-                .withExposedPorts(8080)
+                .withExposedPorts(CONTAINER_HTTP_PORT)
                 .withCommand(handler)
                 .withEnv("AWS_LAMBDA_EXEC_WRAPPER", "/var/task/bootstrap.sh")
-//                    .withEnv("_HANDLER", "com.smirnoal.lambda.handlers.Echo")
-                .withCopyFileToContainer(
-                        MountableFile.forHostPath("target/bootstrap-1.0-SNAPSHOT.jar"),
-                        "/var/task/lib/bootstrap-1.0-SNAPSHOT.jar"
-                )
-                .withCopyFileToContainer(
-                        MountableFile.forHostPath("target/lib/rapid-http-client-1.0-SNAPSHOT.jar"),
-                        "/var/task/lib/rapid-http-client-1.0-SNAPSHOT.jar"
-                )
                 .withCopyFileToContainer(
                         MountableFile.forHostPath("target/test-classes/"),
                         "/var/task/"
                 )
                 .waitingFor(Wait.forLogMessage(".*exec '/var/runtime/bootstrap'.*", 1)
                         .withStartupTimeout(Duration.ofSeconds(10)));
+
+        copyRuntimeLibs(container);
         return container;
+    }
+
+    private static void copyRuntimeLibs(GenericContainer<?> container) {
+        String[] libs = {
+                "target/bootstrap-1.0-SNAPSHOT.jar",
+                "target/lib/rapid-http-client-1.0-SNAPSHOT.jar",
+                "target/lib/gson-2.11.0.jar"
+        };
+        for (String lib : libs) {
+            String libName = Path.of(lib).getFileName().toString();
+            Path destinationFile = Path.of(TASK_LIB_DIR, libName);
+            container.withCopyToContainer(MountableFile.forHostPath(lib), destinationFile.toString());
+        }
     }
 
     String invokeLambda(String jsonPayload) throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
 
         String hostname = lambdaContainer.getHost();
-        Integer port = lambdaContainer.getMappedPort(8080);
+        Integer port = lambdaContainer.getMappedPort(CONTAINER_HTTP_PORT);
+
+        logger.info("invoke lambda");
+//        System.out.println(lambdaContainer.getLogs());
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://" + hostname + ":" + port + "/2015-03-31/functions/function/invocations"))

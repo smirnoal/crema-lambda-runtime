@@ -16,4 +16,13 @@ public class XRayException {
         this.type = type;
         this.stack = stack;
     }
+
+    @Override
+    public String toString() {
+        return "XRayException{" +
+                "message='" + message + '\'' +
+                ", type='" + type + '\'' +
+                ", stack=" + stack +
+                '}';
+    }
 }

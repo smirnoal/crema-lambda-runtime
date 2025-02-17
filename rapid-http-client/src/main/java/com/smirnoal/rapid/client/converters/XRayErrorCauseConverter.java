@@ -20,7 +20,7 @@ public class XRayErrorCauseConverter {
         Collection<XRayException> exceptions = Collections.singletonList(xRayException);
         Collection<String> paths = Arrays.stream(throwable.getStackTrace()).
             map(XRayErrorCauseConverter::determineFileName).
-            collect(Collectors.toSet());
+            toList();
 
         return new XRayErrorCause(workingDirectory, exceptions, paths);
     }
@@ -30,7 +30,7 @@ public class XRayErrorCauseConverter {
         String type = throwable.getClass().getName();
         List<StackElement> stack = Arrays.stream(throwable.getStackTrace()).
             map(XRayErrorCauseConverter::convertStackTraceElement).
-            collect(Collectors.toList());
+            toList();
         return new XRayException(message, type, stack);
     }
 

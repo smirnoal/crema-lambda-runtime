@@ -32,4 +32,13 @@ public class XRayErrorCause {
         this.paths = paths;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "XRayErrorCause{" +
+                "working_directory='" + working_directory + '\'' +
+                ", exceptions=" + exceptions +
+                ", paths=" + paths +
+                '}';
+    }
 }

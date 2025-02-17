@@ -1,5 +1,7 @@
 package com.smirnoal.rapid.client.dto;
 
+import java.util.Arrays;
+
 public class ErrorRequest {
     public String errorMessage;
     public String errorType;
@@ -28,5 +30,14 @@ public class ErrorRequest {
     public ErrorRequest withStackTrace(String[] stackTrace) {
         this.stackTrace = stackTrace;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "ErrorRequest{" +
+                "errorMessage='" + errorMessage + '\'' +
+                ", errorType='" + errorType + '\'' +
+                ", stackTrace=" + Arrays.toString(stackTrace) +
+                '}';
     }
 }

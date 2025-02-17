@@ -14,4 +14,13 @@ public class StackElement {
         this.path = path;
         this.line = line;
     }
+
+    @Override
+    public String toString() {
+        return "StackElement{" +
+                "label='" + label + '\'' +
+                ", path='" + path + '\'' +
+                ", line=" + line +
+                '}';
+    }
 }

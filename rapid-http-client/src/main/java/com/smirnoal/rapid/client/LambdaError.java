@@ -23,4 +23,12 @@ public class LambdaError {
         this.xRayErrorCause = xRayErrorCause;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "LambdaError{" +
+                "errorRequest=" + errorRequest +
+                ", xRayErrorCause=" + xRayErrorCause +
+                '}';
+    }
 }
