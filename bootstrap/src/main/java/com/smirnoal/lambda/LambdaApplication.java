@@ -2,6 +2,7 @@ package com.smirnoal.lambda;
 
 
 import com.smirnoal.rapid.client.LambdaError;
+import com.smirnoal.rapid.client.LambdaRapidHttpClient;
 import com.smirnoal.rapid.client.LambdaRapidHttpClientImpl;
 import com.smirnoal.rapid.client.converters.LambdaErrorConverter;
 import com.smirnoal.rapid.client.converters.XRayErrorCauseConverter;
@@ -9,14 +10,12 @@ import com.smirnoal.rapid.client.dto.ErrorRequest;
 import com.smirnoal.rapid.client.dto.InvocationRequest;
 import com.smirnoal.rapid.client.dto.XRayErrorCause;
 
-import java.util.Objects;
-
 import static com.smirnoal.lambda.Lambda.Constants.LAMBDA_TRACE_HEADER_PROP;
 
 
 public class LambdaApplication {
 
-    private LambdaRapidHttpClientImpl runtimeApiClient;
+    private LambdaRapidHttpClient runtimeApiClient;
     private final LambdaHandler handler;
 
     public LambdaApplication(LambdaHandler lambdaHandler) {

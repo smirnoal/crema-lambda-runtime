@@ -12,6 +12,4 @@ public class LambdaRapidClientException extends RuntimeException {
     public LambdaRapidClientException(String message, int responseCode) {
         super(message + " Response code: '" + responseCode + "'.");
     }
-
-
 }

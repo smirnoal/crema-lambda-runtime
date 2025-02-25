@@ -1,6 +1,7 @@
 package com.smirnoal.rapid.client.converters;
 
 
+
 import com.smirnoal.rapid.client.dto.ErrorRequest;
 
 import java.util.Arrays;

@@ -21,6 +21,12 @@
     <dependencies>
         <dependency>
             <groupId>com.smirnoal</groupId>
+            <artifactId>common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.smirnoal</groupId>
             <artifactId>rapid-http-client</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
@@ -73,7 +79,7 @@
                         <configuration>
                             <outputDirectory>${project.build.directory}/lib</outputDirectory>
                             <excludeTransitive>true</excludeTransitive>
-<!--                            <excludeScope>test</excludeScope>-->
+                            <!--                            <excludeScope>test</excludeScope>-->
                         </configuration>
                     </execution>
                 </executions>

@@ -2,32 +2,14 @@ package com.smirnoal.rapid.client;
 
 import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import org.hamcrest.CoreMatchers;
-import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-class RestoreNextTest {
-    MockWebServer mockWebServer;
-    LambdaRapidHttpClientImpl runtimeClient;
-    private final String EXPECTED_USER_AGENT = "com-smirnoal-java/";
-
-    @BeforeEach
-    void setUp() {
-        mockWebServer = new MockWebServer();
-        String hostnamePort = getHostnamePort();
-        runtimeClient = new LambdaRapidHttpClientImpl(hostnamePort);
-    }
-
-    @NotNull
-    private String getHostnamePort() {
-        return mockWebServer.getHostName() + ":" + mockWebServer.getPort();
-    }
+class RestoreNextTest extends MockServerBase {
 
     @Test
     void restoreNext() throws InterruptedException {
@@ -47,7 +29,7 @@ class RestoreNextTest {
     }
 
     @Test
-    void restoreNext_wrongStatus()  {
+    void restoreNext_wrongStatus() {
         MockResponse response = new MockResponse();
         response.setResponseCode(202);
         mockWebServer.enqueue(response);

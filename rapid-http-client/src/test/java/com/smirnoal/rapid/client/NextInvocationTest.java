@@ -3,10 +3,8 @@ package com.smirnoal.rapid.client;
 import com.smirnoal.rapid.client.dto.InvocationRequest;
 import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import org.hamcrest.CoreMatchers;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,10 +13,7 @@ import java.util.UUID;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-class NextInvocationTest {
-    MockWebServer mockWebServer;
-    LambdaRapidHttpClientImpl runtimeClient;
-
+class NextInvocationTest extends MockServerBase {
     String requestId;
     final String functionArn = "arn:aws:lambda:us-east-1:010203040506:function:java-ric-test";
     final String body = "{ \"foo\": \"bar\" }";
@@ -27,21 +22,12 @@ class NextInvocationTest {
     MockResponse response = new MockResponse();
 
     @BeforeEach
-    void setUp() {
-        mockWebServer = new MockWebServer();
-        String hostnamePort = getHostnamePort();
-        runtimeClient = new LambdaRapidHttpClientImpl(hostnamePort);
-
+    void refreshRequestId() {
         requestId = UUID.randomUUID().toString();
 
         response.addHeader("lambda-runtime-aws-request-id", requestId);
         response.addHeader("lambda-runtime-invoked-function-arn", functionArn);
         response.setBody(body);
-    }
-
-    @NotNull
-    private String getHostnamePort() {
-        return mockWebServer.getHostName() + ":" + mockWebServer.getPort();
     }
 
     @Test

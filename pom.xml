@@ -34,6 +34,7 @@
     </build>
 
     <modules>
+        <module>common</module>
         <module>rapid-http-client</module>
         <module>bootstrap</module>
     </modules>

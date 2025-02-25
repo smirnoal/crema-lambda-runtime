@@ -72,6 +72,7 @@ public class ColdLambdaContainer implements AutoCloseable {
     private static void copyRuntimeLibs(GenericContainer<?> container) {
         String[] libs = {
                 "target/bootstrap-1.0-SNAPSHOT.jar",
+                "target/lib/common-1.0-SNAPSHOT.jar",
                 "target/lib/rapid-http-client-1.0-SNAPSHOT.jar",
                 "target/lib/gson-2.11.0.jar"
         };

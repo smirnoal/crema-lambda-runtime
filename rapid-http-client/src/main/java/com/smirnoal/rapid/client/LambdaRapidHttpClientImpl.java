@@ -14,7 +14,7 @@ import java.util.Objects;
 import static java.net.HttpURLConnection.HTTP_ACCEPTED;
 import static java.net.HttpURLConnection.HTTP_OK;
 
-public class LambdaRapidHttpClientImpl {
+public final class LambdaRapidHttpClientImpl implements LambdaRapidHttpClient {
 
     static final String USER_AGENT =
             "com-smirnoal-java/%s".formatted(System.getProperty("java.vendor.version"));
@@ -43,11 +43,13 @@ public class LambdaRapidHttpClientImpl {
                 .build();
     }
 
+    @Override
     public void initError(LambdaError error) {
         URI endpoint = URI.create(this.baseUrl + "/2018-06-01/runtime/init/error");
         reportLambdaError(endpoint, error);
     }
 
+    @Override
     public InvocationRequest next() {
         HttpResponse<byte[]> response;
         try {
@@ -71,6 +73,7 @@ public class LambdaRapidHttpClientImpl {
         return result;
     }
 
+    @Override
     public void reportInvocationSuccess(String requestId, byte[] response) {
         URI endpoint = URI.create(this.invocationEndpoint + requestId + "/response");
         HttpRequest invocationResponseRequest = HttpRequest.newBuilder(endpoint)
@@ -81,15 +84,17 @@ public class LambdaRapidHttpClientImpl {
         try {
             HTTP_CLIENT.send(invocationResponseRequest, HttpResponse.BodyHandlers.discarding());
         } catch (Exception e) {
-            throw new RuntimeException("Failed to post invocation result", e);
+            throw new LambdaRapidClientException("Failed to post invocation result", e);
         }
     }
 
+    @Override
     public void reportInvocationError(String requestId, LambdaError error) {
         URI endpoint = URI.create(this.invocationEndpoint + requestId + "/error");
         reportLambdaError(endpoint, error);
     }
 
+    @Override
     public void restoreNext() {
         URI endpoint = URI.create(this.baseUrl + "/2018-06-01/runtime/restore/next");
         HttpRequest request = HttpRequest.newBuilder(endpoint)
@@ -108,6 +113,7 @@ public class LambdaRapidHttpClientImpl {
         }
     }
 
+    @Override
     public void reportRestoreError(LambdaError error) {
         URI endpoint = URI.create(this.baseUrl + "/2018-06-01/runtime/restore/error");
         reportLambdaError(endpoint, error);
