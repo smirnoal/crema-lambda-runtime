@@ -36,7 +36,7 @@ public class LambdaApplication {
         while (true) {
             InvocationRequest request = runtimeApiClient.next();
             setXrayTraceId(request.xrayTraceId);
-            Lambda.context = new EventContext(request);
+            Lambda.invocationRequest = request;
 
             try {
                 byte[] result = handler.handle(request.content);

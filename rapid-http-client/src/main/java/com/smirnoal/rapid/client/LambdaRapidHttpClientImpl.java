@@ -6,6 +6,7 @@ import com.smirnoal.rapid.client.serde.PayloadSerializers;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
+import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
@@ -58,19 +59,29 @@ public final class LambdaRapidHttpClientImpl implements LambdaRapidHttpClient {
             throw new LambdaRapidClientException("Failed to get next invoke", e);
         }
 
-        InvocationRequest result = new InvocationRequest();
+        HttpHeaders headers = response.headers();
 
-        result.id = response.headers().firstValue("lambda-runtime-aws-request-id").orElseThrow(
+        String requestId = headers.firstValue("lambda-runtime-aws-request-id").orElseThrow(
                 () -> new LambdaRapidClientException("Request ID absent"));
-        result.invokedFunctionArn = response.headers().firstValue("lambda-runtime-invoked-function-arn").orElseThrow(
+        String invokedFunctionArn = headers.firstValue("lambda-runtime-invoked-function-arn").orElseThrow(
                 () -> new LambdaRapidClientException("Function ARN absent"));
-        result.deadlineTimeInMs = Long.parseLong(response.headers().firstValue("lambda-runtime-deadline-ms").orElse("0"));
-        result.xrayTraceId = response.headers().firstValue("lambda-runtime-trace-id").orElse(null);
-        result.clientContext = response.headers().firstValue("lambda-runtime-client-context").orElse(null);
-        result.cognitoIdentity = response.headers().firstValue("lambda-runtime-cognito-identity").orElse(null);
-        result.content = response.body();
+        long deadlineTimeInMs = Long.parseLong(
+                headers.firstValue("lambda-runtime-deadline-ms").orElse("0")
+        );
+        String xrayTraceId = headers.firstValue("lambda-runtime-trace-id").orElse(null);
+        String clientContext = headers.firstValue("lambda-runtime-client-context").orElse(null);
+        String cognitoIdentity = headers.firstValue("lambda-runtime-cognito-identity").orElse(null);
+        byte[] content = response.body();
 
-        return result;
+        return InvocationRequest.builder()
+                .withId(requestId)
+                .withInvokedFunctionArn(invokedFunctionArn)
+                .withDeadlineTimeInMs(deadlineTimeInMs)
+                .withXrayTraceId(xrayTraceId)
+                .withClientContext(clientContext)
+                .withCognitoIdentity(cognitoIdentity)
+                .withContent(content)
+                .build();
     }
 
     @Override

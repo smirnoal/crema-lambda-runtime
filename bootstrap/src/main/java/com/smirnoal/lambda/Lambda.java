@@ -1,5 +1,7 @@
 package com.smirnoal.lambda;
 
+import com.smirnoal.rapid.client.dto.InvocationRequest;
+
 public final class Lambda {
 
     private Lambda() {
@@ -40,5 +42,5 @@ public final class Lambda {
         static String LAMBDA_TRACE_HEADER_PROP = "com.amazonaws.xray.traceHeader";
     }
 
-    static EventContext context;
+    static InvocationRequest invocationRequest;
 }
