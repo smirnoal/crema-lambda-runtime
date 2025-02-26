@@ -35,17 +35,17 @@ public class LambdaApplication {
 
         while (true) {
             InvocationRequest request = runtimeApiClient.next();
-            setXrayTraceId(request.xrayTraceId);
+            setXrayTraceId(request.xrayTraceId());
             Lambda.invocationRequest = request;
 
             try {
-                byte[] result = handler.handle(request.content);
-                runtimeApiClient.reportInvocationSuccess(request.id, result);
+                byte[] result = handler.handle(request.content());
+                runtimeApiClient.reportInvocationSuccess(request.id(), result);
             } catch (Throwable t) {
                 ErrorRequest errorRequest = LambdaErrorConverter.fromThrowable(t);
                 XRayErrorCause xRayErrorCause = XRayErrorCauseConverter.fromThrowable(t);
                 LambdaError lambdaError = new LambdaError(errorRequest, xRayErrorCause);
-                runtimeApiClient.reportInvocationError(request.id, lambdaError);
+                runtimeApiClient.reportInvocationError(request.id(), lambdaError);
             }
         }
     }

@@ -35,13 +35,13 @@ class NextInvocationTest extends MockServerBase {
         mockWebServer.enqueue(response);
 
         InvocationRequest result = runtimeClient.next();
-        assertEquals(requestId, result.id);
-        assertEquals(functionArn, result.invokedFunctionArn);
-        assertEquals(defaultDeadlineTime, result.deadlineTimeInMs);
-        assertNull(result.xrayTraceId);
-        assertNull(result.clientContext);
-        assertNull(result.cognitoIdentity);
-        assertEquals(body, new String(result.content));
+        assertEquals(requestId, result.id());
+        assertEquals(functionArn, result.invokedFunctionArn());
+        assertEquals(defaultDeadlineTime, result.deadlineTimeInMs());
+        assertNull(result.xrayTraceId());
+        assertNull(result.clientContext());
+        assertNull(result.cognitoIdentity());
+        assertEquals(body, new String(result.content()));
 
         RecordedRequest recordedRequest = mockWebServer.takeRequest();
 
@@ -61,7 +61,7 @@ class NextInvocationTest extends MockServerBase {
         mockWebServer.enqueue(response);
 
         InvocationRequest result = runtimeClient.next();
-        assertEquals(runtimeDeadlineMs, result.deadlineTimeInMs);
+        assertEquals(runtimeDeadlineMs, result.deadlineTimeInMs());
     }
 
     @Test
@@ -71,7 +71,7 @@ class NextInvocationTest extends MockServerBase {
         mockWebServer.enqueue(response);
 
         InvocationRequest result = runtimeClient.next();
-        assertEquals(traceId, result.xrayTraceId);
+        assertEquals(traceId, result.xrayTraceId());
     }
 
     @Test
@@ -81,7 +81,7 @@ class NextInvocationTest extends MockServerBase {
         mockWebServer.enqueue(response);
 
         InvocationRequest result = runtimeClient.next();
-        assertEquals(clientContext, result.clientContext);
+        assertEquals(clientContext, result.clientContext());
     }
 
     @Test
@@ -91,7 +91,7 @@ class NextInvocationTest extends MockServerBase {
         mockWebServer.enqueue(response);
 
         InvocationRequest result = runtimeClient.next();
-        assertEquals(cognitoIdentity, result.cognitoIdentity);
+        assertEquals(cognitoIdentity, result.cognitoIdentity());
     }
 
     @Test

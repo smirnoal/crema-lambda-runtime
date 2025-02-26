@@ -1,43 +1,39 @@
 package com.smirnoal.rapid.client.dto;
 
-import java.util.Arrays;
+public record ErrorRequest(
+        String errorMessage,
+        String errorType,
+        String[] stackTrace) {
 
-public class ErrorRequest {
-    public String errorMessage;
-    public String errorType;
-    public String[] stackTrace;
-
-    @SuppressWarnings("unused")
-    public ErrorRequest() {
+    public static ErrorRequestBuilder builder() {
+        return new ErrorRequestBuilder();
     }
 
-    public ErrorRequest(String errorMessage, String errorType, String[] stackTrace) {
-        this.errorMessage = errorMessage;
-        this.errorType = errorType;
-        this.stackTrace = stackTrace;
-    }
+    public static class ErrorRequestBuilder {
+        String errorMessage;
+        String errorType;
+        String[] stackTrace;
 
-    public ErrorRequest withErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
-        return this;
-    }
+        ErrorRequestBuilder() {
+        }
 
-    public ErrorRequest withErrorType(String errorType) {
-        this.errorType = errorType;
-        return this;
-    }
+        public ErrorRequestBuilder withErrorMessage(String errorMessage) {
+            this.errorMessage = errorMessage;
+            return this;
+        }
 
-    public ErrorRequest withStackTrace(String[] stackTrace) {
-        this.stackTrace = stackTrace;
-        return this;
-    }
+        public ErrorRequestBuilder withErrorType(String errorType) {
+            this.errorType = errorType;
+            return this;
+        }
 
-    @Override
-    public String toString() {
-        return "ErrorRequest{" +
-                "errorMessage='" + errorMessage + '\'' +
-                ", errorType='" + errorType + '\'' +
-                ", stackTrace=" + Arrays.toString(stackTrace) +
-                '}';
+        public ErrorRequestBuilder withStackTrace(String[] stackTrace) {
+            this.stackTrace = stackTrace;
+            return this;
+        }
+
+        public ErrorRequest build() {
+            return new ErrorRequest(errorMessage, errorType, stackTrace);
+        }
     }
 }

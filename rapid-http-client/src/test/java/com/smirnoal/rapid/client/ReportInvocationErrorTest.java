@@ -27,10 +27,11 @@ class ReportInvocationErrorTest extends MockServerBase {
         String errorMessage = "error message";
         String errorType = "errorType";
 
-        ErrorRequest errorRequest = new ErrorRequest()
+        ErrorRequest errorRequest = ErrorRequest.builder()
                 .withErrorMessage(errorMessage)
                 .withErrorType(errorType)
-                .withStackTrace(new String[]{"stack trace line 1", "stack trace line 2"});
+                .withStackTrace(new String[]{"stack trace line 1", "stack trace line 2"})
+                .build();
 
         LambdaError error = new LambdaError(errorRequest);
         runtimeClient.reportInvocationError(requestId, error);
@@ -60,10 +61,11 @@ class ReportInvocationErrorTest extends MockServerBase {
         String errorMessage = "error message";
         String errorType = "errorType";
 
-        ErrorRequest errorRequest = new ErrorRequest()
+        ErrorRequest errorRequest = ErrorRequest.builder()
                 .withErrorMessage(errorMessage)
                 .withErrorType(errorType)
-                .withStackTrace(new String[]{"stack trace line 1", "stack trace line 2"});
+                .withStackTrace(new String[]{"stack trace line 1", "stack trace line 2"})
+                .build();
 
         List<XRayException> exceptions = List.of(
                 new XRayException("xray_exception_message",
@@ -133,10 +135,11 @@ class ReportInvocationErrorTest extends MockServerBase {
         String errorMessage = "error message";
         String errorType = "errorType";
 
-        ErrorRequest errorRequest = new ErrorRequest();
-        errorRequest.errorMessage = errorMessage;
-        errorRequest.errorType = errorType;
-        errorRequest.stackTrace = new String[]{"stack trace line 1", "stack trace line 2"};
+        ErrorRequest errorRequest = ErrorRequest.builder()
+                .withErrorMessage(errorMessage)
+                .withErrorType(errorType)
+                .withStackTrace(new String[]{"stack trace line 1", "stack trace line 2"})
+                .build();
 
         LambdaError lambdaError = new LambdaError(errorRequest);
 

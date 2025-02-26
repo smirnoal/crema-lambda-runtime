@@ -142,8 +142,8 @@ public final class LambdaRapidHttpClientImpl implements LambdaRapidHttpClient {
             }
         }
 
-        if (error.errorRequest.errorType != null) {
-            request.header("Lambda-Runtime-Function-Error-Type", error.errorRequest.errorType);
+        if (error.errorRequest.errorType() != null) {
+            request.header("Lambda-Runtime-Function-Error-Type", error.errorRequest.errorType());
         }
 
         byte[] payload = PayloadSerializers.serialize(error.errorRequest);

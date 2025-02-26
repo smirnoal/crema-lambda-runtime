@@ -21,10 +21,11 @@ class InitErrorTest extends MockServerBase {
         String errorMessage = "init error";
         String errorType = "errorType";
 
-        ErrorRequest errorRequest = new ErrorRequest();
-        errorRequest.errorMessage = errorMessage;
-        errorRequest.errorType = errorType;
-        errorRequest.stackTrace = new String[]{"stack trace line 1", "stack trace line 2"};
+        ErrorRequest errorRequest = ErrorRequest.builder()
+                .withErrorMessage(errorMessage)
+                .withErrorType(errorType)
+                .withStackTrace(new String[]{"stack trace line 1", "stack trace line 2"})
+                .build();
 
         LambdaError lambdaError = new LambdaError(errorRequest);
 
