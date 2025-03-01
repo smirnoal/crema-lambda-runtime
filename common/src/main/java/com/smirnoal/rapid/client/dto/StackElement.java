@@ -1,26 +1,38 @@
 package com.smirnoal.rapid.client.dto;
 
-public class StackElement {
-    public String label;
-    public String path;
-    public int line;
+public record StackElement(String label,
+                           String path,
+                           int line) {
 
-    @SuppressWarnings("unused")
-    public StackElement() {
+    public static StackElementBuilder builder() {
+        return new StackElementBuilder();
     }
 
-    public StackElement(String label, String path, int line) {
-        this.label = label;
-        this.path = path;
-        this.line = line;
-    }
+    public static class StackElementBuilder {
+        String label;
+        String path;
+        int line;
 
-    @Override
-    public String toString() {
-        return "StackElement{" +
-                "label='" + label + '\'' +
-                ", path='" + path + '\'' +
-                ", line=" + line +
-                '}';
+        private StackElementBuilder() {
+        }
+
+        public StackElementBuilder withLabel(String label) {
+            this.label = label;
+            return this;
+        }
+
+        public StackElementBuilder withPath(String path) {
+            this.path = path;
+            return this;
+        }
+
+        public StackElementBuilder withLine(int line) {
+            this.line = line;
+            return this;
+        }
+
+        public StackElement build() {
+            return new StackElement(label, path, line);
+        }
     }
 }

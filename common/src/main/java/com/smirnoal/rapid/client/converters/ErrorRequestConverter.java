@@ -6,8 +6,8 @@ import com.smirnoal.rapid.client.dto.ErrorRequest;
 
 import java.util.Arrays;
 
-public class LambdaErrorConverter {
-    private LambdaErrorConverter() {
+public class ErrorRequestConverter {
+    private ErrorRequestConverter() {
     }
 
     public static ErrorRequest fromThrowable(Throwable throwable) {

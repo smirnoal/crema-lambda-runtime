@@ -70,14 +70,20 @@ class ReportInvocationErrorTest extends MockServerBase {
         List<XRayException> exceptions = List.of(
                 new XRayException("xray_exception_message",
                         "xray_exception_type",
-                        List.of(new StackElement("label", "path", 110))
+                        List.of(StackElement.builder()
+                                .withLabel("label")
+                                .withPath("path")
+                                .withLine(110)
+                                .build()
+                        )
                 )
         );
 
-        XRayErrorCause xRayErrorCause = new XRayErrorCause()
+        XRayErrorCause xRayErrorCause = XRayErrorCause.builder()
                 .withWorkingDirectory("/var/task")
                 .withExceptions(exceptions)
-                .withPaths(List.of("path1", "path2"));
+                .withPaths(List.of("path1", "path2"))
+                .build();
 
         LambdaError error = new LambdaError(errorRequest)
                 .withXRayErrorCause(xRayErrorCause);

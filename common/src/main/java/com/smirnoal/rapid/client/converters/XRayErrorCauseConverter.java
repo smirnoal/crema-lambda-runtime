@@ -18,8 +18,8 @@ public class XRayErrorCauseConverter {
         XRayException xRayException = getXRayExceptionFromThrowable(throwable);
         Collection<XRayException> exceptions = Collections.singletonList(xRayException);
         Collection<String> paths = Arrays.stream(throwable.getStackTrace()).
-            map(XRayErrorCauseConverter::determineFileName).
-            toList();
+                map(XRayErrorCauseConverter::determineFileName).
+                toList();
 
         return new XRayErrorCause(workingDirectory, exceptions, paths);
     }
@@ -28,8 +28,8 @@ public class XRayErrorCauseConverter {
         String message = throwable.getMessage();
         String type = throwable.getClass().getName();
         List<StackElement> stack = Arrays.stream(throwable.getStackTrace()).
-            map(XRayErrorCauseConverter::convertStackTraceElement).
-            toList();
+                map(XRayErrorCauseConverter::convertStackTraceElement).
+                toList();
         return new XRayException(message, type, stack);
     }
 
@@ -46,9 +46,10 @@ public class XRayErrorCauseConverter {
     }
 
     static StackElement convertStackTraceElement(StackTraceElement e) {
-        return new StackElement(
-                e.getMethodName(),
-                determineFileName(e),
-                e.getLineNumber());
+        return StackElement.builder()
+                .withLabel(e.getMethodName())
+                .withPath(determineFileName(e))
+                .withLine(e.getLineNumber())
+                .build();
     }
 }

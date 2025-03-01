@@ -2,43 +2,41 @@ package com.smirnoal.rapid.client.dto;
 
 import java.util.Collection;
 
-public class XRayErrorCause {
-    public String working_directory;
-    public Collection<XRayException> exceptions;
-    public Collection<String> paths;
+public record XRayErrorCause(
+        String working_directory,
+        Collection<XRayException> exceptions,
+        Collection<String> paths) {
 
     @SuppressWarnings("unused")
-    public XRayErrorCause() {
-
+    public static XRayErrorCauseBuilder builder() {
+        return new XRayErrorCauseBuilder();
     }
 
-    public XRayErrorCause(String working_directory, Collection<XRayException> exceptions, Collection<String> paths) {
-        this.working_directory = working_directory;
-        this.exceptions = exceptions;
-        this.paths = paths;
-    }
+    public static class XRayErrorCauseBuilder {
+        String working_directory;
+        Collection<XRayException> exceptions;
+        Collection<String> paths;
 
-    public XRayErrorCause withWorkingDirectory(String workingDirectory) {
-        this.working_directory = workingDirectory;
-        return this;
-    }
+        private XRayErrorCauseBuilder() {
+        }
 
-    public XRayErrorCause withExceptions(Collection<XRayException> exceptions) {
-        this.exceptions = exceptions;
-        return this;
-    }
+        public XRayErrorCauseBuilder withWorkingDirectory(String workingDirectory) {
+            this.working_directory = workingDirectory;
+            return this;
+        }
 
-    public XRayErrorCause withPaths(Collection<String> paths) {
-        this.paths = paths;
-        return this;
-    }
+        public XRayErrorCauseBuilder withExceptions(Collection<XRayException> exceptions) {
+            this.exceptions = exceptions;
+            return this;
+        }
 
-    @Override
-    public String toString() {
-        return "XRayErrorCause{" +
-                "working_directory='" + working_directory + '\'' +
-                ", exceptions=" + exceptions +
-                ", paths=" + paths +
-                '}';
+        public XRayErrorCauseBuilder withPaths(Collection<String> paths) {
+            this.paths = paths;
+            return this;
+        }
+
+        public XRayErrorCause build() {
+            return new XRayErrorCause(working_directory, exceptions, paths);
+        }
     }
 }

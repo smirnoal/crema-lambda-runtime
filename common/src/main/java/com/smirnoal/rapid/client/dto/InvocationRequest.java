@@ -22,7 +22,7 @@ public record InvocationRequest(
         String invokedFunctionArn;
         String xrayTraceId;
 
-        InvocationRequestBuilder() {
+        private InvocationRequestBuilder() {
         }
 
         public InvocationRequestBuilder withClientContext(String clientContext) {

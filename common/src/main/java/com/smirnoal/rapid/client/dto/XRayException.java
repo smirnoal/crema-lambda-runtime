@@ -2,27 +2,41 @@ package com.smirnoal.rapid.client.dto;
 
 import java.util.List;
 
-public class XRayException {
-    public String message;
-    public String type;
-    public List<StackElement> stack;
+public record XRayException(
+        String message,
+        String type,
+        List<StackElement> stack) {
 
     @SuppressWarnings("unused")
-    public XRayException() {
+    public XRayExceptionBuilder builder() {
+        return new XRayExceptionBuilder();
     }
 
-    public XRayException(String message, String type, List<StackElement> stack) {
-        this.message = message;
-        this.type = type;
-        this.stack = stack;
-    }
+    public static class XRayExceptionBuilder {
+        public String message;
+        public String type;
+        public List<StackElement> stack;
 
-    @Override
-    public String toString() {
-        return "XRayException{" +
-                "message='" + message + '\'' +
-                ", type='" + type + '\'' +
-                ", stack=" + stack +
-                '}';
+        private XRayExceptionBuilder() {
+        }
+
+        XRayExceptionBuilder withMessage(String message) {
+            this.message = message;
+            return this;
+        }
+
+        XRayExceptionBuilder withType(String type) {
+            this.type = type;
+            return this;
+        }
+
+        XRayExceptionBuilder withStack(List<StackElement> stack) {
+            this.stack = stack;
+            return this;
+        }
+
+        XRayException build() {
+            return new XRayException(message, type, stack);
+        }
     }
 }

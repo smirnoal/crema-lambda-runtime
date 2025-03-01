@@ -4,7 +4,7 @@ package com.smirnoal.lambda;
 import com.smirnoal.rapid.client.LambdaError;
 import com.smirnoal.rapid.client.LambdaRapidHttpClient;
 import com.smirnoal.rapid.client.LambdaRapidHttpClientImpl;
-import com.smirnoal.rapid.client.converters.LambdaErrorConverter;
+import com.smirnoal.rapid.client.converters.ErrorRequestConverter;
 import com.smirnoal.rapid.client.converters.XRayErrorCauseConverter;
 import com.smirnoal.rapid.client.dto.ErrorRequest;
 import com.smirnoal.rapid.client.dto.InvocationRequest;
@@ -42,7 +42,7 @@ public class LambdaApplication {
                 byte[] result = handler.handle(request.content());
                 runtimeApiClient.reportInvocationSuccess(request.id(), result);
             } catch (Throwable t) {
-                ErrorRequest errorRequest = LambdaErrorConverter.fromThrowable(t);
+                ErrorRequest errorRequest = ErrorRequestConverter.fromThrowable(t);
                 XRayErrorCause xRayErrorCause = XRayErrorCauseConverter.fromThrowable(t);
                 LambdaError lambdaError = new LambdaError(errorRequest, xRayErrorCause);
                 runtimeApiClient.reportInvocationError(request.id(), lambdaError);

@@ -14,7 +14,7 @@ public record ErrorRequest(
         String errorType;
         String[] stackTrace;
 
-        ErrorRequestBuilder() {
+        private ErrorRequestBuilder() {
         }
 
         public ErrorRequestBuilder withErrorMessage(String errorMessage) {
