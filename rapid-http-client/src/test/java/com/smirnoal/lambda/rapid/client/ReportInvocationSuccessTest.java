@@ -1,4 +1,4 @@
-package com.smirnoal.rapid.client;
+package com.smirnoal.lambda.rapid.client;
 
 import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockResponse;

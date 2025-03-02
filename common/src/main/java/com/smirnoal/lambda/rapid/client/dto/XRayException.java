@@ -1,4 +1,4 @@
-package com.smirnoal.rapid.client.dto;
+package com.smirnoal.lambda.rapid.client.dto;
 
 import java.util.List;
 

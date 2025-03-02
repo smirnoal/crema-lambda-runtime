@@ -1,7 +1,7 @@
-package com.smirnoal.rapid.client;
+package com.smirnoal.lambda.rapid.client;
 
 
-import com.smirnoal.rapid.client.dto.InvocationRequest;
+import com.smirnoal.lambda.rapid.client.dto.InvocationRequest;
 
 public interface LambdaRapidHttpClient {
 

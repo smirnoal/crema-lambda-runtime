@@ -1,4 +1,4 @@
-package com.smirnoal.rapid.client;
+package com.smirnoal.lambda.rapid.client;
 
 import okhttp3.mockwebserver.MockWebServer;
 import org.jetbrains.annotations.NotNull;
@@ -7,7 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 class MockServerBase {
     MockWebServer mockWebServer;
     LambdaRapidHttpClient runtimeClient;
-    final String EXPECTED_USER_AGENT = "com-smirnoal-java/";
+    final String EXPECTED_USER_AGENT = "com-smirnoal-java-http/";
 
     @BeforeEach
     void initRuntimeClient() {

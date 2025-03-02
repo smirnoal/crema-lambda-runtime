@@ -1,7 +1,7 @@
-package com.smirnoal.rapid.client;
+package com.smirnoal.lambda.rapid.client;
 
-import com.smirnoal.rapid.client.dto.InvocationRequest;
-import com.smirnoal.rapid.client.serde.PayloadSerializers;
+import com.smirnoal.lambda.rapid.client.dto.InvocationRequest;
+import com.smirnoal.lambda.rapid.client.serde.PayloadSerializers;
 
 import java.io.IOException;
 import java.net.URI;
@@ -18,7 +18,7 @@ import static java.net.HttpURLConnection.HTTP_OK;
 public final class LambdaRapidHttpClientImpl implements LambdaRapidHttpClient {
 
     static final String USER_AGENT =
-            "com-smirnoal-java/%s".formatted(System.getProperty("java.vendor.version"));
+            "com-smirnoal-java-http/%s".formatted(System.getProperty("java.vendor.version"));
 
     private static final int XRAY_ERROR_CAUSE_MAX_HEADER_SIZE = 1024 * 1024;
 
@@ -61,10 +61,10 @@ public final class LambdaRapidHttpClientImpl implements LambdaRapidHttpClient {
 
         HttpHeaders headers = response.headers();
 
-        String requestId = headers.firstValue("lambda-runtime-aws-request-id").orElseThrow(
-                () -> new LambdaRapidClientException("Request ID absent"));
-        String invokedFunctionArn = headers.firstValue("lambda-runtime-invoked-function-arn").orElseThrow(
-                () -> new LambdaRapidClientException("Function ARN absent"));
+        String requestId = headers.firstValue("lambda-runtime-aws-request-id")
+                .orElseThrow(() -> new LambdaRapidClientException("Request ID absent"));
+        String invokedFunctionArn = headers.firstValue("lambda-runtime-invoked-function-arn")
+                .orElseThrow(() -> new LambdaRapidClientException("Function ARN absent"));
         long deadlineTimeInMs = Long.parseLong(
                 headers.firstValue("lambda-runtime-deadline-ms").orElse("0")
         );

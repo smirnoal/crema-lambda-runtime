@@ -1,10 +1,11 @@
-package com.smirnoal.rapid.client.serde;
+package com.smirnoal.lambda.rapid.client.serde;
 
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.smirnoal.rapid.client.dto.ErrorRequest;
-import com.smirnoal.rapid.client.dto.XRayErrorCause;
+import com.smirnoal.lambda.Serializer;
+import com.smirnoal.lambda.rapid.client.dto.ErrorRequest;
+import com.smirnoal.lambda.rapid.client.dto.XRayErrorCause;
 
 public class PayloadSerializers {
     public static byte[] serialize(ErrorRequest error) {

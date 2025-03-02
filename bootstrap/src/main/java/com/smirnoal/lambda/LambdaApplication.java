@@ -1,14 +1,14 @@
 package com.smirnoal.lambda;
 
 
-import com.smirnoal.rapid.client.LambdaError;
-import com.smirnoal.rapid.client.LambdaRapidHttpClient;
-import com.smirnoal.rapid.client.LambdaRapidHttpClientImpl;
-import com.smirnoal.rapid.client.converters.ErrorRequestConverter;
-import com.smirnoal.rapid.client.converters.XRayErrorCauseConverter;
-import com.smirnoal.rapid.client.dto.ErrorRequest;
-import com.smirnoal.rapid.client.dto.InvocationRequest;
-import com.smirnoal.rapid.client.dto.XRayErrorCause;
+import com.smirnoal.lambda.rapid.client.LambdaError;
+import com.smirnoal.lambda.rapid.client.LambdaRapidHttpClient;
+import com.smirnoal.lambda.rapid.client.LambdaRapidHttpClientImpl;
+import com.smirnoal.lambda.rapid.client.converters.ErrorRequestConverter;
+import com.smirnoal.lambda.rapid.client.converters.XRayErrorCauseConverter;
+import com.smirnoal.lambda.rapid.client.dto.ErrorRequest;
+import com.smirnoal.lambda.rapid.client.dto.InvocationRequest;
+import com.smirnoal.lambda.rapid.client.dto.XRayErrorCause;
 
 import static com.smirnoal.lambda.Lambda.Constants.LAMBDA_TRACE_HEADER_PROP;
 

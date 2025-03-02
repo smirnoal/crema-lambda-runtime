@@ -1,4 +1,4 @@
-package com.smirnoal.rapid.client;
+package com.smirnoal.lambda.rapid.client;
 
 public class LambdaRapidClientException extends RuntimeException {
     public LambdaRapidClientException(String message) {

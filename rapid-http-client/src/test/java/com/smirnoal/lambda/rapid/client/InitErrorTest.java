@@ -1,6 +1,6 @@
-package com.smirnoal.rapid.client;
+package com.smirnoal.lambda.rapid.client;
 
-import com.smirnoal.rapid.client.dto.ErrorRequest;
+import com.smirnoal.lambda.rapid.client.dto.ErrorRequest;
 import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.RecordedRequest;

@@ -1,8 +1,8 @@
-package com.smirnoal.rapid.client.converters;
+package com.smirnoal.lambda.rapid.client.converters;
 
-import com.smirnoal.rapid.client.dto.StackElement;
-import com.smirnoal.rapid.client.dto.XRayErrorCause;
-import com.smirnoal.rapid.client.dto.XRayException;
+import com.smirnoal.lambda.rapid.client.dto.StackElement;
+import com.smirnoal.lambda.rapid.client.dto.XRayErrorCause;
+import com.smirnoal.lambda.rapid.client.dto.XRayException;
 
 import java.util.Arrays;
 import java.util.Collection;

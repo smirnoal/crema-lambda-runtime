@@ -1,6 +1,6 @@
-package com.smirnoal.rapid.client;
+package com.smirnoal.lambda.rapid.client;
 
-import com.smirnoal.rapid.client.dto.InvocationRequest;
+import com.smirnoal.lambda.rapid.client.dto.InvocationRequest;
 import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -51,7 +51,7 @@ class NextInvocationTest extends MockServerBase {
         assertEquals(expectedUrl, actualUrl.toString());
 
         String userAgent = recordedRequest.getHeader("User-Agent");
-        assertThat(userAgent, CoreMatchers.startsWith("com-smirnoal-java/"));
+        assertThat(userAgent, CoreMatchers.startsWith(EXPECTED_USER_AGENT));
     }
 
     @Test

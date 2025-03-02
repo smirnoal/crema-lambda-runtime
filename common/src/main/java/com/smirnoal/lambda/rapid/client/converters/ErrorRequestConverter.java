@@ -1,8 +1,8 @@
-package com.smirnoal.rapid.client.converters;
+package com.smirnoal.lambda.rapid.client.converters;
 
 
 
-import com.smirnoal.rapid.client.dto.ErrorRequest;
+import com.smirnoal.lambda.rapid.client.dto.ErrorRequest;
 
 import java.util.Arrays;
 

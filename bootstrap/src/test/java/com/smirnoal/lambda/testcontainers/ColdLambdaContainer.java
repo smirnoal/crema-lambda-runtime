@@ -3,9 +3,7 @@ package com.smirnoal.lambda.testcontainers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.output.OutputFrame;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
-import org.testcontainers.containers.output.ToStringConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
@@ -65,8 +63,21 @@ public class ColdLambdaContainer implements AutoCloseable {
                 .waitingFor(Wait.forLogMessage(".*exec '/var/runtime/bootstrap'.*", 1)
                         .withStartupTimeout(Duration.ofSeconds(10)));
 
+        configureTestEnvironment(container);
         copyRuntimeLibs(container);
         return container;
+    }
+
+    private static void configureTestEnvironment(GenericContainer<?> container) {
+        container
+                .withEnv("AWS_ACCESS_KEY", "test_aws_access_key")
+                .withEnv("AWS_ACCESS_KEY_ID", "test_aws_access_key_id")
+                .withEnv("AWS_SECRET_ACCESS_KEY", "test_aws_secret_access_key")
+                .withEnv("AWS_SESSION_TOKEN", "test_aws_session_token")
+                .withEnv("AWS_REGION", "test_aws_region")
+                .withEnv("AWS_DEFAULT_REGION", "test_aws_default_region")
+                .withEnv("AWS_LAMBDA_INITIALIZATION_TYPE", "test_aws_lambda_initialization_type")
+                .withEnv("AWS_ACCESS_KEY_ID", "test_aws_access_key_id");
     }
 
     private static void copyRuntimeLibs(GenericContainer<?> container) {

@@ -1,18 +1,21 @@
 package com.smirnoal.lambda;
 
 import com.google.gson.Gson;
+import com.smirnoal.lambda.handlers.EnvCheckHandler;
+import com.smirnoal.lambda.handlers.ReverseStringMain;
+import com.smirnoal.lambda.handlers.ThrowsCycleHandler;
+import com.smirnoal.lambda.handlers.ThrowsHandler;
 import com.smirnoal.lambda.testcontainers.ColdLambdaContainer;
-import com.smirnoal.rapid.client.dto.ErrorRequest;
+import com.smirnoal.lambda.rapid.client.dto.ErrorRequest;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class LambdaApplicationIT {
 
-
     @Test
     public void reverseStringTest() {
-        String handler = "com.smirnoal.lambda.handlers.ReverseStringMain";
+        String handler = ReverseStringMain.class.getCanonicalName();
         String jsonPayload = "Hello Lambda";
         String expected = new StringBuilder(jsonPayload).reverse().toString();
         String result = ColdLambdaContainer.invokeLambda(handler, jsonPayload);
@@ -21,7 +24,7 @@ class LambdaApplicationIT {
 
     @Test
     public void throwsTest() {
-        String handler = "com.smirnoal.lambda.handlers.ThrowsHandler";
+        String handler = ThrowsHandler.class.getCanonicalName();
         String jsonPayload = "Hello Lambda";
         String result = ColdLambdaContainer.invokeLambda(handler, jsonPayload);
 
@@ -33,7 +36,7 @@ class LambdaApplicationIT {
 
     @Test
     public void throwsCycleTest() {
-        String handler = "com.smirnoal.lambda.handlers.ThrowsCycleHandler";
+        String handler = ThrowsCycleHandler.class.getCanonicalName();
         String jsonPayload = "Hello Lambda";
         String result = ColdLambdaContainer.invokeLambda(handler, jsonPayload);
 
@@ -41,6 +44,14 @@ class LambdaApplicationIT {
         assertEquals("exception 1", actualErrorRequest.errorMessage());
         assertEquals("java.lang.RuntimeException", actualErrorRequest.errorType());
         assertEquals("com.smirnoal.lambda.handlers.ThrowsCycleHandler.handle(ThrowsCycleHandler.java:9)", actualErrorRequest.stackTrace()[0]);
+    }
+
+    @Test
+    public void testEnvironment() {
+        String handler = EnvCheckHandler.class.getCanonicalName();
+        String result = ColdLambdaContainer.invokeLambda(handler, "");
+
+        assertEquals("", result);
     }
 
 //    @Test

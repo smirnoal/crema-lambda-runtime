@@ -1,8 +1,8 @@
-package com.smirnoal.rapid.client;
+package com.smirnoal.lambda.rapid.client;
 
 
-import com.smirnoal.rapid.client.dto.ErrorRequest;
-import com.smirnoal.rapid.client.dto.XRayErrorCause;
+import com.smirnoal.lambda.rapid.client.dto.ErrorRequest;
+import com.smirnoal.lambda.rapid.client.dto.XRayErrorCause;
 
 public class LambdaError {
 
