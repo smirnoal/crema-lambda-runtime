@@ -1,13 +1,12 @@
 package com.smirnoal.lambda.handlers;
 
-import com.smirnoal.lambda.LambdaHandler;
+import com.smirnoal.lambda.StringLambdaHandler;
 
-public class ReverseStringHandler implements LambdaHandler {
+public class ReverseStringHandler extends StringLambdaHandler {
     @Override
-    public byte[] handle(byte[] event) {
-        return new StringBuilder(new String(event))
+    public String handle(String event) {
+        return new StringBuilder(event)
                 .reverse()
-                .toString()
-                .getBytes();
+                .toString();
     }
 }

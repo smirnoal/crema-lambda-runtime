@@ -1,5 +1,12 @@
 package com.smirnoal.lambda;
 
-public interface LambdaHandler {
-    byte[] handle(byte[] event);
+import java.util.function.Function;
+
+public interface LambdaHandler<InputType, OutputType> {
+    OutputType handle(InputType event);
+
+    byte[] toBytes(OutputType object);
+
+    InputType toInputType(byte[] bytes);
+
 }

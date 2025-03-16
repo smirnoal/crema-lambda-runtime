@@ -1,10 +1,7 @@
 package com.smirnoal.lambda;
 
 import com.google.gson.Gson;
-import com.smirnoal.lambda.handlers.EnvCheckHandler;
-import com.smirnoal.lambda.handlers.ReverseStringMain;
-import com.smirnoal.lambda.handlers.ThrowsCycleHandler;
-import com.smirnoal.lambda.handlers.ThrowsHandler;
+import com.smirnoal.lambda.handlers.*;
 import com.smirnoal.lambda.testcontainers.ColdLambdaContainer;
 import com.smirnoal.lambda.rapid.client.dto.ErrorRequest;
 import org.junit.jupiter.api.Test;
@@ -52,6 +49,15 @@ class LambdaApplicationIT {
         String result = ColdLambdaContainer.invokeLambda(handler, "");
 
         assertEquals("", result);
+    }
+
+    @Test
+    public void testEchoStringHandler() {
+        String handler = EchoStringHandler.class.getCanonicalName();
+        String payload = "abcdefg";
+        String result = ColdLambdaContainer.invokeLambda(handler, payload);
+
+        assertEquals(payload, result);
     }
 
 //    @Test

@@ -2,16 +2,16 @@ package com.smirnoal.lambda.handlers;
 
 import com.smirnoal.lambda.Lambda;
 import com.smirnoal.lambda.LambdaApplication;
-import com.smirnoal.lambda.LambdaHandler;
+import com.smirnoal.lambda.StringLambdaHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class EnvCheckHandler implements LambdaHandler {
+public class EnvCheckHandler extends StringLambdaHandler {
     @Override
-    public byte[] handle(byte[] event) {
+    public String handle(String event) {
 
         List<String> result = new ArrayList<>();
 
@@ -84,12 +84,11 @@ public class EnvCheckHandler implements LambdaHandler {
         }
 
         return result.stream()
-                .collect(Collectors.joining("\n"))
-                .getBytes();
+                .collect(Collectors.joining("\n"));
     }
 
     public static void main(String[] args) {
-        LambdaApplication app = new LambdaApplication(new EnvCheckHandler());
+        LambdaApplication<String, String> app = new LambdaApplication<>(new EnvCheckHandler());
         app.run();
     }
 }

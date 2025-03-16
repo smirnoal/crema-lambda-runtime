@@ -13,16 +13,16 @@ import com.smirnoal.lambda.rapid.client.dto.XRayErrorCause;
 import static com.smirnoal.lambda.Lambda.Constants.LAMBDA_TRACE_HEADER_PROP;
 
 
-public class LambdaApplication {
+public class LambdaApplication<InputType, OutputType> {
 
     private LambdaRapidHttpClient runtimeApiClient;
-    private final LambdaHandler handler;
+    private LambdaHandler<InputType, OutputType> lambdaHandler;
 
-    public LambdaApplication(LambdaHandler lambdaHandler) {
-        this.handler = lambdaHandler;
+    public LambdaApplication(LambdaHandler<InputType, OutputType> lambdaHandler) {
+        this.lambdaHandler = lambdaHandler;
     }
 
-    public LambdaApplication withRuntimeApiClient(LambdaRapidHttpClientImpl runtimeApiClient) {
+    public LambdaApplication withRuntimeApiClient(LambdaRapidHttpClient runtimeApiClient) {
         this.runtimeApiClient = runtimeApiClient;
         return this;
     }
@@ -39,8 +39,10 @@ public class LambdaApplication {
             Lambda.invocationRequest = request;
 
             try {
-                byte[] result = handler.handle(request.content());
-                runtimeApiClient.reportInvocationSuccess(request.id(), result);
+                InputType inputEvent = lambdaHandler.toInputType(request.content());
+                OutputType result = lambdaHandler.handle(inputEvent);
+                byte[] bytes = lambdaHandler.toBytes(result);
+                runtimeApiClient.reportInvocationSuccess(request.id(), bytes);
             } catch (Throwable t) {
                 ErrorRequest errorRequest = ErrorRequestConverter.fromThrowable(t);
                 XRayErrorCause xRayErrorCause = XRayErrorCauseConverter.fromThrowable(t);
