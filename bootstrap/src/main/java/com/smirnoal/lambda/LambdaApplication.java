@@ -13,21 +13,16 @@ import com.smirnoal.lambda.rapid.client.dto.XRayErrorCause;
 import static com.smirnoal.lambda.Lambda.Constants.LAMBDA_TRACE_HEADER_PROP;
 
 
-public class LambdaApplication<InputType, OutputType> {
+public class LambdaApplication {
 
     private LambdaRapidHttpClient runtimeApiClient;
-    private LambdaHandler<InputType, OutputType> lambdaHandler;
-
-    public LambdaApplication(LambdaHandler<InputType, OutputType> lambdaHandler) {
-        this.lambdaHandler = lambdaHandler;
-    }
 
     public LambdaApplication withRuntimeApiClient(LambdaRapidHttpClient runtimeApiClient) {
         this.runtimeApiClient = runtimeApiClient;
         return this;
     }
 
-    public void run() {
+    public <T, R> void run(LambdaHandler<T,R> lambdaHandler) {
 
         if (runtimeApiClient == null) {
             runtimeApiClient = new LambdaRapidHttpClientImpl(Lambda.Environment.AWS_LAMBDA_RUNTIME_API);
@@ -39,8 +34,8 @@ public class LambdaApplication<InputType, OutputType> {
             Lambda.invocationRequest = request;
 
             try {
-                InputType inputEvent = lambdaHandler.toInputType(request.content());
-                OutputType result = lambdaHandler.handle(inputEvent);
+                T inputEvent = lambdaHandler.toInputType(request.content());
+                R result = lambdaHandler.handle(inputEvent);
                 byte[] bytes = lambdaHandler.toBytes(result);
                 runtimeApiClient.reportInvocationSuccess(request.id(), bytes);
             } catch (Throwable t) {

@@ -1,5 +1,7 @@
 package com.smirnoal.lambda;
 
+import com.smirnoal.lambda.serde.LambdaSerDe;
+
 import java.util.function.Function;
 
 public class LambdaHandlerBuilder<T, R> {
@@ -38,7 +40,7 @@ public class LambdaHandlerBuilder<T, R> {
             @Override
             public T toInputType(byte[] bytes) {
                 if (lambdaSerDe != null) {
-                    return lambdaSerDe.getInputDeserializer().apply(bytes);
+                    return lambdaSerDe.inputDeserializer().apply(bytes);
                 }
                 return fromBytesToInput.apply(bytes);
             }
@@ -46,7 +48,7 @@ public class LambdaHandlerBuilder<T, R> {
             @Override
             public byte[] toBytes(R event) {
                 if (lambdaSerDe != null) {
-                    return lambdaSerDe.getOutputSerializer().apply(event);
+                    return lambdaSerDe.outputSerializer().apply(event);
                 }
                 return fromOutputTypeToBytes.apply(event);
             }

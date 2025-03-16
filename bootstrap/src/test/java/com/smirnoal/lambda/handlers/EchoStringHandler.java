@@ -19,7 +19,7 @@ public class EchoStringHandler {
                 .withHandler(myHandler::handle)
                 .build();
 
-        LambdaApplication<String, String> app = new LambdaApplication<>(handler);
-        app.run();
+        LambdaApplication app = new LambdaApplication();
+        app.run(handler);
     }
 }

@@ -2,16 +2,17 @@ package com.smirnoal.lambda.handlers;
 
 import com.smirnoal.lambda.Lambda;
 import com.smirnoal.lambda.LambdaApplication;
-import com.smirnoal.lambda.StringLambdaHandler;
+import com.smirnoal.lambda.LambdaHandler;
+import com.smirnoal.lambda.LambdaHandlerBuilder;
+import com.smirnoal.lambda.serde.StringSerDe;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class EnvCheckHandler extends StringLambdaHandler {
-    @Override
-    public String handle(String event) {
+public class EnvCheckHandler {
+    public static String handle(String event) {
 
         List<String> result = new ArrayList<>();
 
@@ -88,7 +89,13 @@ public class EnvCheckHandler extends StringLambdaHandler {
     }
 
     public static void main(String[] args) {
-        LambdaApplication<String, String> app = new LambdaApplication<>(new EnvCheckHandler());
-        app.run();
+        LambdaApplication app = new LambdaApplication();
+
+        LambdaHandler<String, String> handler = new LambdaHandlerBuilder<String, String>()
+                .withLambdaSerde(new StringSerDe())
+                .withHandler(EnvCheckHandler::handle)
+                .build();
+
+        app.run(handler);
     }
 }

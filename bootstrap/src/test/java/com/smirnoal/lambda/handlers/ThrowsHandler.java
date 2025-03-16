@@ -1,10 +1,11 @@
 package com.smirnoal.lambda.handlers;
 
 import com.smirnoal.lambda.LambdaApplication;
-import com.smirnoal.lambda.StringLambdaHandler;
+import com.smirnoal.lambda.LambdaHandler;
+import com.smirnoal.lambda.LambdaHandlerBuilder;
+import com.smirnoal.lambda.serde.StringSerDe;
 
-public class ThrowsHandler extends StringLambdaHandler {
-    @Override
+public class ThrowsHandler {
     public String handle(String event) {
         throw new MySpecialException("exception message");
     }
@@ -16,7 +17,12 @@ public class ThrowsHandler extends StringLambdaHandler {
     }
 
     public static void main(String[] args) {
-        LambdaApplication<String, String> app = new LambdaApplication<>(new ThrowsHandler());
-        app.run();
+        LambdaApplication app = new LambdaApplication();
+        ThrowsHandler myObject = new ThrowsHandler();
+        LambdaHandler<String, String> handler = new LambdaHandlerBuilder<String, String>()
+                .withHandler(myObject::handle)
+                .withLambdaSerde(new StringSerDe())
+                .build();
+        app.run(handler);
     }
 }
