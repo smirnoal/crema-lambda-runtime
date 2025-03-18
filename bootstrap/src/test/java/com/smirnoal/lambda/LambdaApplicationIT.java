@@ -65,6 +65,32 @@ class LambdaApplicationIT {
         assertEquals(payload, result);
     }
 
+    @Test
+    public void testConsumerHandler() {
+        String handler = ConsumerHandler.class.getCanonicalName();
+        String payload = "abcdefg";
+        String result = ColdLambdaContainer.invokeLambda(handler, payload);
+
+        assertEquals("", result);
+    }
+
+    @Test
+    public void testRunnableHandler() {
+        String handler = RunnableHandler.class.getCanonicalName();
+        String result = ColdLambdaContainer.invokeLambda(handler, "");
+
+        assertEquals("", result);
+    }
+
+    @Test
+    public void testReturnNullHandler() {
+        String handler = ReturnNullHandler.class.getCanonicalName();
+        String payload = "abcdefg";
+        String result = ColdLambdaContainer.invokeLambda(handler, payload);
+
+        assertEquals("null", result);
+    }
+
 //    @Test
 //    public void echoTestLimit() {
 //        String handler = "com.smirnoal.lambda.handlers.Echo";

@@ -17,12 +17,13 @@ public class ThrowsHandler {
     }
 
     public static void main(String[] args) {
-        LambdaApplication app = new LambdaApplication();
         ThrowsHandler myObject = new ThrowsHandler();
         LambdaHandler<String, String> handler = new LambdaHandlerBuilder<String, String>()
                 .withHandler(myObject::handle)
                 .withLambdaSerde(new StringSerDe())
                 .build();
+
+        LambdaApplication app = new LambdaApplication();
         app.run(handler);
     }
 }

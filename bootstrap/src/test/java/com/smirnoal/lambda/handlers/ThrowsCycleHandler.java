@@ -14,13 +14,13 @@ public class ThrowsCycleHandler {
     }
 
     public static void main(String[] args) {
-        LambdaApplication app = new LambdaApplication();
-
         ThrowsCycleHandler myObject = new ThrowsCycleHandler();
         LambdaHandler<String, String> handler = new LambdaHandlerBuilder<String, String>()
                 .withHandler(myObject::handle)
                 .withLambdaSerde(new StringSerDe())
                 .build();
+
+        LambdaApplication app = new LambdaApplication();
         app.run(handler);
     }
 }

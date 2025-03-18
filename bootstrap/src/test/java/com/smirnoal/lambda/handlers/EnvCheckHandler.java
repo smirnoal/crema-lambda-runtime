@@ -89,13 +89,12 @@ public class EnvCheckHandler {
     }
 
     public static void main(String[] args) {
-        LambdaApplication app = new LambdaApplication();
-
         LambdaHandler<String, String> handler = new LambdaHandlerBuilder<String, String>()
                 .withLambdaSerde(new StringSerDe())
                 .withHandler(EnvCheckHandler::handle)
                 .build();
 
+        LambdaApplication app = new LambdaApplication();
         app.run(handler);
     }
 }

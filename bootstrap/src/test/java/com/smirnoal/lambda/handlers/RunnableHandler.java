@@ -3,14 +3,16 @@ package com.smirnoal.lambda.handlers;
 import com.smirnoal.lambda.LambdaApplication;
 import com.smirnoal.lambda.LambdaHandler;
 import com.smirnoal.lambda.LambdaHandlerBuilder;
-import com.smirnoal.lambda.serde.StringSerDe;
 
-public class ReverseStringMain {
+public class RunnableHandler {
+
+    public void voidHandler() {
+    }
+
     public static void main(String[] args) {
-        ReverseStringHandler myObj = new ReverseStringHandler();
-        LambdaHandler<String, String> handler = new LambdaHandlerBuilder<String, String>()
-                .withHandler(myObj::handle)
-                .withLambdaSerde(new StringSerDe())
+        RunnableHandler myHandler = new RunnableHandler();
+        LambdaHandler<Void, Void> handler = new LambdaHandlerBuilder<Void, Void>()
+                .withHandler(myHandler::voidHandler)
                 .build();
 
         LambdaApplication app = new LambdaApplication();

@@ -1,9 +1,9 @@
 package com.smirnoal.lambda;
 
-public interface LambdaHandler<InputType, OutputType> {
-    OutputType handle(InputType event);
+public interface LambdaHandler<T, R> {
+    R handle(T event);
 
-    byte[] toBytes(OutputType object);
+    byte[] toBytes(R object);
 
-    InputType toInputType(byte[] bytes);
+    T toInputType(byte[] bytes);
 }
