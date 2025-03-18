@@ -1,8 +1,7 @@
 package com.smirnoal.lambda.handlers;
 
-import com.smirnoal.lambda.LambdaApplication;
 import com.smirnoal.lambda.LambdaHandler;
-import com.smirnoal.lambda.LambdaHandlerBuilder;
+import com.smirnoal.lambda.LambdaApplication;
 
 public class ConsumerHandler {
 
@@ -12,10 +11,9 @@ public class ConsumerHandler {
     public static void main(String[] args) {
         ConsumerHandler myHandler = new ConsumerHandler();
 
-        LambdaHandler<String, Void> handler = new LambdaHandlerBuilder<String, Void>()
+        LambdaHandler<String, Void> handler = new LambdaHandler<String, Void>()
                 .withInputTypeDeserializer(String::new)
-                .withHandler(myHandler::voidHandler)
-                .build();
+                .withHandler(myHandler::voidHandler);
 
         LambdaApplication app = new LambdaApplication();
         app.run(handler);

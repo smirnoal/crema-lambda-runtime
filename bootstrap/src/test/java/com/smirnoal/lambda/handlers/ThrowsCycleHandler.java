@@ -1,12 +1,11 @@
 package com.smirnoal.lambda.handlers;
 
-import com.smirnoal.lambda.LambdaApplication;
 import com.smirnoal.lambda.LambdaHandler;
-import com.smirnoal.lambda.LambdaHandlerBuilder;
-import com.smirnoal.lambda.serde.StringSerDe;
+import com.smirnoal.lambda.LambdaApplication;
 
 public class ThrowsCycleHandler {
-    public String handle(String o) {
+
+    public void handle() {
         RuntimeException e1 = new RuntimeException("exception 1");
         RuntimeException e2 = new RuntimeException("exception 2", e1);
         e1.initCause(e2);
@@ -15,10 +14,8 @@ public class ThrowsCycleHandler {
 
     public static void main(String[] args) {
         ThrowsCycleHandler myObject = new ThrowsCycleHandler();
-        LambdaHandler<String, String> handler = new LambdaHandlerBuilder<String, String>()
-                .withHandler(myObject::handle)
-                .withLambdaSerde(new StringSerDe())
-                .build();
+        LambdaHandler<Void, Void> handler = new LambdaHandler<Void, Void>()
+                .withHandler(myObject::handle);
 
         LambdaApplication app = new LambdaApplication();
         app.run(handler);

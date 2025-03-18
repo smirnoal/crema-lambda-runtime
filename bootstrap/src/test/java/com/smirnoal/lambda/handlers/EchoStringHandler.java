@@ -2,7 +2,6 @@ package com.smirnoal.lambda.handlers;
 
 import com.smirnoal.lambda.LambdaApplication;
 import com.smirnoal.lambda.LambdaHandler;
-import com.smirnoal.lambda.LambdaHandlerBuilder;
 
 public class EchoStringHandler {
 
@@ -13,11 +12,10 @@ public class EchoStringHandler {
     public static void main(String[] args) {
         EchoStringHandler myHandler = new EchoStringHandler();
 
-        LambdaHandler<String, String> handler = new LambdaHandlerBuilder<String, String>()
+        LambdaHandler<String, String> handler = new LambdaHandler<String, String>()
                 .withInputTypeDeserializer(String::new)
                 .withOutputTypeSerializer(String::getBytes)
-                .withHandler(myHandler::handle)
-                .build();
+                .withHandler(myHandler::handle);
 
         LambdaApplication app = new LambdaApplication();
         app.run(handler);

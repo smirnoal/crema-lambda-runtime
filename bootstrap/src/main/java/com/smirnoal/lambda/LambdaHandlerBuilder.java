@@ -1,6 +1,6 @@
 package com.smirnoal.lambda;
 
-import com.smirnoal.lambda.serde.LambdaSerDe;
+import com.smirnoal.lambda.serde.LambdaSerde;
 
 import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
@@ -23,7 +23,7 @@ public class LambdaHandlerBuilder<T, R> {
         return this;
     }
 
-    public LambdaHandlerBuilder<T, R> withLambdaSerde(LambdaSerDe<T, R> lambdaSerDe) {
+    public LambdaHandlerBuilder<T, R> withLambdaSerde(LambdaSerde<T, R> lambdaSerDe) {
         this.fromBytesToInput = lambdaSerDe.inputDeserializer();
         this.fromOutputTypeToBytes = lambdaSerDe.outputSerializer();
         return this;
@@ -60,10 +60,9 @@ public class LambdaHandlerBuilder<T, R> {
     public LambdaHandler<T, R> build() {
         return new LambdaHandler<>() {
 
-            private static final byte[] EMTPY_BYTE_ARRAY = new byte[0];
+            private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
             private static final byte[] NULL_RESPONSE = "null".getBytes(StandardCharsets.UTF_8);
 
-            @Override
             public R handle(T event) {
                 if (function != null) {
                     return function.apply(event);
@@ -77,7 +76,6 @@ public class LambdaHandlerBuilder<T, R> {
                 throw new RuntimeException("Handler is not defined");
             }
 
-            @Override
             public T toInputType(byte[] bytes) {
                 if (function == null && consumer == null) {
                     return null;
@@ -85,10 +83,9 @@ public class LambdaHandlerBuilder<T, R> {
                 return fromBytesToInput.apply(bytes);
             }
 
-            @Override
             public byte[] toBytes(R event) {
                 if (function == null) {
-                    return EMTPY_BYTE_ARRAY;
+                    return EMPTY_BYTE_ARRAY;
                 }
                 if (event == null) {
                     return NULL_RESPONSE;

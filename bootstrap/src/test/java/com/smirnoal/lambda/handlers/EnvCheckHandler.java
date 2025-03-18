@@ -1,18 +1,13 @@
 package com.smirnoal.lambda.handlers;
 
-import com.smirnoal.lambda.Lambda;
-import com.smirnoal.lambda.LambdaApplication;
-import com.smirnoal.lambda.LambdaHandler;
-import com.smirnoal.lambda.LambdaHandlerBuilder;
-import com.smirnoal.lambda.serde.StringSerDe;
+import com.smirnoal.lambda.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class EnvCheckHandler {
-    public static String handle(String event) {
+    public static String handle() {
 
         List<String> result = new ArrayList<>();
 
@@ -84,15 +79,13 @@ public class EnvCheckHandler {
             result.add("AWS_ACCESS_KEY_ID is invalid: " + Lambda.Environment.AWS_ACCESS_KEY_ID);
         }
 
-        return result.stream()
-                .collect(Collectors.joining("\n"));
+        return String.join("\n", result);
     }
 
     public static void main(String[] args) {
-        LambdaHandler<String, String> handler = new LambdaHandlerBuilder<String, String>()
-                .withLambdaSerde(new StringSerDe())
-                .withHandler(EnvCheckHandler::handle)
-                .build();
+        LambdaHandler<Void, String> handler = new LambdaHandler<Void, String>()
+                .withOutputTypeSerializer(String::getBytes)
+                .withHandler(EnvCheckHandler::handle);
 
         LambdaApplication app = new LambdaApplication();
         app.run(handler);

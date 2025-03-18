@@ -3,7 +3,7 @@ package com.smirnoal.lambda.serde;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Function;
 
-public class StringSerDe implements LambdaSerDe<String, String> {
+public class StringSerde implements LambdaSerde<String, String> {
 
     @Override
     public Function<byte[], String> inputDeserializer() {

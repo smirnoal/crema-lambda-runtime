@@ -22,7 +22,7 @@ public class LambdaApplication {
         return this;
     }
 
-    public <T, R> void run(LambdaHandler<T,R> lambdaHandler) {
+    public <T, R> void run(LambdaHandler<T, R> lambdaHandler) {
 
         if (runtimeApiClient == null) {
             runtimeApiClient = new LambdaRapidHttpClientImpl(Lambda.Environment.AWS_LAMBDA_RUNTIME_API);

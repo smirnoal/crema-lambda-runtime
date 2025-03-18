@@ -1,9 +1,8 @@
 package com.smirnoal.lambda.handlers;
 
-import com.smirnoal.lambda.LambdaApplication;
 import com.smirnoal.lambda.LambdaHandler;
-import com.smirnoal.lambda.LambdaHandlerBuilder;
-import com.smirnoal.lambda.serde.StringSerDe;
+import com.smirnoal.lambda.LambdaApplication;
+import com.smirnoal.lambda.serde.StringSerde;
 
 public class ThrowsHandler {
     public String handle(String event) {
@@ -18,10 +17,9 @@ public class ThrowsHandler {
 
     public static void main(String[] args) {
         ThrowsHandler myObject = new ThrowsHandler();
-        LambdaHandler<String, String> handler = new LambdaHandlerBuilder<String, String>()
+        LambdaHandler<String, String> handler = new LambdaHandler<String, String>()
                 .withHandler(myObject::handle)
-                .withLambdaSerde(new StringSerDe())
-                .build();
+                .withLambdaSerde(new StringSerde());
 
         LambdaApplication app = new LambdaApplication();
         app.run(handler);
