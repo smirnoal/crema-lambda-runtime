@@ -85,8 +85,7 @@ class ReportInvocationErrorTest extends MockServerBase {
                 .withPaths(List.of("path1", "path2"))
                 .build();
 
-        LambdaError error = new LambdaError(errorRequest)
-                .withXRayErrorCause(xRayErrorCause);
+        LambdaError error = new LambdaError(errorRequest, xRayErrorCause);
 
         runtimeClient.reportInvocationError(requestId, error);
         RecordedRequest recordedRequest = mockWebServer.takeRequest();

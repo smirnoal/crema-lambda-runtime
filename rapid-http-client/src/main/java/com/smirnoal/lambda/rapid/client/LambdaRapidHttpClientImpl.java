@@ -135,18 +135,18 @@ public final class LambdaRapidHttpClientImpl implements LambdaRapidHttpClient {
                 .header("User-Agent", USER_AGENT)
                 .header("Content-Type", "application/json");
 
-        if (error.xRayErrorCause != null) {
-            byte[] xRayErrorCauseJson = PayloadSerializers.serialize(error.xRayErrorCause);
+        if (error.xRayErrorCause() != null) {
+            byte[] xRayErrorCauseJson = PayloadSerializers.serialize(error.xRayErrorCause());
             if (xRayErrorCauseJson != null && xRayErrorCauseJson.length < XRAY_ERROR_CAUSE_MAX_HEADER_SIZE) {
                 request.header("Lambda-Runtime-Function-XRay-Error-Cause", new String(xRayErrorCauseJson));
             }
         }
 
-        if (error.errorRequest.errorType() != null) {
-            request.header("Lambda-Runtime-Function-Error-Type", error.errorRequest.errorType());
+        if (error.errorRequest().errorType() != null) {
+            request.header("Lambda-Runtime-Function-Error-Type", error.errorRequest().errorType());
         }
 
-        byte[] payload = PayloadSerializers.serialize(error.errorRequest);
+        byte[] payload = PayloadSerializers.serialize(error.errorRequest());
         request.POST(HttpRequest.BodyPublishers.ofByteArray(payload));
 
         HttpResponse<Void> response;

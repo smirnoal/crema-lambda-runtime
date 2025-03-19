@@ -70,7 +70,7 @@ public class LambdaHandler<T, R> {
             runnable.run();
             return null;
         }
-        throw new RuntimeException("Handler is not defined");
+        throw new AssertionError("Handler is not defined");
     }
 
     T toInputType(byte[] bytes) {
