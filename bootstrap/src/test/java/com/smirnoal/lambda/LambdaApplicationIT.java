@@ -91,6 +91,24 @@ class LambdaApplicationIT {
         assertEquals("null", result);
     }
 
+    @Test
+    public void testPojoHandler() {
+        String handler = PojoHandler.class.getCanonicalName();
+        String payload = "{ \"name\": \"John\", \"age\": 23 }";
+        String result = ColdLambdaContainer.invokeLambda(handler, payload);
+
+        assertEquals("{\"name\":\"Dublin\",\"yearFounded\":841}", result);
+    }
+
+    @Test
+    public void testPojoHandler2() {
+        String handler = PojoHandler2.class.getCanonicalName();
+        String payload = "{ \"name\": \"John\", \"age\": 23 }";
+        String result = ColdLambdaContainer.invokeLambda(handler, payload);
+
+        assertEquals("{\"name\":\"Dublin\",\"yearFounded\":841}", result);
+    }
+
 //    @Test
 //    public void echoTestLimit() {
 //        String handler = "com.smirnoal.lambda.handlers.Echo";
