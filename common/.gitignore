@@ -17,6 +17,7 @@ release.properties
 .classpath
 .project
 .settings/
+.gitignore
 
 # Logs and temp files
 *.log
