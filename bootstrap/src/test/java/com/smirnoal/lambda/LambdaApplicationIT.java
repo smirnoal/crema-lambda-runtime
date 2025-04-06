@@ -5,7 +5,6 @@ import com.smirnoal.lambda.handlers.*;
 import com.smirnoal.lambda.testcontainers.ColdLambdaContainer;
 import com.smirnoal.lambda.rapid.client.dto.ErrorRequest;
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

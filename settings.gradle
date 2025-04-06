@@ -1,0 +1,5 @@
+rootProject.name = 'smirnoal-java-runtime'
+
+include 'common'
+include 'rapid-http-client'
+include 'bootstrap' 

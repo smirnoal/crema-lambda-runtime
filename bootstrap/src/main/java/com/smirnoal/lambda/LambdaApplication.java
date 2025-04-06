@@ -10,6 +10,9 @@ import com.smirnoal.lambda.rapid.client.dto.ErrorRequest;
 import com.smirnoal.lambda.rapid.client.dto.InvocationRequest;
 import com.smirnoal.lambda.rapid.client.dto.XRayErrorCause;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.smirnoal.lambda.Lambda.Constants.LAMBDA_TRACE_HEADER_PROP;
 
 
@@ -20,6 +23,12 @@ public class LambdaApplication {
     public LambdaApplication withRuntimeApiClient(LambdaRapidHttpClient runtimeApiClient) {
         this.runtimeApiClient = runtimeApiClient;
         return this;
+    }
+
+    public void run(Runnable runnable) {
+        LambdaHandler<Void, Void> handler = new LambdaHandler<Void, Void>()
+                .withHandler(runnable);
+        run(handler);
     }
 
     public <T, R> void run(LambdaHandler<T, R> lambdaHandler) {
