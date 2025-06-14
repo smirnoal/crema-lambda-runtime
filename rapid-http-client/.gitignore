@@ -1,6 +1,7 @@
 # Compiled class files
 target/
 out/
+build/
 
 # Maven specific files
 pom.xml.tag

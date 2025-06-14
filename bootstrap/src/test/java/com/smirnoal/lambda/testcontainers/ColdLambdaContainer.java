@@ -62,6 +62,10 @@ public class ColdLambdaContainer implements AutoCloseable {
                         MountableFile.forHostPath("build/classes/java/test/"),
                         "/var/task/"
                 )
+                .withCopyFileToContainer(
+                        MountableFile.forHostPath("build/resources/main/bootstrap.sh"),
+                        "/var/task/"
+                )
                 .waitingFor(Wait.forLogMessage(".*exec '/var/runtime/bootstrap'.*", 1)
                         .withStartupTimeout(Duration.ofSeconds(10)));
 
