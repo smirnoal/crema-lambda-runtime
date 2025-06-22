@@ -23,6 +23,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ColdLambdaContainer implements AutoCloseable {
     final Logger logger = LoggerFactory.getLogger(ColdLambdaContainer.class);
+    // TODO: make it configurable
+    // test candidates: amazoncorretto:17-al2023-headless, amazoncorretto:21-al2023-headless
+    // amazonlinux:2023-minimal java24
     private static final DockerImageName JAVA_17_LAMBDA_IMAGE = DockerImageName.parse("public.ecr.aws/lambda/java:17");
     private static final int CONTAINER_HTTP_PORT = 8080;
     private static final String TASK_LIB_DIR = "/var/task/lib/";

@@ -1,7 +1,7 @@
 package com.smirnoal.lambda.rapid.client;
 
 import com.smirnoal.lambda.rapid.client.dto.InvocationRequest;
-import com.smirnoal.lambda.rapid.client.serde.PayloadSerializers;
+import com.smirnoal.lambda.rapid.client.serde.JsonSerializer;
 
 import java.io.IOException;
 import java.net.URI;
@@ -136,8 +136,8 @@ public final class LambdaRapidHttpClientImpl implements LambdaRapidHttpClient {
                 .header("Content-Type", "application/json");
 
         if (error.xRayErrorCause() != null) {
-            byte[] xRayErrorCauseJson = PayloadSerializers.serialize(error.xRayErrorCause());
-            if (xRayErrorCauseJson != null && xRayErrorCauseJson.length < XRAY_ERROR_CAUSE_MAX_HEADER_SIZE) {
+            byte[] xRayErrorCauseJson = JsonSerializer.serialize(error.xRayErrorCause());
+            if (xRayErrorCauseJson.length < XRAY_ERROR_CAUSE_MAX_HEADER_SIZE) {
                 request.header("Lambda-Runtime-Function-XRay-Error-Cause", new String(xRayErrorCauseJson));
             }
         }
@@ -146,7 +146,7 @@ public final class LambdaRapidHttpClientImpl implements LambdaRapidHttpClient {
             request.header("Lambda-Runtime-Function-Error-Type", error.errorRequest().errorType());
         }
 
-        byte[] payload = PayloadSerializers.serialize(error.errorRequest());
+        byte[] payload = JsonSerializer.serialize(error.errorRequest());
         request.POST(HttpRequest.BodyPublishers.ofByteArray(payload));
 
         HttpResponse<Void> response;
