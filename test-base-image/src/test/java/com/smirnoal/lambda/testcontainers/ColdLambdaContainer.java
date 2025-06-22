@@ -53,8 +53,6 @@ public class ColdLambdaContainer implements AutoCloseable {
         //    https://java.testcontainers.org/features/container_logs/
 
         var container = new GenericContainer<>(JAVA_17_LAMBDA_IMAGE)
-//                .withExposedPorts(5005) // Expose debug port
-//                .withEnv("JAVA_TOOL_OPTIONS", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005")
                 .withExposedPorts(CONTAINER_HTTP_PORT)
                 .withCommand(handler)
                 .withEnv("AWS_LAMBDA_EXEC_WRAPPER", "/var/task/bootstrap.sh")
@@ -118,7 +116,7 @@ public class ColdLambdaContainer implements AutoCloseable {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         lambdaContainer.stop();
     }
 }

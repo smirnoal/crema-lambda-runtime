@@ -15,7 +15,7 @@ public class PojoHandler2 {
     }
 
     public City handle(Person person) {
-        System.out.println("Person %s, age %d".formatted(person.name, person.age));
+        System.out.printf("Person %s, age %d%n", person.name, person.age);
         return new City("Dublin", 841);
     }
 
