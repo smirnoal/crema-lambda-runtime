@@ -8,21 +8,13 @@ dependencies {
     implementation project(':rapid-http-client')
     implementation 'com.google.code.gson:gson:2.11.0'
 
-    testImplementation 'org.slf4j:slf4j-api:2.0.16'
-    testImplementation 'org.slf4j:slf4j-simple:2.0.16'
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.11.4'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.4'
-    testImplementation 'org.testcontainers:junit-jupiter:1.20.4'
-    testImplementation 'org.testcontainers:testcontainers:1.20.4'
 }
 
 test {
     useJUnitPlatform()
 }
-//
-//application {
-//    mainClass = 'com.smirnoal.bootstrap.Bootstrap' // Update this with your main class
-//}
 
 jar {
 //    manifest {
@@ -36,10 +28,10 @@ jar {
 }
 
 // Task to copy dependencies to a dedicated directory
-task copyDependencies(type: Copy) {
+tasks.register('copyDependencies', Copy) {
     from configurations.runtimeClasspath
     into "${layout.buildDirectory.get()}/lib"
 }
 
 // Make the jar task depend on copyDependencies
-jar.dependsOn copyDependencies 
+jar.dependsOn copyDependencies

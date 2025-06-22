@@ -59,11 +59,11 @@ public class ColdLambdaContainer implements AutoCloseable {
                 .withCommand(handler)
                 .withEnv("AWS_LAMBDA_EXEC_WRAPPER", "/var/task/bootstrap.sh")
                 .withCopyFileToContainer(
-                        MountableFile.forHostPath("build/classes/java/test/"),
+                        MountableFile.forHostPath("build/classes/java/main/"),
                         "/var/task/"
                 )
                 .withCopyFileToContainer(
-                        MountableFile.forHostPath("build/resources/main/bootstrap.sh"),
+                        MountableFile.forHostPath("build/resources/test/bootstrap.sh"),
                         "/var/task/"
                 )
                 .waitingFor(Wait.forLogMessage(".*exec '/var/runtime/bootstrap'.*", 1)
@@ -88,10 +88,7 @@ public class ColdLambdaContainer implements AutoCloseable {
 
     private static void copyRuntimeLibs(GenericContainer<?> container) {
         String[] libs = {
-                "build/libs/bootstrap-1.0-SNAPSHOT.jar",
-                "build/lib/common-1.0-SNAPSHOT.jar",
-                "build/lib/rapid-http-client-1.0-SNAPSHOT.jar",
-                "build/lib/gson-2.11.0.jar"
+                "../bootstrap/build/libs/bootstrap-1.0-SNAPSHOT.jar"
         };
         for (String lib : libs) {
             String libName = Path.of(lib).getFileName().toString();
