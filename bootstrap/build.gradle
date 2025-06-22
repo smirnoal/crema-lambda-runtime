@@ -7,9 +7,9 @@ dependencies {
     implementation project(':common')
     implementation project(':rapid-http-client')
     implementation 'com.google.code.gson:gson:2.11.0'
-    implementation 'org.slf4j:slf4j-api:2.0.16'
-    implementation 'org.slf4j:slf4j-simple:2.0.16'
-    
+
+    testImplementation 'org.slf4j:slf4j-api:2.0.16'
+    testImplementation 'org.slf4j:slf4j-simple:2.0.16'
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.11.4'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.4'
     testImplementation 'org.testcontainers:junit-jupiter:1.20.4'
@@ -38,7 +38,7 @@ jar {
 // Task to copy dependencies to a dedicated directory
 task copyDependencies(type: Copy) {
     from configurations.runtimeClasspath
-    into "${buildDir}/lib"
+    into "${layout.buildDirectory.get()}/lib"
 }
 
 // Make the jar task depend on copyDependencies
