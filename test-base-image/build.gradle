@@ -24,6 +24,3 @@ test {
     useJUnitPlatform()
     dependsOn copyDependencies
 }
-
-// Make the jar task depend on copyDependencies
-build.dependsOn copyDependencies

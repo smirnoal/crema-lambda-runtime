@@ -15,16 +15,6 @@ test {
     useJUnitPlatform()
 }
 
-jar {
-//    manifest {
-//        attributes 'Main-Class': 'com.smirnoal.bootstrap.Bootstrap' // Update this with your main class
-//    }
-    
-    from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
 
 // Task to copy dependencies to a dedicated directory
 tasks.register('copyDependencies', Copy) {
@@ -32,5 +22,10 @@ tasks.register('copyDependencies', Copy) {
     into "${layout.buildDirectory.get()}/lib"
 }
 
-// Make the jar task depend on copyDependencies
-jar.dependsOn copyDependencies
+jar {
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    dependsOn copyDependencies
+}
