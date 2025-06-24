@@ -4,6 +4,7 @@ plugins {
 
 dependencies {
     implementation files(project(':bootstrap').jar)
+    implementation 'com.google.code.gson:gson:2.13.1'
     
     testImplementation 'org.slf4j:slf4j-api:2.0.16'
     testImplementation 'org.slf4j:slf4j-simple:2.0.16'
@@ -11,9 +12,18 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.4'
     testImplementation 'org.testcontainers:junit-jupiter:1.21.2'
     testImplementation 'org.testcontainers:testcontainers:1.21.2'
-    testImplementation files(project(':bootstrap').jar)
+}
+
+// Task to copy dependencies to a dedicated directory
+tasks.register('copyDependencies', Copy) {
+    from configurations.runtimeClasspath
+    into "${layout.buildDirectory.get()}/lib"
 }
 
 test {
     useJUnitPlatform()
+    dependsOn copyDependencies
 }
+
+// Make the jar task depend on copyDependencies
+build.dependsOn copyDependencies

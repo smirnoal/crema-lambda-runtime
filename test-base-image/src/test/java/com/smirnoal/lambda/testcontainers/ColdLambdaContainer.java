@@ -88,14 +88,11 @@ public class ColdLambdaContainer implements AutoCloseable {
     }
 
     private static void copyRuntimeLibs(GenericContainer<?> container) {
-        String[] libs = {
-                "../bootstrap/build/libs/bootstrap-1.0-SNAPSHOT.jar"
-        };
-        for (String lib : libs) {
-            String libName = Path.of(lib).getFileName().toString();
-            Path destinationFile = Path.of(TASK_LIB_DIR, libName);
-            container.withCopyToContainer(MountableFile.forHostPath(lib), destinationFile.toString());
-        }
+        // Copy all files from build/lib directory to /var/task/lib/
+        container.withCopyFileToContainer(
+                MountableFile.forHostPath("build/lib/"),
+                TASK_LIB_DIR
+        );
     }
 
     String invokeLambda(String jsonPayload) throws IOException, InterruptedException {
