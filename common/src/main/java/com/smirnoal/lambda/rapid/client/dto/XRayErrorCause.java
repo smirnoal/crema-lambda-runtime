@@ -3,7 +3,7 @@ package com.smirnoal.lambda.rapid.client.dto;
 import java.util.Collection;
 
 public record XRayErrorCause(
-        String working_directory,
+        String workingDirectory,
         Collection<XRayException> exceptions,
         Collection<String> paths) {
 
@@ -13,7 +13,7 @@ public record XRayErrorCause(
     }
 
     public static class XRayErrorCauseBuilder {
-        String working_directory;
+        String workingDirectory;
         Collection<XRayException> exceptions;
         Collection<String> paths;
 
@@ -21,7 +21,7 @@ public record XRayErrorCause(
         }
 
         public XRayErrorCauseBuilder withWorkingDirectory(String workingDirectory) {
-            this.working_directory = workingDirectory;
+            this.workingDirectory = workingDirectory;
             return this;
         }
 
@@ -36,7 +36,7 @@ public record XRayErrorCause(
         }
 
         public XRayErrorCause build() {
-            return new XRayErrorCause(working_directory, exceptions, paths);
+            return new XRayErrorCause(workingDirectory, exceptions, paths);
         }
     }
 }

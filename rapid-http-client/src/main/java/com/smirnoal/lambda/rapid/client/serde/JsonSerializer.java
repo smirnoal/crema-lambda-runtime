@@ -52,8 +52,8 @@ public class JsonSerializer {
         StringBuilder json = new StringBuilder();
         json.append("{");
         
-        if (xRayErrorCause.working_directory() != null) {
-            json.append("\"working_directory\":").append(escapeString(xRayErrorCause.working_directory()));
+        if (xRayErrorCause.workingDirectory() != null) {
+            json.append("\"working_directory\":").append(escapeString(xRayErrorCause.workingDirectory()));
         }
         
         if (xRayErrorCause.exceptions() != null) {
