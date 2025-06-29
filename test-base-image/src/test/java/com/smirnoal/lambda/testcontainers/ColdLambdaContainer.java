@@ -1,5 +1,6 @@
 package com.smirnoal.lambda.testcontainers;
 
+import com.smirnoal.lambda.HandlerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
@@ -31,16 +32,16 @@ public class ColdLambdaContainer implements AutoCloseable {
     private static final String TASK_LIB_DIR = "/var/task/lib/";
     final GenericContainer<?> lambdaContainer;
 
-    public static String invokeLambda(String handler, String jsonPayload) {
-        try (var lambdaContainer = new ColdLambdaContainer(handler)) {
+    public static String invokeLambda(HandlerConfig handlerConfig, String jsonPayload) {
+        try (var lambdaContainer = new ColdLambdaContainer(handlerConfig)) {
             return lambdaContainer.invokeLambda(jsonPayload);
         } catch (Exception e) {
             throw new RuntimeException("", e);
         }
     }
 
-    private ColdLambdaContainer(String handler) {
-        this.lambdaContainer = createContainer(handler);
+    private ColdLambdaContainer(HandlerConfig handlerConfig) {
+        this.lambdaContainer = createContainer(handlerConfig.handlerClassName(), handlerConfig.jarPath());
         lambdaContainer.start();
         assertTrue(lambdaContainer.isRunning());
 
@@ -52,17 +53,13 @@ public class ColdLambdaContainer implements AutoCloseable {
 //        lambdaContainer.followOutput(toStringConsumer, OutputFrame.OutputType.STDERR);
     }
 
-    private static GenericContainer<?> createContainer(String handler) {
+    private static GenericContainer<?> createContainer(String handler, String handlerJarPath) {
         //    https://java.testcontainers.org/features/container_logs/
 
         var container = new GenericContainer<>(JAVA_17_LAMBDA_IMAGE)
                 .withExposedPorts(CONTAINER_HTTP_PORT)
                 .withCommand(handler)
                 .withEnv("AWS_LAMBDA_EXEC_WRAPPER", "/var/task/bootstrap.sh")
-                .withCopyFileToContainer(
-                        MountableFile.forHostPath("build/classes/java/main/"),
-                        "/var/task/"
-                )
                 .withCopyFileToContainer(
                         MountableFile.forHostPath("build/resources/test/bootstrap.sh"),
                         "/var/task/"
@@ -71,7 +68,7 @@ public class ColdLambdaContainer implements AutoCloseable {
                         .withStartupTimeout(Duration.ofSeconds(10)));
 
         configureTestEnvironment(container);
-        copyRuntimeLibs(container);
+        copyRuntimeLibs(container, handlerJarPath);
         return container;
     }
 
@@ -87,12 +84,33 @@ public class ColdLambdaContainer implements AutoCloseable {
                 .withEnv("AWS_ACCESS_KEY_ID", "test_aws_access_key_id");
     }
 
-    private static void copyRuntimeLibs(GenericContainer<?> container) {
-        // Copy all files from build/lib directory to /var/task/lib/
+    private static void copyRuntimeLibs(GenericContainer<?> container, String handlerJarPath) {
+        // Always copy bootstrap jar
         container.withCopyFileToContainer(
-                MountableFile.forHostPath("build/lib/"),
-                TASK_LIB_DIR
+                MountableFile.forHostPath("build/lib/bootstrap-1.0-SNAPSHOT.jar"),
+                TASK_LIB_DIR + "bootstrap-1.0-SNAPSHOT.jar"
         );
+        
+        // Always copy Gson (needed by some handlers)
+        container.withCopyFileToContainer(
+                MountableFile.forHostPath("build/lib/gson-2.13.1.jar"),
+                TASK_LIB_DIR + "gson-2.13.1.jar"
+        );
+        
+        // Copy error_prone_annotations (transitive dependency of Gson)
+        container.withCopyFileToContainer(
+                MountableFile.forHostPath("build/lib/error_prone_annotations-2.38.0.jar"),
+                TASK_LIB_DIR + "error_prone_annotations-2.38.0.jar"
+        );
+        
+        // Copy specific handler JAR if provided
+        if (handlerJarPath != null) {
+            String jarFileName = Path.of(handlerJarPath).getFileName().toString();
+            container.withCopyFileToContainer(
+                    MountableFile.forHostPath(handlerJarPath),
+                    TASK_LIB_DIR + jarFileName
+            );
+        }
     }
 
     String invokeLambda(String jsonPayload) throws IOException, InterruptedException {

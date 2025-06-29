@@ -4,7 +4,7 @@ plugins {
 
 dependencies {
     implementation files(project(':bootstrap').jar)
-    implementation 'com.google.code.gson:gson:2.13.1'
+    implementation project(':test-handlers')
     
     testImplementation 'org.slf4j:slf4j-api:2.0.16'
     testImplementation 'org.slf4j:slf4j-simple:2.0.16'
@@ -12,6 +12,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.4'
     testImplementation 'org.testcontainers:junit-jupiter:1.21.2'
     testImplementation 'org.testcontainers:testcontainers:1.21.2'
+    testImplementation 'com.google.code.gson:gson:2.13.1'
 }
 
 // Task to copy dependencies to a dedicated directory
