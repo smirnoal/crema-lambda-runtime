@@ -138,37 +138,6 @@ class LambdaApplicationIT {
         assertEquals("{\"name\":\"Dublin\",\"yearFounded\":841}", result);
     }
 
-    @Test
-    public void testMultipleHandlersWithConfig() {
-        // Example of how HandlerConfig can be used to organize handler configurations
-        HandlerConfig echoConfig = new HandlerConfig(
-            "com.smirnoal.lambda.handlers.EchoStringHandler",
-            "build/lib/echo-string-handler-1.0-SNAPSHOT.jar"
-        );
-        
-        HandlerConfig reverseConfig = new HandlerConfig(
-            "com.smirnoal.lambda.handlers.ReverseStringMain",
-            "build/lib/reverse-string-handler-1.0-SNAPSHOT.jar"
-        );
-        
-        HandlerConfig pojoConfig = new HandlerConfig(
-            "com.smirnoal.lambda.handlers.PojoHandler",
-            "build/lib/pojo-handler-1.0-SNAPSHOT.jar"
-        );
-        
-        // Test echo handler
-        String echoResult = ColdLambdaContainer.invokeLambda(echoConfig, "test");
-        assertEquals("test", echoResult);
-        
-        // Test reverse handler
-        String reverseResult = ColdLambdaContainer.invokeLambda(reverseConfig, "hello");
-        assertEquals("olleh", reverseResult);
-        
-        // Test pojo handler
-        String pojoResult = ColdLambdaContainer.invokeLambda(pojoConfig, "{ \"name\": \"John\", \"age\": 23 }");
-        assertEquals("{\"name\":\"Dublin\",\"yearFounded\":841}", pojoResult);
-    }
-
 //    @Test
 //    public void echoTestLimit() {
 //        String handler = "com.smirnoal.lambda.handlers.Echo";

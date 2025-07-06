@@ -41,7 +41,7 @@ public class ColdLambdaContainer implements AutoCloseable {
     }
 
     private ColdLambdaContainer(HandlerConfig handlerConfig) {
-        this.lambdaContainer = createContainer(handlerConfig.handlerClassName(), handlerConfig.jarPath());
+        this.lambdaContainer = createContainer(handlerConfig);
         lambdaContainer.start();
         assertTrue(lambdaContainer.isRunning());
 
@@ -53,8 +53,10 @@ public class ColdLambdaContainer implements AutoCloseable {
 //        lambdaContainer.followOutput(toStringConsumer, OutputFrame.OutputType.STDERR);
     }
 
-    private static GenericContainer<?> createContainer(String handler, String handlerJarPath) {
+    private static GenericContainer<?> createContainer(HandlerConfig handlerConfig) {
         //    https://java.testcontainers.org/features/container_logs/
+        String handler = handlerConfig.handlerClassName();
+        String handlerJarPath = handlerConfig.jarPath();
 
         var container = new GenericContainer<>(JAVA_17_LAMBDA_IMAGE)
                 .withExposedPorts(CONTAINER_HTTP_PORT)
@@ -86,22 +88,10 @@ public class ColdLambdaContainer implements AutoCloseable {
 
     private static void copyRuntimeLibs(GenericContainer<?> container, String handlerJarPath) {
         // Always copy bootstrap jar
-        container.withCopyFileToContainer(
-                MountableFile.forHostPath("build/lib/bootstrap-1.0-SNAPSHOT.jar"),
-                TASK_LIB_DIR + "bootstrap-1.0-SNAPSHOT.jar"
-        );
-        
-        // Always copy Gson (needed by some handlers)
-        container.withCopyFileToContainer(
-                MountableFile.forHostPath("build/lib/gson-2.13.1.jar"),
-                TASK_LIB_DIR + "gson-2.13.1.jar"
-        );
-        
-        // Copy error_prone_annotations (transitive dependency of Gson)
-        container.withCopyFileToContainer(
-                MountableFile.forHostPath("build/lib/error_prone_annotations-2.38.0.jar"),
-                TASK_LIB_DIR + "error_prone_annotations-2.38.0.jar"
-        );
+        // container.withCopyFileToContainer(
+        //         MountableFile.forHostPath("build/lib/bootstrap-1.0-SNAPSHOT.jar"),
+        //         TASK_LIB_DIR + "bootstrap-1.0-SNAPSHOT.jar"
+        // );
         
         // Copy specific handler JAR if provided
         if (handlerJarPath != null) {
