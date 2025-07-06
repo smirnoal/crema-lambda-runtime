@@ -14,18 +14,9 @@ dependencies {
 test {
     useJUnitPlatform()
 }
-
-
-// Task to copy dependencies to a dedicated directory
-tasks.register('copyDependencies', Copy) {
-    from configurations.runtimeClasspath
-    into "${layout.buildDirectory.get()}/lib"
-}
-
+    
 jar {
-    from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-    }
+    from project(':common').sourceSets.main.output
+    from project(':rapid-http-client').sourceSets.main.output
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    dependsOn copyDependencies
 }

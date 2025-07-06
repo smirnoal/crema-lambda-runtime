@@ -10,7 +10,7 @@ dependencies {
 // Task to copy dependencies to a dedicated directory
 tasks.register('copyDependencies', Copy) {
     from configurations.runtimeClasspath
-    into "${layout.buildDirectory.get()}/lib"
+    into "${layout.buildDirectory.get()}/dependencies"
 }
 
 jar {
@@ -18,5 +18,4 @@ jar {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    dependsOn copyDependencies
 } 
