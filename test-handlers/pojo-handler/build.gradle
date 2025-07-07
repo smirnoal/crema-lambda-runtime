@@ -18,4 +18,10 @@ jar {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+// native compilation
+if (project == rootProject) return
+afterEvaluate {
+    rootProject.ext.addNativeCompileLinuxTask(project, 'com.smirnoal.lambda.handlers.PojoHandler')
 } 

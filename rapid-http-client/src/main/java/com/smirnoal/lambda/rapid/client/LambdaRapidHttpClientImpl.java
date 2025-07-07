@@ -22,12 +22,7 @@ public final class LambdaRapidHttpClientImpl implements LambdaRapidHttpClient {
 
     private static final int XRAY_ERROR_CAUSE_MAX_HEADER_SIZE = 1024 * 1024;
 
-    private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
-            .version(HttpClient.Version.HTTP_1_1)
-            .followRedirects(HttpClient.Redirect.NEVER)
-            .connectTimeout(Duration.ofDays(14))
-            .build();
-
+    private volatile HttpClient httpClient;
     private final HttpRequest nextRequest;
     private final String baseUrl;
     private final String invocationEndpoint;
@@ -44,6 +39,21 @@ public final class LambdaRapidHttpClientImpl implements LambdaRapidHttpClient {
                 .build();
     }
 
+    private HttpClient httpClient() {
+        if (httpClient == null) {
+            synchronized (this) {
+                if (httpClient == null) {
+                    httpClient = HttpClient.newBuilder()
+                            .version(HttpClient.Version.HTTP_1_1)
+                            .followRedirects(HttpClient.Redirect.NEVER)
+                            .connectTimeout(Duration.ofDays(14))
+                            .build();
+                }
+            }
+        }
+        return httpClient;
+    }
+
     @Override
     public void initError(LambdaError error) {
         URI endpoint = URI.create(this.baseUrl + "/2018-06-01/runtime/init/error");
@@ -54,7 +64,7 @@ public final class LambdaRapidHttpClientImpl implements LambdaRapidHttpClient {
     public InvocationRequest next() {
         HttpResponse<byte[]> response;
         try {
-            response = HTTP_CLIENT.send(nextRequest, HttpResponse.BodyHandlers.ofByteArray());
+            response = httpClient().send(nextRequest, HttpResponse.BodyHandlers.ofByteArray());
         } catch (Exception e) {
             throw new LambdaRapidClientException("Failed to get next invoke", e);
         }
@@ -93,7 +103,7 @@ public final class LambdaRapidHttpClientImpl implements LambdaRapidHttpClient {
                 .build();
 
         try {
-            HTTP_CLIENT.send(invocationResponseRequest, HttpResponse.BodyHandlers.discarding());
+            httpClient().send(invocationResponseRequest, HttpResponse.BodyHandlers.discarding());
         } catch (Exception e) {
             throw new LambdaRapidClientException("Failed to post invocation result", e);
         }
@@ -115,7 +125,7 @@ public final class LambdaRapidHttpClientImpl implements LambdaRapidHttpClient {
 
         HttpResponse<Void> response;
         try {
-            response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.discarding());
+            response = httpClient().send(request, HttpResponse.BodyHandlers.discarding());
         } catch (Exception e) {
             throw new LambdaRapidClientException(endpoint.toString(), e);
         }
@@ -151,7 +161,7 @@ public final class LambdaRapidHttpClientImpl implements LambdaRapidHttpClient {
 
         HttpResponse<Void> response;
         try {
-            response = HTTP_CLIENT.send(request.build(), HttpResponse.BodyHandlers.discarding());
+            response = httpClient().send(request.build(), HttpResponse.BodyHandlers.discarding());
         } catch (InterruptedException | IOException e) {
             throw new LambdaRapidClientException("Failed to post error", e);
         }

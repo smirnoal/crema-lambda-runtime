@@ -18,3 +18,10 @@ jar {
     }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 } 
+
+// native compilation
+if (project == rootProject) return
+afterEvaluate {
+    rootProject.ext.addNativeCompileLinuxTask(project, 'com.smirnoal.lambda.handlers.EchoStringHandler')
+} 
+
