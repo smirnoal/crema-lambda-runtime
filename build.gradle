@@ -38,11 +38,30 @@ ext.addNativeCompileLinuxTask = { project, mainClassName ->
         toolchainDetection = false
     }
 
+    // Task to build custom Docker image with all dependencies
+    project.tasks.register('buildNativeImageDocker', Exec) {
+        group = 'native'
+        description = "Build custom Docker image with GraalVM and Gradle for native compilation"
+        
+        workingDir rootProject.projectDir
+        
+        commandLine 'docker', 'build', '-t', 'smirnoal-native-builder:latest', '-f', 'Dockerfile.native', '.'
+        
+        doFirst {
+            println "Building custom Docker image for native compilation..."
+        }
+        
+        doLast {
+            println "Custom Docker image built successfully!"
+        }
+    }
+
     project.tasks.register('nativeCompileLinux', Exec) {
         group = 'native'
-        description = "Build native image for Linux using Docker for ${project.name}"
+        description = "Build native image for Linux using custom Docker for ${project.name}"
 
         dependsOn project.tasks.compileJava
+        dependsOn project.tasks.buildNativeImageDocker
 
         workingDir project.projectDir
 
@@ -50,14 +69,11 @@ ext.addNativeCompileLinuxTask = { project, mainClassName ->
             '-v', "${rootProject.rootDir.absolutePath}:/workspace",
             '-w', '/workspace',
             '--entrypoint', 'bash',
-            'ghcr.io/graalvm/native-image-community:17',
-            '-c', """
-                microdnf install -y findutils
-                ./gradlew ${project.path}:nativeCompile --no-daemon
-            """
+            'smirnoal-native-builder:latest',
+            '-c', "gradle ${project.path}:nativeCompile"
 
         doFirst {
-            println "Building Linux native image for ${project.name} using Docker (with xargs)..."
+            println "Building Linux native image for ${project.name} using custom Docker..."
             println "Working directory: ${rootProject.rootDir.absolutePath}"
         }
 
