@@ -1,17 +1,3 @@
 plugins {
     id 'java'
-}
-
-dependencies {
-    implementation project(':test-handlers:pojo-handler')
-    implementation project(':test-handlers:pojo-handler2')
-    implementation project(':test-handlers:echo-string-handler')
-    implementation project(':test-handlers:reverse-string-handler')
-    implementation project(':test-handlers:throws-handler')
-    implementation project(':test-handlers:return-null-handler')
-    implementation project(':test-handlers:consumer-handler')
-    implementation project(':test-handlers:runnable-handler')
-    implementation project(':test-handlers:snap-start-runtime-hooks')
-    implementation project(':test-handlers:env-check-handler')
-    implementation project(':test-handlers:throws-cycle-handler')
 } 
