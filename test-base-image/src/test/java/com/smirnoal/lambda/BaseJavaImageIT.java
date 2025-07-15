@@ -1,24 +1,24 @@
 package com.smirnoal.lambda;
 
 import com.google.gson.Gson;
-import com.smirnoal.lambda.testcontainers.ColdLambdaContainer;
+import com.smirnoal.lambda.testcontainers.Java17LambdaContainer;
 import com.smirnoal.lambda.rapid.client.dto.ErrorRequest;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class LambdaApplicationIT {
+class BaseJavaImageIT {
 
     @Test
     public void reverseStringTest() {
         HandlerConfig handlerConfig = new HandlerConfig(
             "com.smirnoal.lambda.handlers.ReverseStringMain",
-            "build/dependencies/reverse-string-handler-1.0-SNAPSHOT.jar"
+            "reverse-string-handler"
         );
         String jsonPayload = "Hello Lambda";
         String expected = new StringBuilder(jsonPayload).reverse().toString();
-        String result = ColdLambdaContainer.invokeLambda(handlerConfig, jsonPayload);
+        String result = Java17LambdaContainer.invokeLambda(handlerConfig, jsonPayload);
         assertEquals(expected, result);
     }
 
@@ -26,10 +26,10 @@ class LambdaApplicationIT {
     public void throwsTest() {
         HandlerConfig handlerConfig = new HandlerConfig(
             "com.smirnoal.lambda.handlers.ThrowsHandler",
-            "build/dependencies/throws-handler-1.0-SNAPSHOT.jar"
+            "throws-handler"
         );
         String jsonPayload = "Hello Lambda";
-        String result = ColdLambdaContainer.invokeLambda(handlerConfig, jsonPayload);
+        String result = Java17LambdaContainer.invokeLambda(handlerConfig, jsonPayload);
 
         ErrorRequest actualErrorRequest = new Gson().fromJson(result, ErrorRequest.class);
         assertEquals("exception message", actualErrorRequest.errorMessage());
@@ -43,10 +43,10 @@ class LambdaApplicationIT {
     public void throwsCycleTest() {
         HandlerConfig handlerConfig = new HandlerConfig(
             "com.smirnoal.lambda.handlers.ThrowsCycleHandler",
-            "build/dependencies/throws-cycle-handler-1.0-SNAPSHOT.jar"
+            "throws-cycle-handler"
         );
         String jsonPayload = "Hello Lambda";
-        String result = ColdLambdaContainer.invokeLambda(handlerConfig, jsonPayload);
+        String result = Java17LambdaContainer.invokeLambda(handlerConfig, jsonPayload);
 
         ErrorRequest actualErrorRequest = new Gson().fromJson(result, ErrorRequest.class);
         assertEquals("exception 1", actualErrorRequest.errorMessage());
@@ -60,9 +60,9 @@ class LambdaApplicationIT {
     public void testEnvironment() {
         HandlerConfig handlerConfig = new HandlerConfig(
             "com.smirnoal.lambda.handlers.EnvCheckHandler",
-            "build/dependencies/env-check-handler-1.0-SNAPSHOT.jar"
+            "env-check-handler"
         );
-        String result = ColdLambdaContainer.invokeLambda(handlerConfig, "");
+        String result = Java17LambdaContainer.invokeLambda(handlerConfig, "");
 
         assertEquals("", result);
     }
@@ -71,10 +71,11 @@ class LambdaApplicationIT {
     public void testEchoStringHandler() {
         HandlerConfig handlerConfig = new HandlerConfig(
             "com.smirnoal.lambda.handlers.EchoStringHandler",
-            "build/dependencies/echo-string-handler-1.0-SNAPSHOT.jar"
+            "echo-string-handler"
         );
+
         String payload = "abcdefg";
-        String result = ColdLambdaContainer.invokeLambda(handlerConfig, payload);
+        String result = Java17LambdaContainer.invokeLambda(handlerConfig, payload);
 
         assertEquals(payload, result);
     }
@@ -83,10 +84,10 @@ class LambdaApplicationIT {
     public void testConsumerHandler() {
         HandlerConfig handlerConfig = new HandlerConfig(
             "com.smirnoal.lambda.handlers.ConsumerHandler",
-            "build/dependencies/consumer-handler-1.0-SNAPSHOT.jar"
+            "consumer-handler"
         );
         String payload = "abcdefg";
-        String result = ColdLambdaContainer.invokeLambda(handlerConfig, payload);
+        String result = Java17LambdaContainer.invokeLambda(handlerConfig, payload);
 
         assertEquals("", result);
     }
@@ -95,9 +96,9 @@ class LambdaApplicationIT {
     public void testRunnableHandler() {
         HandlerConfig handlerConfig = new HandlerConfig(
             "com.smirnoal.lambda.handlers.RunnableHandler",
-            "build/dependencies/runnable-handler-1.0-SNAPSHOT.jar"
+            "runnable-handler"
         );
-        String result = ColdLambdaContainer.invokeLambda(handlerConfig, "");
+        String result = Java17LambdaContainer.invokeLambda(handlerConfig, "");
 
         assertEquals("", result);
     }
@@ -106,10 +107,10 @@ class LambdaApplicationIT {
     public void testReturnNullHandler() {
         HandlerConfig handlerConfig = new HandlerConfig(
             "com.smirnoal.lambda.handlers.ReturnNullHandler",
-            "build/dependencies/return-null-handler-1.0-SNAPSHOT.jar"
+            "return-null-handler"
         );
         String payload = "abcdefg";
-        String result = ColdLambdaContainer.invokeLambda(handlerConfig, payload);
+        String result = Java17LambdaContainer.invokeLambda(handlerConfig, payload);
 
         assertEquals("null", result);
     }
@@ -118,10 +119,10 @@ class LambdaApplicationIT {
     public void testPojoHandler() {
         HandlerConfig handlerConfig = new HandlerConfig(
             "com.smirnoal.lambda.handlers.PojoHandler",
-            "build/dependencies/pojo-handler-1.0-SNAPSHOT.jar"
+            "pojo-handler"
         );
         String payload = "{ \"name\": \"John\", \"age\": 23 }";
-        String result = ColdLambdaContainer.invokeLambda(handlerConfig, payload);
+        String result = Java17LambdaContainer.invokeLambda(handlerConfig, payload);
 
         assertEquals("{\"name\":\"Dublin\",\"yearFounded\":841}", result);
     }
@@ -130,10 +131,10 @@ class LambdaApplicationIT {
     public void testPojoHandler2() {
         HandlerConfig handlerConfig = new HandlerConfig(
             "com.smirnoal.lambda.handlers.PojoHandler2",
-            "build/dependencies/pojo-handler2-1.0-SNAPSHOT.jar"
+            "pojo-handler2"
         );
         String payload = "{ \"name\": \"John\", \"age\": 23 }";
-        String result = ColdLambdaContainer.invokeLambda(handlerConfig, payload);
+        String result = Java17LambdaContainer.invokeLambda(handlerConfig, payload);
 
         assertEquals("{\"name\":\"Dublin\",\"yearFounded\":841}", result);
     }
@@ -148,7 +149,7 @@ class LambdaApplicationIT {
 //            sb.append('A');
 //        }
 //
-//        String result = ColdLambdaContainer.invokeLambda(handler, sb.toString());
+//        String result = BaseimageLambdaContainer.invokeLambda(handler, sb.toString());
 //        System.out.println(result.length());
 //        assertEquals(sb.toString(), result);
 //    }

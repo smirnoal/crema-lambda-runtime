@@ -1,13 +1,11 @@
 package com.smirnoal.lambda.testcontainers;
 
-import com.smirnoal.lambda.HandlerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
-import org.testcontainers.utility.MountableFile;
 
 import java.io.IOException;
 import java.net.URI;
@@ -15,63 +13,33 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.time.Duration;
 
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ColdLambdaContainer implements AutoCloseable {
-    final Logger logger = LoggerFactory.getLogger(ColdLambdaContainer.class);
-    private static final DockerImageName JAVA_17_LAMBDA_IMAGE = DockerImageName.parse("public.ecr.aws/lambda/java:17");
-    private static final int CONTAINER_HTTP_PORT = 8080;
-    private static final String TASK_LIB_DIR = "/var/task/lib/";
-    final GenericContainer<?> lambdaContainer;
+public abstract class ColdLambdaContainer implements AutoCloseable {
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    protected static final int CONTAINER_HTTP_PORT = 8080;
+    protected GenericContainer<?> lambdaContainer;
 
-    public static String invokeLambda(HandlerConfig handlerConfig, String jsonPayload) {
-        try (var lambdaContainer = new ColdLambdaContainer(handlerConfig)) {
-            return lambdaContainer.invokeLambda(jsonPayload);
-        } catch (Exception e) {
-            throw new RuntimeException("", e);
-        }
+    protected ColdLambdaContainer() {
+        // Subclasses should call initializeContainer() after they're fully initialized
     }
 
-    private ColdLambdaContainer(HandlerConfig handlerConfig) {
-        this.lambdaContainer = createContainer(handlerConfig);
+    protected void initializeContainer() {
+        this.lambdaContainer = createContainer();
         lambdaContainer.start();
         assertTrue(lambdaContainer.isRunning());
 
         Slf4jLogConsumer logConsumer = new Slf4jLogConsumer(logger);
         lambdaContainer.followOutput(logConsumer);
-
-//        ToStringConsumer toStringConsumer = new ToStringConsumer();
-//        lambdaContainer.followOutput(toStringConsumer, OutputFrame.OutputType.STDOUT);
-//        lambdaContainer.followOutput(toStringConsumer, OutputFrame.OutputType.STDERR);
     }
 
-    private static GenericContainer<?> createContainer(HandlerConfig handlerConfig) {
-        //    https://java.testcontainers.org/features/container_logs/
-        String handler = handlerConfig.handlerClassName();
-        String handlerJarPath = handlerConfig.jarPath();
+    protected abstract GenericContainer<?> createContainer();
 
-        var container = new GenericContainer<>(JAVA_17_LAMBDA_IMAGE)
-                .withExposedPorts(CONTAINER_HTTP_PORT)
-                .withCommand(handler)
-                .withEnv("AWS_LAMBDA_EXEC_WRAPPER", "/var/task/bootstrap.sh")
-                .withCopyFileToContainer(
-                        MountableFile.forHostPath("build/resources/test/bootstrap.sh"),
-                        "/var/task/"
-                )
-                .waitingFor(Wait.forLogMessage(".*exec '/var/runtime/bootstrap'.*", 1)
-                        .withStartupTimeout(Duration.ofSeconds(10)));
-
-        configureTestEnvironment(container);
-        copyRuntimeLibs(container, handlerJarPath);
-        return container;
-    }
-
-    private static void configureTestEnvironment(GenericContainer<?> container) {
+    protected void configureTestEnvironment(GenericContainer<?> container) {
         container
                 .withEnv("AWS_ACCESS_KEY", "test_aws_access_key")
                 .withEnv("AWS_ACCESS_KEY_ID", "test_aws_access_key_id")
@@ -79,35 +47,21 @@ public class ColdLambdaContainer implements AutoCloseable {
                 .withEnv("AWS_SESSION_TOKEN", "test_aws_session_token")
                 .withEnv("AWS_REGION", "test_aws_region")
                 .withEnv("AWS_DEFAULT_REGION", "test_aws_default_region")
-                .withEnv("AWS_LAMBDA_INITIALIZATION_TYPE", "test_aws_lambda_initialization_type")
-                .withEnv("AWS_ACCESS_KEY_ID", "test_aws_access_key_id");
+                .withEnv("AWS_LAMBDA_INITIALIZATION_TYPE", "test_aws_lambda_initialization_type");
     }
 
-    private static void copyRuntimeLibs(GenericContainer<?> container, String handlerJarPath) {
-        // Always copy bootstrap jar
-        // container.withCopyFileToContainer(
-        //         MountableFile.forHostPath("build/lib/bootstrap-1.0-SNAPSHOT.jar"),
-        //         TASK_LIB_DIR + "bootstrap-1.0-SNAPSHOT.jar"
-        // );
-        
-        // Copy specific handler JAR if provided
-        if (handlerJarPath != null) {
-            String jarFileName = Path.of(handlerJarPath).getFileName().toString();
-            container.withCopyFileToContainer(
-                    MountableFile.forHostPath(handlerJarPath),
-                    TASK_LIB_DIR + jarFileName
-            );
-        }
+    protected void configureWaitStrategy(GenericContainer<?> container) {
+        container.waitingFor(Wait.forLogMessage(".*exec '/var/runtime/bootstrap'.*", 1)
+                .withStartupTimeout(Duration.ofSeconds(10)));
     }
 
-    String invokeLambda(String jsonPayload) throws IOException, InterruptedException {
+    protected String invokeLambda(String jsonPayload) throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
 
         String hostname = lambdaContainer.getHost();
         Integer port = lambdaContainer.getMappedPort(CONTAINER_HTTP_PORT);
 
         logger.info("invoke lambda");
-//        System.out.println(lambdaContainer.getLogs());
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://" + hostname + ":" + port + "/2015-03-31/functions/function/invocations"))
@@ -124,4 +78,4 @@ public class ColdLambdaContainer implements AutoCloseable {
     public void close() {
         lambdaContainer.stop();
     }
-}
+} 
