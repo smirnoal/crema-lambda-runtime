@@ -21,35 +21,23 @@ tasks.register('copyDependencies', Copy) {
     into "${layout.buildDirectory.get()}/dependencies"
 }
 
-// Copy native handler binaries from all test-handlers subprojects
-def nativeHandlerProjects = [
-    'pojo-handler',
-    'echo-string-handler',
-    'throws-handler'
-]
-
-task copyHandlerBinaries(type: Copy) {
+task copyHandlers(type: Copy) {
     dependsOn ':test-handlers:build'
-    nativeHandlerProjects.each { handler ->
-        def src = "../test-handlers/${handler}/build/native/nativeCompile/bootstrap"
-        from(src) {
-            into handler
+    def handlerDirs = file('../test-handlers').listFiles()?.findAll { it.isDirectory() }
+    handlerDirs?.each { handlerDir ->
+        def handler = handlerDir.name
+        def jar = new File(handlerDir, "build/libs/${handler}-1.0-SNAPSHOT.jar")
+        if (jar.exists()) {
+            from(jar) {
+                into handler
+            }
         }
-    }
-    into "${buildDir}/handlers"
-}
-
-// Task to build and copy all handler JARs from test-handlers subprojects
-
-task copyHandlerJars(type: Copy) {
-    dependsOn ':test-handlers:build'
-    from(fileTree(dir: '../test-handlers', include: '*/build/libs/*.jar')) {
-        eachFile { fileCopyDetails ->
-            // Extract handler subproject name from the path
-            def handlerName = fileCopyDetails.file.parentFile.parentFile.parentFile.name
-            fileCopyDetails.relativePath = new RelativePath(true, handlerName, fileCopyDetails.name)
+        def nativeBin = new File(handlerDir, "build/native/nativeCompile/bootstrap")
+        if (nativeBin.exists()) {
+            from(nativeBin) {
+                into handler
+            }
         }
-        includeEmptyDirs = false
     }
     into "${buildDir}/handlers"
 }
@@ -57,6 +45,5 @@ task copyHandlerJars(type: Copy) {
 test {
     useJUnitPlatform()
     dependsOn copyDependencies
-    dependsOn copyHandlerBinaries
-    dependsOn copyHandlerJars
+    dependsOn copyHandlers
 }
