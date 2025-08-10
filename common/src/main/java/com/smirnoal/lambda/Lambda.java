@@ -20,6 +20,7 @@ public final class Lambda {
         }
 
         public static final String HANDLER = System.getenv("_HANDLER");
+        public static final String LAMBDA_TELEMETRY_LOG_FD = System.getenv("_LAMBDA_TELEMETRY_LOG_FD");
         public static final String AWS_DEFAULT_REGION = System.getenv("AWS_DEFAULT_REGION");
         public static final String AWS_REGION = System.getenv("AWS_REGION");
         public static final String AWS_EXECUTION_ENV = System.getenv("AWS_EXECUTION_ENV");

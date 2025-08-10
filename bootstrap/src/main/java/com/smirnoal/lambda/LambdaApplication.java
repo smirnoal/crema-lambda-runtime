@@ -9,6 +9,11 @@ import com.smirnoal.lambda.rapid.client.converters.XRayErrorCauseConverter;
 import com.smirnoal.lambda.rapid.client.dto.ErrorRequest;
 import com.smirnoal.lambda.rapid.client.dto.InvocationRequest;
 import com.smirnoal.lambda.rapid.client.dto.XRayErrorCause;
+import com.smirnoal.lambda.log.FramedTelemetryLogSink;
+import com.smirnoal.lambda.log.TelemetryLogRedirection;
+
+import java.io.FileDescriptor;
+import java.io.IOException;
 
 import static com.smirnoal.lambda.Lambda.Constants.LAMBDA_TRACE_HEADER_PROP;
 
@@ -29,6 +34,7 @@ public class LambdaApplication {
     }
 
     public <T, R> void run(LambdaHandler<T, R> lambdaHandler) {
+        TelemetryLogRedirection.setupIfAvailable();
 
         if (runtimeApiClient == null) {
             runtimeApiClient = new LambdaRapidHttpClientImpl(Lambda.Environment.AWS_LAMBDA_RUNTIME_API);
