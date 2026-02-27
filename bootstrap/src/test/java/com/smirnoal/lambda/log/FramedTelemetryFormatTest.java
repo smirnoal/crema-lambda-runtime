@@ -49,7 +49,7 @@ class FramedTelemetryFormatTest {
         
         // Read frame type (4 bytes)
         int frameType = buffer.getInt();
-        assertEquals(0xa55a0001, frameType, "Frame type should be 0xa55a0001");
+        assertEquals(0xa55a0003, frameType, "Frame type should be 0xa55a0003");
         
         // Read message length (4 bytes)
         int messageLength = buffer.getInt();
@@ -82,7 +82,7 @@ class FramedTelemetryFormatTest {
         
         // Verify first frame
         int frameType1 = buffer.getInt();
-        assertEquals(0xa55a0001, frameType1);
+        assertEquals(0xa55a0003, frameType1);
         int length1 = buffer.getInt();
         assertEquals(message1.getBytes().length, length1);
         buffer.getLong(); // skip timestamp
@@ -92,7 +92,7 @@ class FramedTelemetryFormatTest {
         
         // Verify second frame
         int frameType2 = buffer.getInt();
-        assertEquals(0xa55a0001, frameType2);
+        assertEquals(0xa55a0003, frameType2);
         int length2 = buffer.getInt();
         assertEquals(message2.getBytes().length, length2);
         buffer.getLong(); // skip timestamp
@@ -111,10 +111,46 @@ class FramedTelemetryFormatTest {
         
         ByteBuffer buffer = ByteBuffer.wrap(output).order(ByteOrder.BIG_ENDIAN);
         int frameType = buffer.getInt();
-        assertEquals(0xa55a0001, frameType);
+        assertEquals(0xa55a0003, frameType);
         int messageLength = buffer.getInt();
         assertEquals(0, messageLength, "Message length should be 0");
         buffer.getLong(); // skip timestamp
-        // No message bytes to read
+    }
+
+    @Test
+    void testPrintStreamProducesOneFramePerPrintln() throws IOException {
+        Path printStreamFile = Files.createTempFile("telemetry-ps-test", ".log");
+        try (FileOutputStream fos = new FileOutputStream(printStreamFile.toFile())) {
+            FramedTelemetryLogSink psSink = new FramedTelemetryLogSink(fos.getFD());
+            try (FramedTelemetryPrintStream ps = new FramedTelemetryPrintStream(psSink)) {
+                ps.println("first line");
+                ps.println("second line");
+            }
+
+            byte[] output = Files.readAllBytes(printStreamFile);
+            ByteBuffer buffer = ByteBuffer.wrap(output).order(ByteOrder.BIG_ENDIAN);
+
+            // First frame
+            assertEquals(0xa55a0003, buffer.getInt());
+            int len1 = buffer.getInt();
+            assertEquals("first line\n".getBytes().length, len1);
+            buffer.getLong(); // timestamp
+            byte[] msg1 = new byte[len1];
+            buffer.get(msg1);
+            assertArrayEquals("first line\n".getBytes(), msg1);
+
+            // Second frame
+            assertEquals(0xa55a0003, buffer.getInt());
+            int len2 = buffer.getInt();
+            assertEquals("second line\n".getBytes().length, len2);
+            buffer.getLong(); // timestamp
+            byte[] msg2 = new byte[len2];
+            buffer.get(msg2);
+            assertArrayEquals("second line\n".getBytes(), msg2);
+
+            assertFalse(buffer.hasRemaining(), "No extra bytes beyond the two frames");
+        } finally {
+            Files.deleteIfExists(printStreamFile);
+        }
     }
 } 

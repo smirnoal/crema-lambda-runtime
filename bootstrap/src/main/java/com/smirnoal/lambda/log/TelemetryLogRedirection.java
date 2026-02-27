@@ -3,10 +3,8 @@ package com.smirnoal.lambda.log;
 import com.smirnoal.lambda.Lambda;
 
 import java.io.FileDescriptor;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Constructor;
-import java.nio.charset.StandardCharsets;
 
 public class TelemetryLogRedirection {
     public static void setupIfAvailable() {
@@ -18,9 +16,9 @@ public class TelemetryLogRedirection {
             int fd = Integer.parseInt(telemetryFdStr);
             FileDescriptor fileDescriptor = getFileDescriptor(fd);
             FramedTelemetryLogSink sink = new FramedTelemetryLogSink(fileDescriptor);
-            OutputStream out = new FramedTelemetryOutputStream(sink);
-            System.setOut(new PrintStream(out, false, StandardCharsets.UTF_8));
-            System.setErr(new PrintStream(out, false, StandardCharsets.UTF_8));
+            PrintStream telemetryStream = new FramedTelemetryPrintStream(sink);
+            System.setOut(telemetryStream);
+            System.setErr(telemetryStream);
         } catch (Exception e) {
             e.printStackTrace();
         }

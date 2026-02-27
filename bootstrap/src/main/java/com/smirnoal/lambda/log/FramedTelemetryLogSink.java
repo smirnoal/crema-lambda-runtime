@@ -9,7 +9,7 @@ import java.time.Instant;
 
 public class FramedTelemetryLogSink {
     private static final int HEADER_LENGTH = 16;
-    private static final int FRAME_TYPE_LOG = 0xa55a0001;
+    private static final int FRAME_TYPE_LOG = 0xa55a0003;
     private final FileOutputStream logOutputStream;
     private final ByteBuffer headerBuf;
 
@@ -23,7 +23,6 @@ public class FramedTelemetryLogSink {
             updateHeader(message.length);
             this.logOutputStream.write(this.headerBuf.array());
             this.logOutputStream.write(message);
-            this.logOutputStream.flush();
         } catch (IOException e) {
             // ignore
         }
