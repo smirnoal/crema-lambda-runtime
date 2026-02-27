@@ -70,7 +70,6 @@ public final class LambdaRapidHttpClientImpl implements LambdaRapidHttpClient {
         }
 
         HttpHeaders headers = response.headers();
-
         String requestId = headers.firstValue("lambda-runtime-aws-request-id")
                 .orElseThrow(() -> new LambdaRapidClientException("Request ID absent"));
         String invokedFunctionArn = headers.firstValue("lambda-runtime-invoked-function-arn")

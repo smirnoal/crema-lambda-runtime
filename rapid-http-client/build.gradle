@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'java-library'
+    id 'maven-publish'
 }
 
 dependencies {
@@ -13,4 +14,16 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        rapidHttpClient(MavenPublication) {
+            from components.java
+            groupId = 'com.smirnoal'
+            artifactId = 'rapid-http-client'
+            version = project.version
+        }
+    }
+    repositories { mavenLocal() }
 } 
