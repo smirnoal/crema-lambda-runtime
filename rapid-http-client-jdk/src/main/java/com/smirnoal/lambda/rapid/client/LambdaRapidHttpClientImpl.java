@@ -15,7 +15,7 @@ import java.util.Objects;
 import static java.net.HttpURLConnection.HTTP_ACCEPTED;
 import static java.net.HttpURLConnection.HTTP_OK;
 
-public final class LambdaRapidHttpClientImpl implements LambdaRapidHttpClient {
+final class LambdaRapidHttpClientImpl implements LambdaRapidHttpClient {
 
     static final String USER_AGENT =
             "com-smirnoal-java-http/%s".formatted(System.getProperty("java.vendor.version"));

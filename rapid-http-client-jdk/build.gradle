@@ -21,7 +21,7 @@ publishing {
         rapidHttpClient(MavenPublication) {
             from components.java
             groupId = 'com.smirnoal'
-            artifactId = 'rapid-http-client'
+            artifactId = 'rapid-http-client-jdk'
             version = project.version
         }
     }

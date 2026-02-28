@@ -5,8 +5,8 @@ plugins {
 }
 
 dependencies {
-    implementation project(':common')
-    implementation project(':rapid-http-client')
+    api project(':common')
+    api project(':rapid-http-client-jdk')
 
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.11.4'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.4'
@@ -14,12 +14,6 @@ dependencies {
 
 test {
     useJUnitPlatform()
-}
-    
-jar {
-    from project(':common').sourceSets.main.output
-    from project(':rapid-http-client').sourceSets.main.output
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 publishing {

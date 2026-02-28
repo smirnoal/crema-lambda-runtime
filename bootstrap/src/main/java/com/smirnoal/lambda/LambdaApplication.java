@@ -3,28 +3,33 @@ package com.smirnoal.lambda;
 
 import com.smirnoal.lambda.rapid.client.LambdaError;
 import com.smirnoal.lambda.rapid.client.LambdaRapidHttpClient;
-import com.smirnoal.lambda.rapid.client.LambdaRapidHttpClientImpl;
+import com.smirnoal.lambda.rapid.client.LambdaRapidHttpClientProvider;
 import com.smirnoal.lambda.rapid.client.converters.ErrorRequestConverter;
 import com.smirnoal.lambda.rapid.client.converters.XRayErrorCauseConverter;
 import com.smirnoal.lambda.rapid.client.dto.ErrorRequest;
 import com.smirnoal.lambda.rapid.client.dto.InvocationRequest;
 import com.smirnoal.lambda.rapid.client.dto.XRayErrorCause;
-import com.smirnoal.lambda.log.FramedTelemetryLogSink;
 import com.smirnoal.lambda.log.TelemetryLogRedirection;
 
-import java.io.FileDescriptor;
-import java.io.IOException;
+import java.util.Comparator;
+import java.util.ServiceLoader;
 
 import static com.smirnoal.lambda.Lambda.Constants.LAMBDA_TRACE_HEADER_PROP;
 
 
 public class LambdaApplication {
 
-    private LambdaRapidHttpClient runtimeApiClient;
+    private final LambdaRapidHttpClient runtimeApiClient;
 
-    public LambdaApplication withRuntimeApiClient(LambdaRapidHttpClient runtimeApiClient) {
-        this.runtimeApiClient = runtimeApiClient;
-        return this;
+    public LambdaApplication() {
+        String host = Lambda.Environment.AWS_LAMBDA_RUNTIME_API;
+        this.runtimeApiClient = ServiceLoader.load(LambdaRapidHttpClientProvider.class)
+                .stream()
+                .map(ServiceLoader.Provider::get)
+                .max(Comparator.comparingInt(LambdaRapidHttpClientProvider::priority))
+                .map(p -> p.create(host))
+                .orElseThrow(() -> new IllegalStateException(
+                        "No LambdaRapidHttpClientProvider found on classpath"));
     }
 
     public void run(Runnable runnable) {
@@ -35,10 +40,6 @@ public class LambdaApplication {
 
     public <T, R> void run(LambdaHandler<T, R> lambdaHandler) {
         TelemetryLogRedirection.setupIfAvailable();
-
-        if (runtimeApiClient == null) {
-            runtimeApiClient = new LambdaRapidHttpClientImpl(Lambda.Environment.AWS_LAMBDA_RUNTIME_API);
-        }
 
         while (true) {
             InvocationRequest request = runtimeApiClient.next();
