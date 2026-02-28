@@ -5,6 +5,7 @@ import com.smirnoal.lambda.rapid.client.dto.StackElement;
 import com.smirnoal.lambda.rapid.client.dto.XRayErrorCause;
 import com.smirnoal.lambda.rapid.client.dto.XRayException;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
 
@@ -42,7 +43,7 @@ public class JsonSerializer {
         }
         
         json.append("}");
-        return json.toString().getBytes();
+        return json.toString().getBytes(StandardCharsets.UTF_8);
     }
     
     /**
@@ -83,7 +84,7 @@ public class JsonSerializer {
         }
         
         json.append("}");
-        return json.toString().getBytes();
+        return json.toString().getBytes(StandardCharsets.UTF_8);
     }
     
     /**

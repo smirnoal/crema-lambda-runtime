@@ -2,4 +2,5 @@ rootProject.name = 'smirnoal-java-runtime'
 
 include 'common'
 include 'rapid-http-client-jdk'
+include 'rapid-http-client-okhttp'
 include 'bootstrap'
