@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+import static com.smirnoal.lambda.rapid.client.RuntimeApiConstants.*;
 import static java.net.HttpURLConnection.HTTP_ACCEPTED;
 import static java.net.HttpURLConnection.HTTP_OK;
 
@@ -20,7 +21,6 @@ final class OkHttpLambdaRapidHttpClient implements LambdaRapidHttpClient {
     static final String USER_AGENT =
             "com-smirnoal-okhttp/%s".formatted(System.getProperty("java.vendor.version"));
 
-    private static final int XRAY_ERROR_CAUSE_MAX_HEADER_SIZE = 1024 * 1024;
     private static final MediaType JSON = MediaType.get("application/json");
     private static final MediaType OCTET_STREAM = MediaType.get("application/octet-stream");
 
@@ -32,7 +32,7 @@ final class OkHttpLambdaRapidHttpClient implements LambdaRapidHttpClient {
     OkHttpLambdaRapidHttpClient(String runtimeApiHost) {
         Objects.requireNonNull(runtimeApiHost, "host cannot be null");
         this.baseUrl = "http://" + runtimeApiHost;
-        this.invocationEndpoint = this.baseUrl + "/2018-06-01/runtime/invocation/";
+        this.invocationEndpoint = this.baseUrl + PATH_INVOCATION;
 
         String nextRequestEndpoint = this.invocationEndpoint + "next";
         nextRequest = new Request.Builder()
@@ -47,9 +47,9 @@ final class OkHttpLambdaRapidHttpClient implements LambdaRapidHttpClient {
             synchronized (this) {
                 if (httpClient == null) {
                     httpClient = new OkHttpClient.Builder()
-                            .connectTimeout(14, TimeUnit.DAYS)
-                            .readTimeout(14, TimeUnit.DAYS)
-                            .writeTimeout(14, TimeUnit.DAYS)
+                            .connectTimeout(REQUEST_TIMEOUT.toSeconds(), TimeUnit.SECONDS)
+                            .readTimeout(REQUEST_TIMEOUT.toSeconds(), TimeUnit.SECONDS)
+                            .writeTimeout(REQUEST_TIMEOUT.toSeconds(), TimeUnit.SECONDS)
                             .followRedirects(false)
                             .retryOnConnectionFailure(false)
                             .build();
@@ -61,26 +61,25 @@ final class OkHttpLambdaRapidHttpClient implements LambdaRapidHttpClient {
 
     @Override
     public void initError(LambdaError error) {
-        String endpoint = this.baseUrl + "/2018-06-01/runtime/init/error";
-        reportLambdaError(endpoint, error);
+        reportLambdaError(this.baseUrl + PATH_INIT_ERROR, error);
     }
 
     @Override
     public InvocationRequest next() {
         try (Response response = httpClient().newCall(nextRequest).execute()) {
-            String requestId = response.header("lambda-runtime-aws-request-id");
+            String requestId = response.header(HEADER_AWS_REQUEST_ID);
             if (requestId == null) {
                 throw new LambdaRapidClientException("Request ID absent");
             }
-            String invokedFunctionArn = response.header("lambda-runtime-invoked-function-arn");
+            String invokedFunctionArn = response.header(HEADER_INVOKED_FUNCTION_ARN);
             if (invokedFunctionArn == null) {
                 throw new LambdaRapidClientException("Function ARN absent");
             }
-            String deadlineStr = response.header("lambda-runtime-deadline-ms");
+            String deadlineStr = response.header(HEADER_DEADLINE_MS);
             long deadlineTimeInMs = deadlineStr != null ? Long.parseLong(deadlineStr) : 0L;
-            String xrayTraceId = response.header("lambda-runtime-trace-id");
-            String clientContext = response.header("lambda-runtime-client-context");
-            String cognitoIdentity = response.header("lambda-runtime-cognito-identity");
+            String xrayTraceId = response.header(HEADER_TRACE_ID);
+            String clientContext = response.header(HEADER_CLIENT_CONTEXT);
+            String cognitoIdentity = response.header(HEADER_COGNITO_IDENTITY);
             byte[] content = response.body() != null ? response.body().bytes() : new byte[0];
 
             return InvocationRequest.builder()
@@ -123,7 +122,7 @@ final class OkHttpLambdaRapidHttpClient implements LambdaRapidHttpClient {
 
     @Override
     public void restoreNext() {
-        String endpoint = this.baseUrl + "/2018-06-01/runtime/restore/next";
+        String endpoint = this.baseUrl + PATH_RESTORE_NEXT;
         Request request = new Request.Builder()
                 .url(endpoint)
                 .header("User-Agent", USER_AGENT)
@@ -143,8 +142,7 @@ final class OkHttpLambdaRapidHttpClient implements LambdaRapidHttpClient {
 
     @Override
     public void reportRestoreError(LambdaError error) {
-        String endpoint = this.baseUrl + "/2018-06-01/runtime/restore/error";
-        reportLambdaError(endpoint, error);
+        reportLambdaError(this.baseUrl + PATH_RESTORE_ERROR, error);
     }
 
     private void reportLambdaError(String endpoint, LambdaError error) {
@@ -156,12 +154,12 @@ final class OkHttpLambdaRapidHttpClient implements LambdaRapidHttpClient {
         if (error.xRayErrorCause() != null) {
             byte[] xRayErrorCauseJson = JsonSerializer.serialize(error.xRayErrorCause());
             if (xRayErrorCauseJson.length < XRAY_ERROR_CAUSE_MAX_HEADER_SIZE) {
-                request.header("Lambda-Runtime-Function-XRay-Error-Cause", new String(xRayErrorCauseJson));
+                request.header(HEADER_XRAY_ERROR_CAUSE, new String(xRayErrorCauseJson));
             }
         }
 
         if (error.errorRequest().errorType() != null) {
-            request.header("Lambda-Runtime-Function-Error-Type", error.errorRequest().errorType());
+            request.header(HEADER_ERROR_TYPE, error.errorRequest().errorType());
         }
 
         byte[] payload = JsonSerializer.serialize(error.errorRequest());
@@ -171,8 +169,6 @@ final class OkHttpLambdaRapidHttpClient implements LambdaRapidHttpClient {
             if (response.code() != HTTP_ACCEPTED) {
                 throw new LambdaRapidClientException(endpoint, response.code());
             }
-        } catch (LambdaRapidClientException e) {
-            throw e;
         } catch (IOException e) {
             throw new LambdaRapidClientException("Failed to post error", e);
         }

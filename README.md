@@ -4,11 +4,15 @@ Custom AWS Lambda Runtime Interface Client for Java.
 
 ## Modules
 
-| Module | Description |
-|---|---|
-| `common` | Shared types and interfaces |
-| `rapid-http-client` | HTTP client for the Lambda Runtime API |
-| `bootstrap` | Runtime bootstrap that wires everything together |
+```
+Module                  | Description
+------------------------|---------------------------------------------
+common                  | Shared types and interfaces
+rapid-http-client-jdk   | Runtime API HTTP client (java.net.http)
+rapid-http-client-okhttp| Runtime API HTTP client (OkHttp)
+rapid-http-client-netty | Runtime API HTTP client (Netty, supports streaming)
+bootstrap               | Runtime bootstrap that wires everything together
+```
 
 ## Build
 
@@ -34,7 +38,3 @@ Package the runtime and handler into a Docker image based on any Java distributi
 ### Lambda Layer
 
 Publish the bootstrap library as a Lambda Layer. Functions attach the layer and reference the runtime classes from it. This avoids bundling the runtime into every function's deployment package.
-
-## Tests
-
-See [smirnoal-ric-tests/](../smirnoal-ric-tests/) for container-based integration tests and AWS E2E tests.

@@ -1,6 +1,5 @@
 plugins {
     id 'java'
-    id 'org.graalvm.buildtools.native' version '0.10.1' apply false
 }
 
 allprojects {
@@ -22,70 +21,5 @@ subprojects {
     
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
-    }
-}
-
-// Native image build logic available to all subprojects
-ext.addNativeCompileLinuxTask = { project, mainClassName ->
-    project.plugins.apply('org.graalvm.buildtools.native')
-
-    project.graalvmNative {
-        binaries {
-            main {
-                imageName = 'bootstrap'
-                mainClass = mainClassName
-            }
-        }
-        toolchainDetection = false
-    }
-
-    // Task to build custom Docker image with all dependencies
-    project.tasks.register('buildNativeImageDocker', Exec) {
-        group = 'native'
-        description = "Build custom Docker image with GraalVM and Gradle for native compilation"
-        
-        workingDir rootProject.projectDir
-        
-        commandLine 'docker', 'build', '-t', 'smirnoal-native-builder:latest', '-f', 'Dockerfile.native', '.'
-        
-        doFirst {
-            println "Building custom Docker image for native compilation..."
-        }
-        
-        doLast {
-            println "Custom Docker image built successfully!"
-        }
-    }
-
-    project.tasks.register('nativeCompileLinux', Exec) {
-        group = 'native'
-        description = "Build native image for Linux using custom Docker for ${project.name}"
-
-        dependsOn project.tasks.compileJava
-        dependsOn project.tasks.buildNativeImageDocker
-
-        workingDir project.projectDir
-
-        commandLine 'docker', 'run', '--rm',
-            '-v', "${rootProject.rootDir.absolutePath}:/workspace",
-            '-w', '/workspace',
-            '--entrypoint', 'bash',
-            'smirnoal-native-builder:latest',
-            '-c', "gradle ${project.path}:nativeCompile"
-
-        doFirst {
-            println "Building Linux native image for ${project.name} using custom Docker..."
-            println "Working directory: ${rootProject.rootDir.absolutePath}"
-        }
-
-        doLast {
-            println "Linux native image built successfully for ${project.name}!"
-            println "Binary location: ${project.buildDir}/native/nativeCompile/${project.name}"
-        }
-    }
-
-    // Ensure native image is built as part of the standard build
-    project.tasks.named('build') {
-        dependsOn project.tasks.named('nativeCompileLinux')
     }
 } 

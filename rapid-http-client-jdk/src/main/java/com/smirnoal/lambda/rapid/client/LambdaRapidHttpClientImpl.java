@@ -9,9 +9,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.Duration;
 import java.util.Objects;
 
+import static com.smirnoal.lambda.rapid.client.RuntimeApiConstants.*;
 import static java.net.HttpURLConnection.HTTP_ACCEPTED;
 import static java.net.HttpURLConnection.HTTP_OK;
 
@@ -19,8 +19,6 @@ final class LambdaRapidHttpClientImpl implements LambdaRapidHttpClient {
 
     static final String USER_AGENT =
             "com-smirnoal-java-http/%s".formatted(System.getProperty("java.vendor.version"));
-
-    private static final int XRAY_ERROR_CAUSE_MAX_HEADER_SIZE = 1024 * 1024;
 
     private volatile HttpClient httpClient;
     private final HttpRequest nextRequest;
@@ -30,11 +28,12 @@ final class LambdaRapidHttpClientImpl implements LambdaRapidHttpClient {
     public LambdaRapidHttpClientImpl(String runtimeApiHost) {
         Objects.requireNonNull(runtimeApiHost, "host cannot be null");
         this.baseUrl = "http://" + runtimeApiHost;
-        this.invocationEndpoint = this.baseUrl + "/2018-06-01/runtime/invocation/";
+        this.invocationEndpoint = this.baseUrl + PATH_INVOCATION;
 
         String nextRequestEndpoint = this.invocationEndpoint + "next";
         nextRequest = HttpRequest.newBuilder(URI.create(nextRequestEndpoint))
                 .header("User-Agent", USER_AGENT)
+                .timeout(REQUEST_TIMEOUT)
                 .GET()
                 .build();
     }
@@ -46,7 +45,7 @@ final class LambdaRapidHttpClientImpl implements LambdaRapidHttpClient {
                     httpClient = HttpClient.newBuilder()
                             .version(HttpClient.Version.HTTP_1_1)
                             .followRedirects(HttpClient.Redirect.NEVER)
-                            .connectTimeout(Duration.ofDays(14))
+                            .connectTimeout(REQUEST_TIMEOUT)
                             .build();
                 }
             }
@@ -56,8 +55,7 @@ final class LambdaRapidHttpClientImpl implements LambdaRapidHttpClient {
 
     @Override
     public void initError(LambdaError error) {
-        URI endpoint = URI.create(this.baseUrl + "/2018-06-01/runtime/init/error");
-        reportLambdaError(endpoint, error);
+        reportLambdaError(URI.create(this.baseUrl + PATH_INIT_ERROR), error);
     }
 
     @Override
@@ -70,16 +68,16 @@ final class LambdaRapidHttpClientImpl implements LambdaRapidHttpClient {
         }
 
         HttpHeaders headers = response.headers();
-        String requestId = headers.firstValue("lambda-runtime-aws-request-id")
+        String requestId = headers.firstValue(HEADER_AWS_REQUEST_ID)
                 .orElseThrow(() -> new LambdaRapidClientException("Request ID absent"));
-        String invokedFunctionArn = headers.firstValue("lambda-runtime-invoked-function-arn")
+        String invokedFunctionArn = headers.firstValue(HEADER_INVOKED_FUNCTION_ARN)
                 .orElseThrow(() -> new LambdaRapidClientException("Function ARN absent"));
         long deadlineTimeInMs = Long.parseLong(
-                headers.firstValue("lambda-runtime-deadline-ms").orElse("0")
+                headers.firstValue(HEADER_DEADLINE_MS).orElse("0")
         );
-        String xrayTraceId = headers.firstValue("lambda-runtime-trace-id").orElse(null);
-        String clientContext = headers.firstValue("lambda-runtime-client-context").orElse(null);
-        String cognitoIdentity = headers.firstValue("lambda-runtime-cognito-identity").orElse(null);
+        String xrayTraceId = headers.firstValue(HEADER_TRACE_ID).orElse(null);
+        String clientContext = headers.firstValue(HEADER_CLIENT_CONTEXT).orElse(null);
+        String cognitoIdentity = headers.firstValue(HEADER_COGNITO_IDENTITY).orElse(null);
         byte[] content = response.body();
 
         return InvocationRequest.builder()
@@ -98,6 +96,7 @@ final class LambdaRapidHttpClientImpl implements LambdaRapidHttpClient {
         URI endpoint = URI.create(this.invocationEndpoint + requestId + "/response");
         HttpRequest invocationResponseRequest = HttpRequest.newBuilder(endpoint)
                 .header("User-Agent", USER_AGENT)
+                .timeout(REQUEST_TIMEOUT)
                 .POST(HttpRequest.BodyPublishers.ofByteArray(response))
                 .build();
 
@@ -116,10 +115,11 @@ final class LambdaRapidHttpClientImpl implements LambdaRapidHttpClient {
 
     @Override
     public void restoreNext() {
-        URI endpoint = URI.create(this.baseUrl + "/2018-06-01/runtime/restore/next");
+        URI endpoint = URI.create(this.baseUrl + PATH_RESTORE_NEXT);
         HttpRequest request = HttpRequest.newBuilder(endpoint)
                 .GET()
                 .header("User-Agent", USER_AGENT)
+                .timeout(REQUEST_TIMEOUT)
                 .build();
 
         HttpResponse<Void> response;
@@ -135,24 +135,24 @@ final class LambdaRapidHttpClientImpl implements LambdaRapidHttpClient {
 
     @Override
     public void reportRestoreError(LambdaError error) {
-        URI endpoint = URI.create(this.baseUrl + "/2018-06-01/runtime/restore/error");
-        reportLambdaError(endpoint, error);
+        reportLambdaError(URI.create(this.baseUrl + PATH_RESTORE_ERROR), error);
     }
 
     void reportLambdaError(URI endpoint, LambdaError error) {
         HttpRequest.Builder request = HttpRequest.newBuilder(endpoint)
                 .header("User-Agent", USER_AGENT)
-                .header("Content-Type", "application/json");
+                .header("Content-Type", "application/json")
+                .timeout(REQUEST_TIMEOUT);
 
         if (error.xRayErrorCause() != null) {
             byte[] xRayErrorCauseJson = JsonSerializer.serialize(error.xRayErrorCause());
             if (xRayErrorCauseJson.length < XRAY_ERROR_CAUSE_MAX_HEADER_SIZE) {
-                request.header("Lambda-Runtime-Function-XRay-Error-Cause", new String(xRayErrorCauseJson));
+                request.header(HEADER_XRAY_ERROR_CAUSE, new String(xRayErrorCauseJson));
             }
         }
 
         if (error.errorRequest().errorType() != null) {
-            request.header("Lambda-Runtime-Function-Error-Type", error.errorRequest().errorType());
+            request.header(HEADER_ERROR_TYPE, error.errorRequest().errorType());
         }
 
         byte[] payload = JsonSerializer.serialize(error.errorRequest());
