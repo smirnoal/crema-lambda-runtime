@@ -1,7 +1,8 @@
 package com.smirnoal.lambda.stream;
 
+import com.smirnoal.lambda.serde.JsonEscape;
+
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -42,6 +43,38 @@ public final class HttpResponseStream {
      */
     public static Prelude.Builder prelude() {
         return new Prelude.Builder();
+    }
+
+    private static byte[] preludeBytes(Prelude prelude) {
+        byte[] jsonBytes = serializePreludeToJson(prelude).getBytes(StandardCharsets.UTF_8);
+        byte[] result = new byte[jsonBytes.length + DELIMITER_LEN];
+        System.arraycopy(jsonBytes, 0, result, 0, jsonBytes.length);
+        return result;
+    }
+
+    private static String serializePreludeToJson(Prelude prelude) {
+        StringBuilder json = new StringBuilder();
+        json.append("{\"statusCode\":").append(prelude.statusCode());
+        if (!prelude.headers().isEmpty()) {
+            json.append(",\"headers\":{");
+            boolean first = true;
+            for (Map.Entry<String, String> e : prelude.headers().entrySet()) {
+                if (!first) json.append(",");
+                json.append(JsonEscape.escape(e.getKey())).append(":").append(JsonEscape.escape(e.getValue()));
+                first = false;
+            }
+            json.append("}");
+        }
+        if (!prelude.cookies().isEmpty()) {
+            json.append(",\"cookies\":[");
+            for (int i = 0; i < prelude.cookies().size(); i++) {
+                if (i > 0) json.append(",");
+                json.append(JsonEscape.escape(prelude.cookies().get(i)));
+            }
+            json.append("]");
+        }
+        json.append("}");
+        return json.toString();
     }
 
     /**
@@ -96,60 +129,10 @@ public final class HttpResponseStream {
 
         private void ensurePreludeWritten() throws IOException {
             if (!preludeWritten) {
-                byte[] preludeJson = serializePrelude(prelude);
-                delegate.write(preludeJson);
-                delegate.write(new byte[DELIMITER_LEN]);
+                delegate.write(HttpResponseStream.preludeBytes(prelude));
                 delegate.flush();
                 preludeWritten = true;
             }
-        }
-
-        private static byte[] serializePrelude(Prelude prelude) {
-            StringBuilder json = new StringBuilder();
-            json.append("{\"statusCode\":").append(prelude.statusCode());
-            if (!prelude.headers().isEmpty()) {
-                json.append(",\"headers\":{");
-                boolean first = true;
-                for (Map.Entry<String, String> e : prelude.headers().entrySet()) {
-                    if (!first) json.append(",");
-                    json.append(escape(e.getKey())).append(":").append(escape(e.getValue()));
-                    first = false;
-                }
-                json.append("}");
-            }
-            if (!prelude.cookies().isEmpty()) {
-                json.append(",\"cookies\":[");
-                for (int i = 0; i < prelude.cookies().size(); i++) {
-                    if (i > 0) json.append(",");
-                    json.append(escape(prelude.cookies().get(i)));
-                }
-                json.append("]");
-            }
-            json.append("}");
-            return json.toString().getBytes(StandardCharsets.UTF_8);
-        }
-
-        private static String escape(String s) {
-            if (s == null) return "null";
-            StringBuilder sb = new StringBuilder().append('"');
-            for (int i = 0; i < s.length(); i++) {
-                char c = s.charAt(i);
-                switch (c) {
-                    case '"' -> sb.append("\\\"");
-                    case '\\' -> sb.append("\\\\");
-                    case '\n' -> sb.append("\\n");
-                    case '\r' -> sb.append("\\r");
-                    case '\t' -> sb.append("\\t");
-                    default -> {
-                        if (c < 32 || c > 126) {
-                            sb.append(String.format("\\u%04x", (int) c));
-                        } else {
-                            sb.append(c);
-                        }
-                    }
-                }
-            }
-            return sb.append('"').toString();
         }
 
         @Override

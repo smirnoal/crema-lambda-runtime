@@ -1,6 +1,7 @@
 package com.smirnoal.lambda.rapid.client.serde;
 
 import com.smirnoal.lambda.rapid.client.dto.ErrorRequest;
+import com.smirnoal.lambda.serde.JsonEscape;
 import com.smirnoal.lambda.rapid.client.dto.StackElement;
 import com.smirnoal.lambda.rapid.client.dto.XRayErrorCause;
 import com.smirnoal.lambda.rapid.client.dto.XRayException;
@@ -23,12 +24,12 @@ public class JsonSerializer {
         json.append("{");
         
         if (errorRequest.errorMessage() != null) {
-            json.append("\"errorMessage\":").append(escapeString(errorRequest.errorMessage()));
+            json.append("\"errorMessage\":").append(JsonEscape.escape(errorRequest.errorMessage()));
         }
         
         if (errorRequest.errorType() != null) {
             if (json.length() > 1) json.append(",");
-            json.append("\"errorType\":").append(escapeString(errorRequest.errorType()));
+            json.append("\"errorType\":").append(JsonEscape.escape(errorRequest.errorType()));
         }
         
         if (errorRequest.stackTrace() != null) {
@@ -37,7 +38,7 @@ public class JsonSerializer {
             String[] stackTrace = errorRequest.stackTrace();
             for (int i = 0; i < stackTrace.length; i++) {
                 if (i > 0) json.append(",");
-                json.append(escapeString(stackTrace[i]));
+                json.append(JsonEscape.escape(stackTrace[i]));
             }
             json.append("]");
         }
@@ -54,7 +55,7 @@ public class JsonSerializer {
         json.append("{");
         
         if (xRayErrorCause.workingDirectory() != null) {
-            json.append("\"working_directory\":").append(escapeString(xRayErrorCause.workingDirectory()));
+            json.append("\"working_directory\":").append(JsonEscape.escape(xRayErrorCause.workingDirectory()));
         }
         
         if (xRayErrorCause.exceptions() != null) {
@@ -77,7 +78,7 @@ public class JsonSerializer {
             boolean first = true;
             for (String path : paths) {
                 if (!first) json.append(",");
-                json.append(escapeString(path));
+                json.append(JsonEscape.escape(path));
                 first = false;
             }
             json.append("]");
@@ -95,12 +96,12 @@ public class JsonSerializer {
         json.append("{");
         
         if (exception.message() != null) {
-            json.append("\"message\":").append(escapeString(exception.message()));
+            json.append("\"message\":").append(JsonEscape.escape(exception.message()));
         }
         
         if (exception.type() != null) {
             if (json.length() > 1) json.append(",");
-            json.append("\"type\":").append(escapeString(exception.type()));
+            json.append("\"type\":").append(JsonEscape.escape(exception.type()));
         }
         
         if (exception.stack() != null) {
@@ -128,12 +129,12 @@ public class JsonSerializer {
         json.append("{");
         
         if (element.label() != null) {
-            json.append("\"label\":").append(escapeString(element.label()));
+            json.append("\"label\":").append(JsonEscape.escape(element.label()));
         }
         
         if (element.path() != null) {
             if (json.length() > 1) json.append(",");
-            json.append("\"path\":").append(escapeString(element.path()));
+            json.append("\"path\":").append(JsonEscape.escape(element.path()));
         }
         
         if (json.length() > 1) json.append(",");
@@ -143,54 +144,4 @@ public class JsonSerializer {
         return json.toString();
     }
     
-    /**
-     * Escape a string for JSON output.
-     * Handles quotes, backslashes, control characters, and Unicode escapes.
-     */
-    private static String escapeString(String input) {
-        if (input == null) {
-            return "null";
-        }
-        
-        StringBuilder escaped = new StringBuilder();
-        escaped.append('"');
-        
-        for (int i = 0; i < input.length(); i++) {
-            char c = input.charAt(i);
-            switch (c) {
-                case '"':
-                    escaped.append("\\\"");
-                    break;
-                case '\\':
-                    escaped.append("\\\\");
-                    break;
-                case '\b':
-                    escaped.append("\\b");
-                    break;
-                case '\f':
-                    escaped.append("\\f");
-                    break;
-                case '\n':
-                    escaped.append("\\n");
-                    break;
-                case '\r':
-                    escaped.append("\\r");
-                    break;
-                case '\t':
-                    escaped.append("\\t");
-                    break;
-                default:
-                    if (c < 32 || c > 126) {
-                        // Escape non-printable characters as Unicode
-                        escaped.append(String.format("\\u%04x", (int) c));
-                    } else {
-                        escaped.append(c);
-                    }
-                    break;
-            }
-        }
-        
-        escaped.append('"');
-        return escaped.toString();
-    }
 } 
