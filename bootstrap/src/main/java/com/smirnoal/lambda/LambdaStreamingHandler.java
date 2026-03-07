@@ -1,6 +1,7 @@
 package com.smirnoal.lambda;
 
 import com.smirnoal.lambda.stream.ResponseStream;
+import com.smirnoal.lambda.stream.StreamOnlyHandler;
 import com.smirnoal.lambda.stream.StreamingFunction;
 
 import java.util.function.Function;
@@ -15,6 +16,7 @@ public class LambdaStreamingHandler<T> {
 
     private Function<byte[], T> inputDeserializer;
     private StreamingFunction<T> handler;
+    private StreamOnlyHandler streamOnlyHandler;
 
     public LambdaStreamingHandler<T> withInputTypeDeserializer(Function<byte[], T> func) {
         this.inputDeserializer = func;
@@ -22,11 +24,25 @@ public class LambdaStreamingHandler<T> {
     }
 
     public LambdaStreamingHandler<T> withHandler(StreamingFunction<T> handler) {
+        if (streamOnlyHandler != null) {
+            throw new IllegalStateException("Stream-only handler is already set");
+        }
         this.handler = handler;
         return this;
     }
 
+    public LambdaStreamingHandler<T> withHandler(StreamOnlyHandler streamOnlyHandler) {
+        if (handler != null) {
+            throw new IllegalStateException("Event handler is already set");
+        }
+        this.streamOnlyHandler = streamOnlyHandler;
+        return this;
+    }
+
     T toInputType(byte[] bytes) {
+        if (streamOnlyHandler != null) {
+            return null;
+        }
         if (inputDeserializer == null) {
             throw new IllegalStateException("Input deserializer must be set");
         }
@@ -34,9 +50,12 @@ public class LambdaStreamingHandler<T> {
     }
 
     void handle(T event, ResponseStream responseStream) throws Exception {
-        if (handler == null) {
+        if (streamOnlyHandler != null) {
+            streamOnlyHandler.accept(responseStream);
+        } else if (handler != null) {
+            handler.accept(event, responseStream);
+        } else {
             throw new IllegalStateException("Handler must be set");
         }
-        handler.accept(event, responseStream);
     }
 }
