@@ -64,7 +64,10 @@ public final class Lambda {
         private Constants() {
         }
 
-        static String LAMBDA_TRACE_HEADER_PROP = "com.amazonaws.xray.traceHeader";
+        public static final String LAMBDA_TRACE_HEADER_PROP = "com.amazonaws.xray.traceHeader";
+        public static final String INITIALIZATION_TYPE_SNAP_START = "snap-start";
+        public static final String ERROR_TYPE_BEFORE_SNAPSHOT = "Runtime.BeforeSnapshotError";
+        public static final String ERROR_TYPE_AFTER_RESTORE = "Runtime.AfterRestoreError";
     }
 
     static InvocationRequest invocationRequest;

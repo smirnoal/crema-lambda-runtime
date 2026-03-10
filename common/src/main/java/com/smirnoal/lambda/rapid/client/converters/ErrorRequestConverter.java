@@ -11,11 +11,13 @@ public class ErrorRequestConverter {
     }
 
     public static ErrorRequest fromThrowable(Throwable throwable) {
+        return fromThrowable(throwable, throwable.getClass().getName());
+    }
+
+    public static ErrorRequest fromThrowable(Throwable throwable, String errorType) {
         String errorMessage = throwable.getLocalizedMessage() == null
                 ? throwable.getClass().getName()
                 : throwable.getLocalizedMessage();
-
-        String errorType = throwable.getClass().getName();
 
         String[] stackTrace = Arrays.stream(throwable.getStackTrace())
                 .map(StackTraceElement::toString)
