@@ -5,6 +5,7 @@ import com.smirnoal.lambda.serde.LambdaSerde;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class LambdaHandler<T, R> {
     private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
@@ -15,6 +16,7 @@ public class LambdaHandler<T, R> {
     private Function<T, R> function;
     private Consumer<T> consumer;
     private Runnable runnable;
+    private Supplier<R> supplier;
 
     public LambdaHandler<T, R> withInputTypeDeserializer(Function<byte[], T> func) {
         this.fromBytesToInput = func;
@@ -50,6 +52,12 @@ public class LambdaHandler<T, R> {
         return this;
     }
 
+    public LambdaHandler<T, R> withHandler(Supplier<R> supplier) {
+        assertHandlerNotDefined();
+        this.supplier = supplier;
+        return this;
+    }
+
     private void assertHandlerNotDefined() {
         if (function != null) {
             throw new AssertionError("Function handler is already defined");
@@ -57,11 +65,15 @@ public class LambdaHandler<T, R> {
             throw new AssertionError("Consumer handler is already defined");
         } else if (runnable != null) {
             throw new AssertionError("Runnable handler is already defined");
+        } else if (supplier != null) {
+            throw new AssertionError("Supplier handler is already defined");
         }
     }
 
     R handle(T event) {
-        if (function != null) {
+        if (supplier != null) {
+            return supplier.get();
+        } else if (function != null) {
             return function.apply(event);
         } else if (consumer != null) {
             consumer.accept(event);
@@ -74,14 +86,14 @@ public class LambdaHandler<T, R> {
     }
 
     T toInputType(byte[] bytes) {
-        if (function == null && consumer == null) {
+        if (supplier != null || (function == null && consumer == null)) {
             return null;
         }
         return fromBytesToInput.apply(bytes);
     }
 
     byte[] toBytes(R event) {
-        if (function == null) {
+        if (function == null && supplier == null) {
             return EMPTY_BYTE_ARRAY;
         }
         if (event == null) {

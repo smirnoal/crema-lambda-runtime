@@ -49,7 +49,9 @@ public class LambdaApplication {
     }
 
     public <T, R> void run(LambdaHandler<T, R> lambdaHandler) {
-        runSnapStartHooks();
+        if (isSnapStart()) {
+            runSnapStartHooks();
+        }
         while (true) {
             InvocationRequest request = runtimeApiClient.next();
             setXrayTraceId(request.xrayTraceId());
@@ -70,7 +72,9 @@ public class LambdaApplication {
     }
 
     public <T> void run(LambdaStreamingHandler<T> streamingHandler) {
-        runSnapStartHooks();
+        if (isSnapStart()) {
+            runSnapStartHooks();
+        }
         while (true) {
             InvocationRequest request = runtimeApiClient.next();
             setXrayTraceId(request.xrayTraceId());
@@ -102,11 +106,11 @@ public class LambdaApplication {
         }
     }
 
-    private void runSnapStartHooks() {
-        if (!INITIALIZATION_TYPE_SNAP_START.equalsIgnoreCase(Environment.AWS_LAMBDA_INITIALIZATION_TYPE)) {
-            return;
-        }
+    private boolean isSnapStart() {
+        return INITIALIZATION_TYPE_SNAP_START.equalsIgnoreCase(Environment.AWS_LAMBDA_INITIALIZATION_TYPE);
+    }
 
+    private void runSnapStartHooks() {
         try {
             SnapStart.getBeforeSnapshot().forEach(Runnable::run);
             DnsCache.clearInetAddressCache();

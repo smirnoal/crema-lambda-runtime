@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * Test-only provider with high priority so that {@link LambdaApplication}'s
  * default constructor picks up a controllable mock client.
  */
-public final class MockSnapStartLambdaRapidHttpClientProvider implements LambdaRapidHttpClientProvider {
+public final class SnapStartMockLambdaRapidHttpClientProvider implements LambdaRapidHttpClientProvider {
     static final AtomicReference<LambdaRapidHttpClient> CLIENT = new AtomicReference<>();
 
     @Override

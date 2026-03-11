@@ -8,7 +8,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
-final class SnapStartTestHooks {
+final class SnapStartTestUtils {
     private static final String ORIGINAL_INIT_TYPE = Environment.AWS_LAMBDA_INITIALIZATION_TYPE;
     private static final VarHandle MODIFIERS;
 
@@ -21,19 +21,7 @@ final class SnapStartTestHooks {
         }
     }
 
-    private SnapStartTestHooks() {
-    }
-
-    @SuppressWarnings("unchecked")
-    static void registerBeforeSnapshot(Runnable runnable) throws Exception {
-        List<Runnable> list = (List<Runnable>) getField("BEFORE_SNAPSHOT").get(null);
-        list.add(runnable);
-    }
-
-    @SuppressWarnings("unchecked")
-    static void registerAfterRestore(Runnable runnable) throws Exception {
-        List<Runnable> list = (List<Runnable>) getField("AFTER_RESTORE").get(null);
-        list.add(runnable);
+    private SnapStartTestUtils() {
     }
 
     static void reset() throws Exception {
