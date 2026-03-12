@@ -1,7 +1,5 @@
 package com.smirnoal.lambda;
 
-import com.smirnoal.lambda.rapid.client.dto.InvocationRequest;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,5 +68,17 @@ public final class Lambda {
         public static final String ERROR_TYPE_AFTER_RESTORE = "Runtime.AfterRestoreError";
     }
 
-    static InvocationRequest invocationRequest;
+    private static volatile InvocationContext currentContext;
+
+    /**
+     * Returns the invocation context for the current invocation, or null when
+     * called outside of a handler (e.g. during initialization).
+     */
+    public static InvocationContext context() {
+        return currentContext;
+    }
+
+    static void setCurrentContext(InvocationContext context) {
+        currentContext = context;
+    }
 }

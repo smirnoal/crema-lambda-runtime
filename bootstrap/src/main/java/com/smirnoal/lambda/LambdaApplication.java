@@ -55,7 +55,8 @@ public class LambdaApplication {
         while (true) {
             InvocationRequest request = runtimeApiClient.next();
             setXrayTraceId(request.xrayTraceId());
-            Lambda.invocationRequest = request;
+            InvocationContext ctx = new InvocationContext(request);
+            Lambda.setCurrentContext(ctx);
 
             try {
                 T inputEvent = lambdaHandler.toInputType(request.content());
@@ -67,6 +68,8 @@ public class LambdaApplication {
                 XRayErrorCause xRayErrorCause = XRayErrorCauseConverter.fromThrowable(t);
                 LambdaError lambdaError = new LambdaError(errorRequest, xRayErrorCause);
                 runtimeApiClient.reportInvocationError(request.id(), lambdaError);
+            } finally {
+                Lambda.setCurrentContext(null);
             }
         }
     }
@@ -78,7 +81,8 @@ public class LambdaApplication {
         while (true) {
             InvocationRequest request = runtimeApiClient.next();
             setXrayTraceId(request.xrayTraceId());
-            Lambda.invocationRequest = request;
+            InvocationContext ctx = new InvocationContext(request);
+            Lambda.setCurrentContext(ctx);
 
             StreamingResponseHandle handle =
                     runtimeApiClient.startStreamingResponse(request.id());
@@ -94,6 +98,8 @@ public class LambdaApplication {
                 } catch (IOException e) {
                     throw new LambdaRapidClientException("Failed to report streaming error", e);
                 }
+            } finally {
+                Lambda.setCurrentContext(null);
             }
         }
     }
