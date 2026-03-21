@@ -1,0 +1,21 @@
+{
+  "version": "1",
+  "triggerSource": "CustomSMSSender_SignUp",
+  "region": "us-east-1",
+  "userPoolId": "us-east-1_EXAMPLE",
+  "userName": "JaneDoe",
+  "callerContext": {
+    "awsSdkVersion": "aws-sdk-unknown-unknown",
+    "clientId": "1example23456789"
+  },
+  "request": {
+    "type": "customSMSSenderRequestV1",
+    "code": "AQICAHh...base64encrypted...",
+    "clientMetadata": { },
+    "userAttributes": {
+      "phone_number": "+15551234567",
+      "email": "jane@example.com"
+    }
+  },
+  "response": { }
+}

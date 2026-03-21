@@ -1,0 +1,105 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CognitoUserPoolPreTokenGenerationEventV2",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string"
+    },
+    "triggerSource": {
+      "type": "string"
+    },
+    "region": {
+      "type": "string"
+    },
+    "userPoolId": {
+      "type": "string"
+    },
+    "userName": {
+      "type": "string"
+    },
+    "callerContext": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "request": {
+      "type": "object",
+      "properties": {
+        "userAttributes": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "groupConfiguration": {
+          "$ref": "#/definitions/GroupConfiguration"
+        },
+        "scopes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "response": {
+      "type": "object",
+      "properties": {
+        "claimsAndScopeOverrideDetails": {
+          "type": "object",
+          "properties": {
+            "groupOverrideDetails": {
+              "$ref": "#/definitions/GroupOverrideDetails"
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "GroupConfiguration": {
+      "type": "object",
+      "properties": {
+        "groupsToOverride": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "iamRolesToOverride": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "preferredRole": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "GroupOverrideDetails": {
+      "type": "object",
+      "properties": {
+        "groupsToOverride": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "iamRolesToOverride": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "preferredRole": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ConnectEvent",
+  "type": "object",
+  "properties": {
+    "Name": {
+      "type": "string"
+    },
+    "Details": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

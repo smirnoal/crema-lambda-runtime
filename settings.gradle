@@ -1,6 +1,10 @@
 rootProject.name = 'smirnoal-java-runtime'
 
 include 'common'
+include 'events-schemas'
+include 'events-jackson2'
+include 'serde-jackson2'
+include 'serde-gson'
 include 'rapid-http-client-jdk'
 include 'rapid-http-client-okhttp'
 include 'rapid-http-client-netty'

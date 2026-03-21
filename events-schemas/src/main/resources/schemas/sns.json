@@ -1,0 +1,93 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SnsEvent",
+  "type": "object",
+  "properties": {
+    "Records": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/SnsRecord"
+      }
+    }
+  },
+  "required": [ "Records" ],
+  "additionalProperties": false,
+  "definitions": {
+    "SnsRecord": {
+      "type": "object",
+      "properties": {
+        "EventSource": {
+          "type": "string"
+        },
+        "EventVersion": {
+          "type": "string"
+        },
+        "EventSubscriptionArn": {
+          "type": "string"
+        },
+        "Sns": {
+          "$ref": "#/definitions/SnsMessage"
+        }
+      },
+      "required": [ "EventSource", "EventVersion", "EventSubscriptionArn", "Sns" ],
+      "additionalProperties": false
+    },
+    "SnsMessage": {
+      "type": "object",
+      "properties": {
+        "Type": {
+          "type": "string"
+        },
+        "MessageId": {
+          "type": "string"
+        },
+        "TopicArn": {
+          "type": "string"
+        },
+        "Subject": {
+          "type": "string"
+        },
+        "Message": {
+          "type": "string"
+        },
+        "Timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "SignatureVersion": {
+          "type": "string"
+        },
+        "Signature": {
+          "type": "string"
+        },
+        "SigningCertUrl": {
+          "type": "string"
+        },
+        "UnsubscribeUrl": {
+          "type": "string"
+        },
+        "MessageAttributes": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/SnsMessageAttribute"
+          }
+        }
+      },
+      "required": [ "Type", "MessageId", "TopicArn", "Message", "Timestamp" ],
+      "additionalProperties": false
+    },
+    "SnsMessageAttribute": {
+      "type": "object",
+      "properties": {
+        "Type": {
+          "type": "string"
+        },
+        "Value": {
+          "type": "string"
+        }
+      },
+      "required": [ "Type", "Value" ],
+      "additionalProperties": false
+    }
+  }
+}

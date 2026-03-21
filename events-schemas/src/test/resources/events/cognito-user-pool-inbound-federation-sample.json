@@ -1,0 +1,34 @@
+{
+  "version": "1",
+  "triggerSource": "InboundFederation_ExternalProvider",
+  "region": "us-east-1",
+  "userPoolId": "us-east-1_EXAMPLE",
+  "userName": "JaneDoe",
+  "callerContext": {
+    "awsSdkVersion": "aws-sdk-unknown-unknown",
+    "clientId": "1example23456789"
+  },
+  "request": {
+    "providerName": "ExampleProvider",
+    "providerType": "OIDC",
+    "attributes": {
+      "tokenResponse": {
+        "access_token": "abcDE...",
+        "token_type": "Bearer",
+        "expires_in": "3600"
+      },
+      "idToken": {
+        "sub": "12345",
+        "email": "user@example.com"
+      },
+      "userInfo": {
+        "email": "user@example.com",
+        "given_name": "Example",
+        "family_name": "User"
+      }
+    }
+  },
+  "response": {
+    "userAttributesToMap": { }
+  }
+}

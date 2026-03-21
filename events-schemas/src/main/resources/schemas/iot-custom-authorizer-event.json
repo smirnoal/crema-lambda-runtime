@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "IoTCustomAuthorizerEvent",
+  "type": "object",
+  "properties": {
+    "token": {
+      "type": "string"
+    },
+    "signatureVerified": {
+      "type": "boolean"
+    },
+    "protocols": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "protocolData": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "connectionMetadata": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ApplicationLoadBalancerRequestEvent",
+  "type": "object",
+  "properties": {
+    "requestContext": {
+      "$ref": "#/definitions/AlbRequestContext"
+    },
+    "httpMethod": {
+      "type": "string"
+    },
+    "path": {
+      "type": "string"
+    },
+    "queryStringParameters": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "headers": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "body": {
+      "type": "string"
+    },
+    "isBase64Encoded": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "AlbRequestContext": {
+      "type": "object",
+      "properties": {
+        "elb": {
+          "$ref": "#/definitions/Elb"
+        }
+      }
+    },
+    "Elb": {
+      "type": "object",
+      "properties": {
+        "targetGroupArn": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

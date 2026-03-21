@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "KinesisFirehoseEvent",
+  "type": "object",
+  "properties": {
+    "invocationId": {
+      "type": "string"
+    },
+    "deliveryStreamArn": {
+      "type": "string"
+    },
+    "region": {
+      "type": "string"
+    },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": false
+}

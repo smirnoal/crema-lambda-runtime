@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CloudWatchLogsEvent",
+  "type": "object",
+  "properties": {
+    "awslogs": {
+      "$ref": "#/definitions/AwsLogs"
+    }
+  },
+  "required": [ "awslogs" ],
+  "additionalProperties": false,
+  "definitions": {
+    "AwsLogs": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "string",
+          "contentEncoding": "base64"
+        }
+      },
+      "required": [ "data" ],
+      "additionalProperties": false
+    }
+  }
+}

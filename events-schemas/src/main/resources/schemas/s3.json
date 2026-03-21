@@ -1,0 +1,170 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "S3Event",
+  "type": "object",
+  "properties": {
+    "Records": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/S3EventNotificationRecord"
+      }
+    }
+  },
+  "required": [ "Records" ],
+  "additionalProperties": false,
+  "definitions": {
+    "S3EventNotificationRecord": {
+      "type": "object",
+      "properties": {
+        "eventVersion": {
+          "type": "string"
+        },
+        "eventSource": {
+          "type": "string"
+        },
+        "awsRegion": {
+          "type": "string"
+        },
+        "eventTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "eventName": {
+          "type": "string"
+        },
+        "userIdentity": {
+          "$ref": "#/definitions/UserIdentityEntity"
+        },
+        "requestParameters": {
+          "$ref": "#/definitions/RequestParametersEntity"
+        },
+        "responseElements": {
+          "$ref": "#/definitions/ResponseElementsEntity"
+        },
+        "s3": {
+          "$ref": "#/definitions/S3Entity"
+        },
+        "glacierEventData": {
+          "$ref": "#/definitions/GlacierEventData"
+        },
+        "replicationEventData": {
+          "type": "object"
+        },
+        "intelligentTieringEventData": {
+          "type": "object"
+        },
+        "lifecycleEventData": {
+          "type": "object"
+        }
+      },
+      "required": [ "eventVersion", "eventSource", "awsRegion", "eventTime", "eventName", "s3" ],
+      "additionalProperties": false
+    },
+    "GlacierEventData": {
+      "type": "object",
+      "properties": {
+        "restoreEventData": {
+          "type": "object",
+          "properties": {
+            "lifecycleRestorationExpiryTime": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "lifecycleRestoreStorageClass": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "UserIdentityEntity": {
+      "type": "object",
+      "properties": {
+        "principalId": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "RequestParametersEntity": {
+      "type": "object",
+      "properties": {
+        "sourceIPAddress": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ResponseElementsEntity": {
+      "type": "object",
+      "properties": {
+        "x-amz-request-id": {
+          "type": "string"
+        },
+        "x-amz-id-2": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "S3Entity": {
+      "type": "object",
+      "properties": {
+        "s3SchemaVersion": {
+          "type": "string"
+        },
+        "configurationId": {
+          "type": "string"
+        },
+        "bucket": {
+          "$ref": "#/definitions/S3BucketEntity"
+        },
+        "object": {
+          "$ref": "#/definitions/S3ObjectEntity"
+        }
+      },
+      "required": [ "s3SchemaVersion", "bucket", "object" ],
+      "additionalProperties": false
+    },
+    "S3BucketEntity": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "ownerIdentity": {
+          "$ref": "#/definitions/UserIdentityEntity"
+        },
+        "arn": {
+          "type": "string"
+        }
+      },
+      "required": [ "name", "arn" ],
+      "additionalProperties": false
+    },
+    "S3ObjectEntity": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "size": {
+          "type": "integer"
+        },
+        "eTag": {
+          "type": "string"
+        },
+        "versionId": {
+          "type": "string"
+        },
+        "sequencer": {
+          "type": "string"
+        }
+      },
+      "required": [ "key" ],
+      "additionalProperties": false
+    }
+  }
+}

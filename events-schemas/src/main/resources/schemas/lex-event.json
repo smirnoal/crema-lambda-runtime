@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "LexEvent",
+  "type": "object",
+  "properties": {
+    "messageVersion": {
+      "type": "string"
+    },
+    "invocationSource": {
+      "type": "string"
+    },
+    "userId": {
+      "type": "string"
+    },
+    "sessionAttributes": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "bot": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "outputDialogMode": {
+      "type": "string"
+    },
+    "currentIntent": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

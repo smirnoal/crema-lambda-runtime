@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "KinesisAnalyticsFirehoseInputPreprocessingEvent",
+  "type": "object",
+  "properties": {
+    "invocationId": {
+      "type": "string"
+    },
+    "applicationArn": {
+      "type": "string"
+    },
+    "streamArn": {
+      "type": "string"
+    },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": false
+}

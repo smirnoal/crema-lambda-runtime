@@ -1,0 +1,75 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "KinesisEvent",
+  "type": "object",
+  "properties": {
+    "Records": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/KinesisEventRecord"
+      }
+    }
+  },
+  "required": [ "Records" ],
+  "additionalProperties": false,
+  "definitions": {
+    "KinesisEventRecord": {
+      "type": "object",
+      "properties": {
+        "eventSource": {
+          "type": "string"
+        },
+        "eventVersion": {
+          "type": "string"
+        },
+        "eventID": {
+          "type": "string"
+        },
+        "eventName": {
+          "type": "string"
+        },
+        "invokeIdentityArn": {
+          "type": "string"
+        },
+        "eventSourceARN": {
+          "type": "string"
+        },
+        "awsRegion": {
+          "type": "string"
+        },
+        "kinesis": {
+          "$ref": "#/definitions/KinesisRecord"
+        }
+      },
+      "required": [ "eventSource", "eventVersion", "eventID", "eventName", "kinesis" ],
+      "additionalProperties": false
+    },
+    "KinesisRecord": {
+      "type": "object",
+      "properties": {
+        "kinesisSchemaVersion": {
+          "type": "string"
+        },
+        "partitionKey": {
+          "type": "string"
+        },
+        "sequenceNumber": {
+          "type": "string"
+        },
+        "data": {
+          "type": "string",
+          "contentEncoding": "base64",
+          "existingJavaType": "java.nio.ByteBuffer"
+        },
+        "approximateArrivalTimestamp": {
+          "type": "number"
+        },
+        "encryptionType": {
+          "type": "string"
+        }
+      },
+      "required": [ "partitionKey", "sequenceNumber", "data" ],
+      "additionalProperties": false
+    }
+  }
+}

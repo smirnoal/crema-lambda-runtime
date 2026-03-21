@@ -1,0 +1,24 @@
+{
+  "version": "1",
+  "triggerSource": "UserMigration_Authentication",
+  "region": "us-east-1",
+  "userPoolId": "us-east-1_EXAMPLE",
+  "userName": "JaneDoe",
+  "callerContext": {
+    "awsSdkVersion": "aws-sdk-unknown-unknown",
+    "clientId": "1example23456789"
+  },
+  "request": {
+    "password": "password123",
+    "validationData": { }
+  },
+  "response": {
+    "userAttributes": {
+      "email": "jane@example.com",
+      "email_verified": "true"
+    },
+    "finalUserStatus": "CONFIRMED",
+    "messageAction": "SUPPRESS",
+    "desiredDeliveryMediums": [ "EMAIL" ]
+  }
+}

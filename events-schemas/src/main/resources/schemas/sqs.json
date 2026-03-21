@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SqsEvent",
+  "type": "object",
+  "properties": {
+    "Records": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/SqsMessage"
+      }
+    }
+  },
+  "required": [ "Records" ],
+  "additionalProperties": false,
+  "definitions": {
+    "SqsMessage": {
+      "type": "object",
+      "properties": {
+        "messageId": {
+          "type": "string"
+        },
+        "receiptHandle": {
+          "type": "string"
+        },
+        "body": {
+          "type": "string"
+        },
+        "attributes": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "messageAttributes": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/MessageAttribute"
+          }
+        },
+        "md5OfBody": {
+          "type": "string"
+        },
+        "md5OfMessageAttributes": {
+          "type": "string"
+        },
+        "eventSource": {
+          "type": "string"
+        },
+        "eventSourceARN": {
+          "type": "string"
+        },
+        "awsRegion": {
+          "type": "string"
+        }
+      },
+      "required": [ "messageId", "body", "eventSource", "eventSourceARN", "awsRegion" ],
+      "additionalProperties": false
+    },
+    "MessageAttribute": {
+      "type": "object",
+      "properties": {
+        "stringValue": {
+          "type": "string"
+        },
+        "binaryValue": {
+          "type": "string",
+          "contentEncoding": "base64",
+          "existingJavaType": "java.nio.ByteBuffer"
+        },
+        "stringListValues": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "binaryListValues": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "existingJavaType": "java.nio.ByteBuffer"
+          }
+        },
+        "dataType": {
+          "type": "string"
+        }
+      },
+      "required": [ "dataType" ],
+      "additionalProperties": false
+    }
+  }
+}

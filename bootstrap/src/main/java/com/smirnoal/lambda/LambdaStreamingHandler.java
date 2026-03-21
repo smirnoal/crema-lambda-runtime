@@ -1,5 +1,6 @@
 package com.smirnoal.lambda;
 
+import com.smirnoal.lambda.serde.LambdaSerde;
 import com.smirnoal.lambda.stream.ResponseStream;
 import com.smirnoal.lambda.stream.StreamOnlyHandler;
 import com.smirnoal.lambda.stream.StreamingFunction;
@@ -21,6 +22,17 @@ public class LambdaStreamingHandler<T> {
     public LambdaStreamingHandler<T> withInputTypeDeserializer(Function<byte[], T> func) {
         this.inputDeserializer = func;
         return this;
+    }
+
+    /**
+     * Configure the input deserializer using an existing {@link LambdaSerde}.
+     * The output serializer is ignored since streaming handlers write directly to the response stream.
+     */
+    public LambdaStreamingHandler<T> withLambdaSerde(LambdaSerde<T, ?> serde) {
+        if (serde == null) {
+            throw new IllegalArgumentException("serde must not be null");
+        }
+        return withInputTypeDeserializer(serde.inputDeserializer());
     }
 
     public LambdaStreamingHandler<T> withHandler(StreamingFunction<T> handler) {

@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ConfigEvent",
+  "type": "object",
+  "properties": {
+    "invokingEvent": {
+      "type": "string"
+    },
+    "ruleParameters": {
+      "type": "string"
+    },
+    "resultToken": {
+      "type": "string"
+    },
+    "eventLeftScope": {
+      "type": "boolean"
+    },
+    "executionRoleArn": {
+      "type": "string"
+    },
+    "configRuleArn": {
+      "type": "string"
+    },
+    "configRuleName": {
+      "type": "string"
+    },
+    "configRuleId": {
+      "type": "string"
+    },
+    "accountId": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

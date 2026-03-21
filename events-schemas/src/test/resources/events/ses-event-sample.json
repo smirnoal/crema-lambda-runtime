@@ -1,0 +1,58 @@
+{
+  "Records": [ {
+    "eventSource": "aws:ses",
+    "eventVersion": "1.0",
+    "ses": {
+      "mail": {
+        "timestamp": "2019-08-05T21:30:02.028Z",
+        "source": "sender@example.com",
+        "messageId": "EXAMPLE7c191be45-e9aedb9a-02f9-4d12-a87d-dd0099a07f8a-000000",
+        "destination": [ "recipient@example.com" ],
+        "headersTruncated": false,
+        "headers": [ {
+          "name": "From",
+          "value": "sender@example.com"
+        }, {
+          "name": "To",
+          "value": "recipient@example.com"
+        }, {
+          "name": "Subject",
+          "value": "Test email"
+        } ],
+        "commonHeaders": {
+          "returnPath": "sender@example.com",
+          "from": [ "sender@example.com" ],
+          "date": "Mon, 5 Aug 2019 21:29:57 +0000",
+          "to": [ "recipient@example.com" ],
+          "messageId": "<test@example.com>",
+          "subject": "Test email"
+        }
+      },
+      "receipt": {
+        "timestamp": "2019-08-05T21:30:02.028Z",
+        "processingTimeMillis": 1205,
+        "recipients": [ "recipient@example.com" ],
+        "spamVerdict": {
+          "status": "PASS"
+        },
+        "virusVerdict": {
+          "status": "PASS"
+        },
+        "spfVerdict": {
+          "status": "PASS"
+        },
+        "dkimVerdict": {
+          "status": "PASS"
+        },
+        "dmarcVerdict": {
+          "status": "GRAY"
+        },
+        "action": {
+          "type": "Lambda",
+          "functionArn": "arn:aws:lambda:us-east-1:123456789012:function:IncomingEmail",
+          "invocationType": "Event"
+        }
+      }
+    }
+  } ]
+}

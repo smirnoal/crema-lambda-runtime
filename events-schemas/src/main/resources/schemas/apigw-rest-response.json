@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ApiGatewayProxyResponseEvent",
+  "type": "object",
+  "properties": {
+    "statusCode": {
+      "type": "integer"
+    },
+    "headers": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "multiValueHeaders": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "body": {
+      "type": "string"
+    },
+    "isBase64Encoded": {
+      "type": "boolean"
+    }
+  },
+  "required": [ "statusCode" ],
+  "additionalProperties": false
+}

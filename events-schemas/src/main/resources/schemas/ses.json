@@ -1,0 +1,173 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SesEvent",
+  "type": "object",
+  "properties": {
+    "Records": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/SesRecord"
+      }
+    }
+  },
+  "required": [ "Records" ],
+  "additionalProperties": false,
+  "definitions": {
+    "SesRecord": {
+      "type": "object",
+      "properties": {
+        "eventSource": {
+          "type": "string"
+        },
+        "eventVersion": {
+          "type": "string"
+        },
+        "ses": {
+          "$ref": "#/definitions/Ses"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Ses": {
+      "type": "object",
+      "properties": {
+        "mail": {
+          "$ref": "#/definitions/Mail"
+        },
+        "receipt": {
+          "$ref": "#/definitions/Receipt"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Mail": {
+      "type": "object",
+      "properties": {
+        "timestamp": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "messageId": {
+          "type": "string"
+        },
+        "destination": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "headersTruncated": {
+          "type": "boolean"
+        },
+        "headers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Header"
+          }
+        },
+        "commonHeaders": {
+          "type": "object",
+          "properties": {
+            "returnPath": {
+              "type": "string"
+            },
+            "from": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "date": {
+              "type": "string"
+            },
+            "to": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "messageId": {
+              "type": "string"
+            },
+            "subject": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "Header": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Receipt": {
+      "type": "object",
+      "properties": {
+        "timestamp": {
+          "type": "string"
+        },
+        "processingTimeMillis": {
+          "type": "integer"
+        },
+        "recipients": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "spamVerdict": {
+          "$ref": "#/definitions/Verdict"
+        },
+        "virusVerdict": {
+          "$ref": "#/definitions/Verdict"
+        },
+        "spfVerdict": {
+          "$ref": "#/definitions/Verdict"
+        },
+        "dkimVerdict": {
+          "$ref": "#/definitions/Verdict"
+        },
+        "dmarcVerdict": {
+          "$ref": "#/definitions/Verdict"
+        },
+        "action": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "functionArn": {
+              "type": "string"
+            },
+            "invocationType": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "Verdict": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
