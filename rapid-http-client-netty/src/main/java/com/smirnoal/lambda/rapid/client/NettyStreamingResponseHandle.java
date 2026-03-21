@@ -1,5 +1,7 @@
 package com.smirnoal.lambda.rapid.client;
 
+import com.smirnoal.lambda.log.RicLog;
+import com.smirnoal.lambda.log.RicLog.RicLogger;
 import com.smirnoal.lambda.rapid.client.dto.ErrorRequest;
 import com.smirnoal.lambda.rapid.client.serde.JsonSerializer;
 import io.netty.buffer.Unpooled;
@@ -20,6 +22,8 @@ import static java.net.HttpURLConnection.HTTP_ACCEPTED;
 import static java.net.HttpURLConnection.HTTP_OK;
 
 final class NettyStreamingResponseHandle implements StreamingResponseHandle {
+
+    private static final RicLogger log = RicLog.getLogger("streaming");
 
     private static final int STREAMING_RESPONSE_TIMEOUT_SECONDS = (int) REQUEST_TIMEOUT.toSeconds();
 
@@ -45,6 +49,7 @@ final class NettyStreamingResponseHandle implements StreamingResponseHandle {
             FullHttpResponse response = future.get(STREAMING_RESPONSE_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             try {
                 int code = response.status().code();
+                log.log(() -> "waitFor202 status=" + code);
                 if (code != HTTP_ACCEPTED && code != HTTP_OK) {
                     throw new LambdaRapidClientException("Streaming response failed: " + code, code);
                 }
@@ -65,6 +70,7 @@ final class NettyStreamingResponseHandle implements StreamingResponseHandle {
     public void complete() throws IOException {
         if (finished) return;
         finished = true;
+        log.log("complete() sending empty last content");
         channel.writeAndFlush(DefaultLastHttpContent.EMPTY_LAST_CONTENT);
         waitFor202();
     }
@@ -75,6 +81,7 @@ final class NettyStreamingResponseHandle implements StreamingResponseHandle {
         finished = true;
 
         ErrorRequest req = error.errorRequest();
+        log.log(() -> "fail() sending error trailers errorType=" + (req.errorType() != null ? req.errorType() : "java.lang.Throwable"));
         String errorType = req.errorType() != null ? req.errorType() : "java.lang.Throwable";
         byte[] errorBodyJson = JsonSerializer.serialize(req);
         String errorBodyBase64 = Base64.getEncoder().encodeToString(errorBodyJson);

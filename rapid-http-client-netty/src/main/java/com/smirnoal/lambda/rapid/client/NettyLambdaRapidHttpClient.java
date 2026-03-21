@@ -1,5 +1,7 @@
 package com.smirnoal.lambda.rapid.client;
 
+import com.smirnoal.lambda.log.RicLog;
+import com.smirnoal.lambda.log.RicLog.RicLogger;
 import com.smirnoal.lambda.rapid.client.dto.InvocationRequest;
 import com.smirnoal.lambda.rapid.client.serde.JsonSerializer;
 import io.netty.bootstrap.Bootstrap;
@@ -38,6 +40,8 @@ import static java.net.HttpURLConnection.HTTP_ACCEPTED;
 import static java.net.HttpURLConnection.HTTP_OK;
 
 final class NettyLambdaRapidHttpClient implements LambdaRapidHttpClient {
+
+    private static final RicLogger log = RicLog.getLogger("client");
 
     static final String USER_AGENT =
             "com-smirnoal-netty/%s".formatted(System.getProperty("java.vendor.version"));
@@ -80,8 +84,10 @@ final class NettyLambdaRapidHttpClient implements LambdaRapidHttpClient {
     private Channel getChannel() {
         if (channel == null || !channel.isActive()) {
             try {
+                log.log(() -> "connecting to " + runtimeApiHost);
                 ChannelFuture future = bootstrap.connect(host, port);
                 channel = future.sync().channel();
+                log.log("connected");
             } catch (Exception e) {
                 throw new LambdaRapidClientException("Failed to connect to " + runtimeApiHost, e);
             }
@@ -119,9 +125,11 @@ final class NettyLambdaRapidHttpClient implements LambdaRapidHttpClient {
     @Override
     public InvocationRequest next() {
         String path = invocationPathPrefix + "next";
+        log.log(() -> "next() GET " + path);
         HttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, path);
 
         FullHttpResponse response = execute(request);
+        log.log(() -> "next() response status=" + response.status().code() + " contentLen=" + response.content().readableBytes());
         try {
             if (response.status().code() != HTTP_OK) {
                 throw new LambdaRapidClientException(path, response.status().code());
@@ -159,12 +167,15 @@ final class NettyLambdaRapidHttpClient implements LambdaRapidHttpClient {
     @Override
     public void reportInvocationSuccess(String requestId, byte[] response) {
         String path = invocationPathPrefix + requestId + "/response";
+        int len = response != null ? response.length : 0;
+        log.log(() -> "reportInvocationSuccess POST " + path + " bodyLen=" + len);
         DefaultFullHttpRequest request = new DefaultFullHttpRequest(
                 HttpVersion.HTTP_1_1, HttpMethod.POST, path,
                 Unpooled.wrappedBuffer(response != null ? response : new byte[0]));
         request.headers().set(HttpHeaderNames.CONTENT_LENGTH, request.content().readableBytes());
 
         FullHttpResponse resp = execute(request);
+        log.log(() -> "reportInvocationSuccess response status=" + resp.status().code());
         resp.release();
         if (resp.status().code() != HTTP_OK && resp.status().code() != HTTP_ACCEPTED) {
             throw new LambdaRapidClientException(path, resp.status().code());
@@ -199,6 +210,7 @@ final class NettyLambdaRapidHttpClient implements LambdaRapidHttpClient {
     @Override
     public StreamingResponseHandle startStreamingResponse(String requestId) {
         String path = invocationPathPrefix + requestId + "/response";
+        RicLog.getLogger("streaming").log(() -> "startStreamingResponse POST " + path + " (chunked)");
         Channel ch = getChannel();
 
         HttpHeaders headers = new DefaultHttpHeaders()

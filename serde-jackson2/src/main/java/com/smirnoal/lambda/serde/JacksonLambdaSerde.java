@@ -1,5 +1,6 @@
 package com.smirnoal.lambda.serde;
 
+import com.smirnoal.lambda.log.RicLog;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
@@ -91,6 +92,8 @@ public final class JacksonLambdaSerde {
     }
 
     private static final class JacksonLambdaSerdeImpl<T, R> implements LambdaSerde<T, R> {
+        private static final RicLog.RicLogger log = RicLog.getLogger("serde");
+
         private final ObjectMapper mapper;
         private final JavaType inputType;
         private final JavaType outputType;
@@ -114,6 +117,8 @@ public final class JacksonLambdaSerde {
                 try {
                     return mapper.readValue(bytes, inputType);
                 } catch (Exception e) {
+                    int len = bytes.length;
+                    log.log(() -> "Failed to deserialize " + inputType.getTypeName() + " inputLen=" + len + ": " + e.getMessage());
                     throw new SerdeException("Failed to deserialize input", e);
                 }
             };
@@ -131,6 +136,7 @@ public final class JacksonLambdaSerde {
                 try {
                     return mapper.writeValueAsBytes(obj);
                 } catch (Exception e) {
+                    log.log(() -> "Failed to serialize " + outputType.getTypeName() + ": " + e.getMessage());
                     throw new SerdeException("Failed to serialize output", e);
                 }
             };
