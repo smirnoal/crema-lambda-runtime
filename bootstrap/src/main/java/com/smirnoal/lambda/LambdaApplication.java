@@ -39,7 +39,7 @@ public class LambdaApplication {
                 .map(p -> p.create(host))
                 .orElseThrow(() -> new IllegalStateException(
                         "No LambdaRapidHttpClientProvider found on classpath"));
-        log.log(() -> "Runtime API client: " + runtimeApiClient.getClass().getName());
+        log.message(() -> "Runtime API client: " + runtimeApiClient.getClass().getName());
         TelemetryLogRedirection.setupIfAvailable();
     }
 
@@ -54,24 +54,23 @@ public class LambdaApplication {
             runSnapStartHooks();
         }
         while (true) {
-            log.log("polling next()");
+            log.message("polling next()");
             InvocationRequest request = runtimeApiClient.next();
-            log.log(() -> "got request id=" + request.id() + " contentLen=" + (request.content() != null ? request.content().length : 0));
+            log.message(() -> "got request id=" + request.id() + " contentLen=" + (request.content() != null ? request.content().length : 0));
             setXrayTraceId(request.xrayTraceId());
             InvocationContext ctx = new InvocationContext(request);
             Lambda.setCurrentContext(ctx);
 
             try {
-                log.log("handler processing");
+                log.message("handler processing");
                 T inputEvent = lambdaHandler.toInputType(request.content());
                 R result = lambdaHandler.handle(inputEvent);
                 byte[] bytes = lambdaHandler.toBytes(result);
-                log.log(() -> "reportInvocationSuccess len=" + (bytes != null ? bytes.length : 0));
+                log.message(() -> "reportInvocationSuccess len=" + (bytes != null ? bytes.length : 0));
                 runtimeApiClient.reportInvocationSuccess(request.id(), bytes);
-                log.log("done");
+                log.message("done");
             } catch (Throwable t) {
-                log.log(() -> "handler threw: " + t.getClass().getSimpleName() + ": " + t.getMessage()
-                        + (t.getCause() != null ? " | cause: " + t.getCause().getClass().getSimpleName() + ": " + t.getCause().getMessage() : ""));
+                log.exception("handler threw", t);
                 ErrorRequest errorRequest = ErrorRequestConverter.fromThrowable(t);
                 XRayErrorCause xRayErrorCause = XRayErrorCauseConverter.fromThrowable(t);
                 LambdaError lambdaError = new LambdaError(errorRequest, xRayErrorCause);
@@ -87,26 +86,25 @@ public class LambdaApplication {
             runSnapStartHooks();
         }
         while (true) {
-            log.log("streaming polling next()");
+            log.message("streaming polling next()");
             InvocationRequest request = runtimeApiClient.next();
-            log.log(() -> "streaming got request id=" + request.id() + " contentLen=" + (request.content() != null ? request.content().length : 0));
+            log.message(() -> "streaming got request id=" + request.id() + " contentLen=" + (request.content() != null ? request.content().length : 0));
             setXrayTraceId(request.xrayTraceId());
             InvocationContext ctx = new InvocationContext(request);
             Lambda.setCurrentContext(ctx);
 
-            log.log("streaming startStreamingResponse");
+            log.message("streaming startStreamingResponse");
             StreamingResponseHandle handle =
                     runtimeApiClient.startStreamingResponse(request.id());
             try {
-                log.log("streaming handler processing");
+                log.message("streaming handler processing");
                 T inputEvent = streamingHandler.toInputType(request.content());
                 streamingHandler.handle(inputEvent, handle.responseStream());
-                log.log("streaming handle.complete()");
+                log.message("streaming handle.complete()");
                 handle.complete();
-                log.log("streaming done");
+                log.message("streaming done");
             } catch (Throwable t) {
-                log.log(() -> "streaming handler threw: " + t.getClass().getSimpleName() + ": " + t.getMessage()
-                        + (t.getCause() != null ? " | cause: " + t.getCause().getClass().getSimpleName() + ": " + t.getCause().getMessage() : ""));
+                log.exception("streaming handler threw", t);
                 ErrorRequest errorRequest = ErrorRequestConverter.fromThrowable(t);
                 XRayErrorCause xRayErrorCause = XRayErrorCauseConverter.fromThrowable(t);
                 try {

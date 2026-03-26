@@ -2,7 +2,7 @@ package com.smirnoal.lambda.log;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -10,9 +10,13 @@ import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static com.smirnoal.lambda.LambdaTestUtils.withFormattingSink;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FramedTelemetryFormatTest {
+
+    @TempDir
+    Path tempDir;
 
     private Path tempFile;
     private FramedTelemetryLogSink sink;
@@ -20,17 +24,10 @@ class FramedTelemetryFormatTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        tempFile = Files.createTempFile("telemetry-test", ".log");
+        tempFile = Files.createTempFile(tempDir, "telemetry-test", ".log");
         FileOutputStream fileOutputStream = new FileOutputStream(tempFile.toFile());
         testFd = fileOutputStream.getFD();
         sink = new FramedTelemetryLogSink(testFd);
-    }
-
-    @AfterEach
-    void tearDown() throws Exception {
-        if (tempFile != null) {
-            Files.deleteIfExists(tempFile);
-        }
     }
 
     @Test
@@ -118,39 +115,37 @@ class FramedTelemetryFormatTest {
     }
 
     @Test
-    void testPrintStreamProducesOneFramePerPrintln() throws IOException {
-        Path printStreamFile = Files.createTempFile("telemetry-ps-test", ".log");
-        try (FileOutputStream fos = new FileOutputStream(printStreamFile.toFile())) {
-            FramedTelemetryLogSink psSink = new FramedTelemetryLogSink(fos.getFD());
-            try (FramedTelemetryPrintStream ps = new FramedTelemetryPrintStream(psSink)) {
+    void testPrintStreamProducesOneFramePerPrintln() throws Exception {
+        Path printStreamFile = Files.createTempFile(tempDir, "telemetry-ps-test", ".log");
+        withFormattingSink(printStreamFile, sink -> {
+            try (FramedTelemetryPrintStream ps = new FramedTelemetryPrintStream(sink)) {
                 ps.println("first line");
                 ps.println("second line");
             }
+        });
 
-            byte[] output = Files.readAllBytes(printStreamFile);
-            ByteBuffer buffer = ByteBuffer.wrap(output).order(ByteOrder.BIG_ENDIAN);
+        byte[] output = Files.readAllBytes(printStreamFile);
+        ByteBuffer buffer = ByteBuffer.wrap(output).order(ByteOrder.BIG_ENDIAN);
 
-            // First frame
-            assertEquals(0xa55a0003, buffer.getInt());
-            int len1 = buffer.getInt();
-            assertEquals("first line\n".getBytes().length, len1);
-            buffer.getLong(); // timestamp
-            byte[] msg1 = new byte[len1];
-            buffer.get(msg1);
-            assertArrayEquals("first line\n".getBytes(), msg1);
+        // First frame: timestamp\trequestId\tUNDEFINED\tfirst line\n
+        assertEquals(0xa55a0003, buffer.getInt());
+        int len1 = buffer.getInt();
+        buffer.getLong(); // timestamp
+        byte[] msg1 = new byte[len1];
+        buffer.get(msg1);
+        String s1 = new String(msg1);
+        assertTrue(s1.endsWith("\tUNDEFINED\tfirst line\n"), "Expected ...UNDEFINED\tfirst line\\n, got: " + s1);
+        assertTrue(s1.matches("[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z\t.*\tUNDEFINED\tfirst line\n"), s1);
 
-            // Second frame
-            assertEquals(0xa55a0003, buffer.getInt());
-            int len2 = buffer.getInt();
-            assertEquals("second line\n".getBytes().length, len2);
-            buffer.getLong(); // timestamp
-            byte[] msg2 = new byte[len2];
-            buffer.get(msg2);
-            assertArrayEquals("second line\n".getBytes(), msg2);
+        // Second frame: timestamp\trequestId\tUNDEFINED\tsecond line\n
+        assertEquals(0xa55a0003, buffer.getInt());
+        int len2 = buffer.getInt();
+        buffer.getLong(); // timestamp
+        byte[] msg2 = new byte[len2];
+        buffer.get(msg2);
+        String s2 = new String(msg2);
+        assertTrue(s2.endsWith("\tUNDEFINED\tsecond line\n"), "Expected ...UNDEFINED\tsecond line\\n, got: " + s2);
 
-            assertFalse(buffer.hasRemaining(), "No extra bytes beyond the two frames");
-        } finally {
-            Files.deleteIfExists(printStreamFile);
-        }
+        assertFalse(buffer.hasRemaining(), "No extra bytes beyond the two frames");
     }
 } 

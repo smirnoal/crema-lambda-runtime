@@ -49,7 +49,7 @@ final class NettyStreamingResponseHandle implements StreamingResponseHandle {
             FullHttpResponse response = future.get(STREAMING_RESPONSE_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             try {
                 int code = response.status().code();
-                log.log(() -> "waitFor202 status=" + code);
+                log.message(() -> "waitFor202 status=" + code);
                 if (code != HTTP_ACCEPTED && code != HTTP_OK) {
                     throw new LambdaRapidClientException("Streaming response failed: " + code, code);
                 }
@@ -70,7 +70,7 @@ final class NettyStreamingResponseHandle implements StreamingResponseHandle {
     public void complete() throws IOException {
         if (finished) return;
         finished = true;
-        log.log("complete() sending empty last content");
+        log.message("complete() sending empty last content");
         channel.writeAndFlush(DefaultLastHttpContent.EMPTY_LAST_CONTENT);
         waitFor202();
     }
@@ -81,7 +81,7 @@ final class NettyStreamingResponseHandle implements StreamingResponseHandle {
         finished = true;
 
         ErrorRequest req = error.errorRequest();
-        log.log(() -> "fail() sending error trailers errorType=" + (req.errorType() != null ? req.errorType() : "java.lang.Throwable"));
+        log.message(() -> "fail() sending error trailers errorType=" + (req.errorType() != null ? req.errorType() : "java.lang.Throwable"));
         String errorType = req.errorType() != null ? req.errorType() : "java.lang.Throwable";
         byte[] errorBodyJson = JsonSerializer.serialize(req);
         String errorBodyBase64 = Base64.getEncoder().encodeToString(errorBodyJson);

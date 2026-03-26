@@ -1,5 +1,7 @@
 package com.smirnoal.lambda.log;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
@@ -55,16 +57,49 @@ public final class RicLog {
             return Holder.ENABLED.contains(name);
         }
 
-        public void log(String message) {
+        public void message(String message) {
             if (Holder.ENABLED.contains(name)) {
                 System.err.println("[smirnoal-ric][" + name + "] " + message);
             }
         }
 
-        public void log(Supplier<String> messageSupplier) {
+        public void message(Supplier<String> messageSupplier) {
             if (Holder.ENABLED.contains(name)) {
                 System.err.println("[smirnoal-ric][" + name + "] " + messageSupplier.get());
             }
+        }
+
+        /**
+         * Logs a message with an associated throwable. Formats the throwable with
+         * its message and stack trace. Only formats when the category is enabled.
+         */
+        public void exception(String message, Throwable throwable) {
+            if (Holder.ENABLED.contains(name)) {
+                String formatted = formatThrowable(message, throwable);
+                System.err.println("[smirnoal-ric][" + name + "] " + formatted);
+            }
+        }
+
+        /**
+         * Logs a throwable with its message and stack trace.
+         */
+        public void exception(Throwable throwable) {
+            if (Holder.ENABLED.contains(name)) {
+                String formatted = formatThrowable(null, throwable);
+                System.err.println("[smirnoal-ric][" + name + "] " + formatted);
+            }
+        }
+
+        private static String formatThrowable(String message, Throwable throwable) {
+            StringWriter sw = new StringWriter();
+            if (message != null && !message.isEmpty()) {
+                sw.write(message);
+                sw.write("\n");
+            }
+            if (throwable != null) {
+                throwable.printStackTrace(new PrintWriter(sw));
+            }
+            return sw.toString().trim();
         }
     }
 }

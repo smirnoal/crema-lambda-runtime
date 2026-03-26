@@ -6,20 +6,19 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * A PrintStream that writes each complete message as a single framed telemetry entry.
- * This avoids the buffering issues of wrapping an OutputStream in PrintStream,
- * which can merge multiple log lines into one frame or split a single line across frames.
+ * Uses FormattingLogSink to apply JSON/TEXT formatting and level filtering.
  */
 public class FramedTelemetryPrintStream extends PrintStream {
-    private final FramedTelemetryLogSink sink;
+    private final FormattingLogSink formatSink;
 
-    public FramedTelemetryPrintStream(FramedTelemetryLogSink sink) {
+    public FramedTelemetryPrintStream(FormattingLogSink formatSink) {
         super(OutputStream.nullOutputStream(), false, StandardCharsets.UTF_8);
-        this.sink = sink;
+        this.formatSink = formatSink;
     }
 
     @Override
     public void println(String x) {
-        sink.log((x != null ? x + "\n" : "null\n").getBytes(StandardCharsets.UTF_8));
+        formatSink.log(LogLevel.UNDEFINED, x != null ? x : "null", null, null);
     }
 
     @Override
@@ -29,7 +28,7 @@ public class FramedTelemetryPrintStream extends PrintStream {
 
     @Override
     public void println() {
-        sink.log("\n".getBytes(StandardCharsets.UTF_8));
+        formatSink.log(LogLevel.UNDEFINED, "", null, null);
     }
 
     @Override
@@ -69,7 +68,7 @@ public class FramedTelemetryPrintStream extends PrintStream {
 
     @Override
     public void print(String s) {
-        sink.log((s != null ? s : "null").getBytes(StandardCharsets.UTF_8));
+        formatSink.log(LogLevel.UNDEFINED, s != null ? s : "null", null, null);
     }
 
     @Override
@@ -116,17 +115,17 @@ public class FramedTelemetryPrintStream extends PrintStream {
     public void write(byte[] buf, int off, int len) {
         byte[] slice = new byte[len];
         System.arraycopy(buf, off, slice, 0, len);
-        sink.log(slice);
+        formatSink.logRaw(slice);
     }
 
     @Override
     public void write(int b) {
-        sink.log(new byte[]{(byte) b});
+        formatSink.logRaw(new byte[]{(byte) b});
     }
 
     @Override
     public void write(byte[] buf) {
-        sink.log(buf);
+        formatSink.logRaw(buf != null ? buf : new byte[0]);
     }
 
     @Override

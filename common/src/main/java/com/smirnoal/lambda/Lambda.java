@@ -1,5 +1,7 @@
 package com.smirnoal.lambda;
 
+import com.smirnoal.lambda.log.LambdaLogger;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +30,8 @@ public final class Lambda {
         public static final String AWS_LAMBDA_INITIALIZATION_TYPE = System.getenv("AWS_LAMBDA_INITIALIZATION_TYPE");
         public static final String AWS_LAMBDA_LOG_GROUP_NAME = System.getenv("AWS_LAMBDA_LOG_GROUP_NAME");
         public static final String AWS_LAMBDA_LOG_STREAM_NAME = System.getenv("AWS_LAMBDA_LOG_STREAM_NAME");
+        public static final String AWS_LAMBDA_LOG_FORMAT = getEnvOrDefault("AWS_LAMBDA_LOG_FORMAT", "TEXT");
+        public static final String AWS_LAMBDA_LOG_LEVEL = getEnvOrDefault("AWS_LAMBDA_LOG_LEVEL", "UNDEFINED");
         public static final String AWS_ACCESS_KEY = System.getenv("AWS_ACCESS_KEY");
         public static final String AWS_ACCESS_KEY_ID = System.getenv("AWS_ACCESS_KEY_ID");
         public static final String AWS_SECRET_ACCESS_KEY = System.getenv("AWS_SECRET_ACCESS_KEY");
@@ -35,6 +39,11 @@ public final class Lambda {
         public static final String AWS_LAMBDA_RUNTIME_API = System.getenv("AWS_LAMBDA_RUNTIME_API");
         public static final String LAMBDA_TASK_ROOT = System.getenv("LAMBDA_TASK_ROOT");
         public static final String LAMBDA_RUNTIME_DIR = System.getenv("LAMBDA_RUNTIME_DIR");
+    }
+
+    private static String getEnvOrDefault(String name, String defaultValue) {
+        String v = System.getenv(name);
+        return (v != null && !v.isBlank()) ? v : defaultValue;
     }
 
     public static final class SnapStart {
@@ -66,13 +75,14 @@ public final class Lambda {
         public static final String INITIALIZATION_TYPE_SNAP_START = "snap-start";
         public static final String ERROR_TYPE_BEFORE_SNAPSHOT = "Runtime.BeforeSnapshotError";
         public static final String ERROR_TYPE_AFTER_RESTORE = "Runtime.AfterRestoreError";
+        public static final String AWS_LAMBDA_LOG_FORMAT_JSON = "JSON";
     }
 
     private static volatile InvocationContext currentContext;
 
     /**
      * Returns the invocation context for the current invocation, or null when
-     * called outside of a handler (e.g. during initialization).
+     * called outside a handler (e.g. during initialization).
      */
     public static InvocationContext context() {
         return currentContext;
@@ -80,5 +90,15 @@ public final class Lambda {
 
     static void setCurrentContext(InvocationContext context) {
         currentContext = context;
+    }
+
+    /**
+     * Returns the Lambda logger. Use {@code info()}, {@code debug()}, etc. to
+     * log with levels. Output format is text or JSON depending on
+     * AWS_LAMBDA_LOG_FORMAT; AWS_LAMBDA_LOG_LEVEL controls minimum level when
+     * configured via LoggingConfig.
+     */
+    public static LambdaLogger logger() {
+        return LambdaLogger.instance();
     }
 }

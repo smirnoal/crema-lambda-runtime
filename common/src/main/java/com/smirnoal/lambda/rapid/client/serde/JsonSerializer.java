@@ -1,7 +1,7 @@
 package com.smirnoal.lambda.rapid.client.serde;
 
+import com.smirnoal.lambda.json.JsonText;
 import com.smirnoal.lambda.rapid.client.dto.ErrorRequest;
-import com.smirnoal.lambda.serde.JsonEscape;
 import com.smirnoal.lambda.rapid.client.dto.StackElement;
 import com.smirnoal.lambda.rapid.client.dto.XRayErrorCause;
 import com.smirnoal.lambda.rapid.client.dto.XRayException;
@@ -24,12 +24,14 @@ public class JsonSerializer {
         json.append("{");
         
         if (errorRequest.errorMessage() != null) {
-            json.append("\"errorMessage\":").append(JsonEscape.escape(errorRequest.errorMessage()));
+            json.append("\"errorMessage\":");
+            JsonText.appendJsonString(errorRequest.errorMessage(), json);
         }
         
         if (errorRequest.errorType() != null) {
             if (json.length() > 1) json.append(",");
-            json.append("\"errorType\":").append(JsonEscape.escape(errorRequest.errorType()));
+            json.append("\"errorType\":");
+            JsonText.appendJsonString(errorRequest.errorType(), json);
         }
         
         if (errorRequest.stackTrace() != null) {
@@ -38,7 +40,7 @@ public class JsonSerializer {
             String[] stackTrace = errorRequest.stackTrace();
             for (int i = 0; i < stackTrace.length; i++) {
                 if (i > 0) json.append(",");
-                json.append(JsonEscape.escape(stackTrace[i]));
+                JsonText.appendJsonString(stackTrace[i], json);
             }
             json.append("]");
         }
@@ -55,7 +57,8 @@ public class JsonSerializer {
         json.append("{");
         
         if (xRayErrorCause.workingDirectory() != null) {
-            json.append("\"working_directory\":").append(JsonEscape.escape(xRayErrorCause.workingDirectory()));
+            json.append("\"working_directory\":");
+            JsonText.appendJsonString(xRayErrorCause.workingDirectory(), json);
         }
         
         if (xRayErrorCause.exceptions() != null) {
@@ -78,7 +81,7 @@ public class JsonSerializer {
             boolean first = true;
             for (String path : paths) {
                 if (!first) json.append(",");
-                json.append(JsonEscape.escape(path));
+                JsonText.appendJsonString(path, json);
                 first = false;
             }
             json.append("]");
@@ -96,12 +99,14 @@ public class JsonSerializer {
         json.append("{");
         
         if (exception.message() != null) {
-            json.append("\"message\":").append(JsonEscape.escape(exception.message()));
+            json.append("\"message\":");
+            JsonText.appendJsonString(exception.message(), json);
         }
         
         if (exception.type() != null) {
             if (json.length() > 1) json.append(",");
-            json.append("\"type\":").append(JsonEscape.escape(exception.type()));
+            json.append("\"type\":");
+            JsonText.appendJsonString(exception.type(), json);
         }
         
         if (exception.stack() != null) {
@@ -129,12 +134,14 @@ public class JsonSerializer {
         json.append("{");
         
         if (element.label() != null) {
-            json.append("\"label\":").append(JsonEscape.escape(element.label()));
+            json.append("\"label\":");
+            JsonText.appendJsonString(element.label(), json);
         }
         
         if (element.path() != null) {
             if (json.length() > 1) json.append(",");
-            json.append("\"path\":").append(JsonEscape.escape(element.path()));
+            json.append("\"path\":");
+            JsonText.appendJsonString(element.path(), json);
         }
         
         if (json.length() > 1) json.append(",");

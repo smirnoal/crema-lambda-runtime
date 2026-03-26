@@ -9,6 +9,11 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.4'
 }
 
+test {
+    useJUnitPlatform()
+    environment 'SMIRNOAL_RIC_LOGS', 'riclog-enabled-test'
+}
+
 publishing {
     publications {
         common(MavenPublication) {

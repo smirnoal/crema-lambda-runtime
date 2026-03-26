@@ -117,8 +117,7 @@ public final class JacksonLambdaSerde {
                 try {
                     return mapper.readValue(bytes, inputType);
                 } catch (Exception e) {
-                    int len = bytes.length;
-                    log.log(() -> "Failed to deserialize " + inputType.getTypeName() + " inputLen=" + len + ": " + e.getMessage());
+                    log.exception("Failed to deserialize " + inputType.getTypeName() + " inputLen=" + bytes.length, e);
                     throw new SerdeException("Failed to deserialize input", e);
                 }
             };
@@ -136,7 +135,7 @@ public final class JacksonLambdaSerde {
                 try {
                     return mapper.writeValueAsBytes(obj);
                 } catch (Exception e) {
-                    log.log(() -> "Failed to serialize " + outputType.getTypeName() + ": " + e.getMessage());
+                    log.exception("Failed to serialize " + outputType.getTypeName(), e);
                     throw new SerdeException("Failed to serialize output", e);
                 }
             };

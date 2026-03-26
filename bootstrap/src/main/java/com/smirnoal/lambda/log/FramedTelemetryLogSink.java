@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.time.Instant;
 
-public class FramedTelemetryLogSink {
+public class FramedTelemetryLogSink implements ByteLogSink {
     private static final int HEADER_LENGTH = 16;
     private static final int FRAME_TYPE_LOG = 0xa55a0003;
     private final FileOutputStream logOutputStream;
@@ -18,6 +18,7 @@ public class FramedTelemetryLogSink {
         this.headerBuf = ByteBuffer.allocate(HEADER_LENGTH).order(ByteOrder.BIG_ENDIAN);
     }
 
+    @Override
     public synchronized void log(byte[] message) {
         try {
             updateHeader(message.length);

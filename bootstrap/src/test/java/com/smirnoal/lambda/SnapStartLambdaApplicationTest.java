@@ -32,7 +32,7 @@ class SnapStartLambdaApplicationTest {
 
     @BeforeEach
     void setup() throws Exception {
-        SnapStartTestUtils.setInitializationType(Constants.INITIALIZATION_TYPE_SNAP_START);
+        LambdaTestUtils.setInitializationType(Constants.INITIALIZATION_TYPE_SNAP_START);
     }
 
     @AfterEach
@@ -72,7 +72,7 @@ class SnapStartLambdaApplicationTest {
             throw new AssertionError("after restore hook should not run");
         });
 
-        SnapStartTestUtils.setInitializationType("on-demand");
+        LambdaTestUtils.setInitializationType("on-demand");
 
         AtomicInteger restoreNextCalls = new AtomicInteger(0);
         LambdaRapidHttpClient mock = new MockClient(

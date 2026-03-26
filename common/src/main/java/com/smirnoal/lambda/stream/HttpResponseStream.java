@@ -1,6 +1,6 @@
 package com.smirnoal.lambda.stream;
 
-import com.smirnoal.lambda.serde.JsonEscape;
+import com.smirnoal.lambda.json.JsonText;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -60,7 +60,9 @@ public final class HttpResponseStream {
             boolean first = true;
             for (Map.Entry<String, String> e : prelude.headers().entrySet()) {
                 if (!first) json.append(",");
-                json.append(JsonEscape.escape(e.getKey())).append(":").append(JsonEscape.escape(e.getValue()));
+                JsonText.appendJsonString(e.getKey(), json);
+                json.append(':');
+                JsonText.appendJsonString(e.getValue(), json);
                 first = false;
             }
             json.append("}");
@@ -69,7 +71,7 @@ public final class HttpResponseStream {
             json.append(",\"cookies\":[");
             for (int i = 0; i < prelude.cookies().size(); i++) {
                 if (i > 0) json.append(",");
-                json.append(JsonEscape.escape(prelude.cookies().get(i)));
+                JsonText.appendJsonString(prelude.cookies().get(i), json);
             }
             json.append("]");
         }
