@@ -28,6 +28,7 @@ exec /var/lang/bin/java \
   -XX:+TieredCompilation -XX:TieredStopAtLevel=1 \
   -XX:+UseSerialGC \
   -XX:+ErrorFileToStderr \
+  --add-opens=java.base/java.io=ALL-UNNAMED \
   --add-opens=java.base/java.net=ALL-UNNAMED \
   "$_HANDLER"
 
