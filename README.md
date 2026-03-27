@@ -2,17 +2,34 @@
 
 Custom AWS Lambda Runtime Interface Client for Java.
 
+## License
+
+This project is licensed under Elastic License 2.0 (`ELv2`). See `LICENSE`.
+
+In short:
+
+- Internal and self-hosted use is allowed, including commercial use.
+- You may not offer `smirnoal-ric` as a public managed runtime service
+  for third parties under ELv2.
+- If you want to offer that kind of public managed service, contact the
+  licensor for commercial terms.
+
+For details and examples, see `LICENSE-FAQ.md`. For commercial terms, see
+`COMMERCIAL-LICENSE.md`.
+
 ## Modules
 
-```
-Module                  | Description
-------------------------|---------------------------------------------
-common                  | Shared types and interfaces
-rapid-http-client-jdk   | Runtime API HTTP client (java.net.http)
-rapid-http-client-okhttp| Runtime API HTTP client (OkHttp)
-rapid-http-client-netty | Runtime API HTTP client (Netty, supports streaming)
-bootstrap               | Runtime bootstrap that wires everything together
-```
+| Module                   | Description                                                   |
+|--------------------------|---------------------------------------------------------------|
+| common                   | Shared types and interfaces used across runtime modules       |
+| events-schemas           | JSON Schemas for AWS Lambda event/response payloads           |
+| events-jackson2          | Jackson 2 event model classes and helper APIs                |
+| serde-jackson2           | Jackson 2 serializers/deserializers for runtime integration  |
+| serde-gson               | Gson serializers/deserializers for runtime integration       |
+| rapid-http-client-jdk    | Runtime API HTTP client (java.net.http)                      |
+| rapid-http-client-okhttp | Runtime API HTTP client (OkHttp)                             |
+| rapid-http-client-netty  | Runtime API HTTP client (Netty, supports streaming)          |
+| bootstrap                | Runtime bootstrap that wires everything together             |
 
 ## Build
 
