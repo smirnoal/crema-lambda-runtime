@@ -25,4 +25,10 @@ subprojects {
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
     }
+
+    // Some IDEs (notably Eclipse/VS Code Java) compile into ./bin by default.
+    // Keep `gradle clean` effective by deleting those outputs too.
+    tasks.named('clean') {
+        delete layout.projectDirectory.dir('bin')
+    }
 } 
