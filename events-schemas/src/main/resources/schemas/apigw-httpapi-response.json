@@ -7,19 +7,10 @@
       "type": "integer"
     },
     "headers": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "string"
-      }
+      "$ref": "#/definitions/ApiGatewayHttpApiResponseHeaders"
     },
     "multiValueHeaders": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "array",
-        "items": {
-          "type": "string"
-        }
-      }
+      "$ref": "#/definitions/ApiGatewayHttpApiMultiValueHeaders"
     },
     "cookies": {
       "type": "array",
@@ -35,5 +26,22 @@
     }
   },
   "required": [ "statusCode" ],
-  "additionalProperties": false
+  "additionalProperties": false,
+  "definitions": {
+    "ApiGatewayHttpApiResponseHeaders": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "ApiGatewayHttpApiMultiValueHeaders": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    }
+  }
 }

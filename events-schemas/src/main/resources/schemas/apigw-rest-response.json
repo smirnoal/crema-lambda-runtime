@@ -7,19 +7,10 @@
       "type": "integer"
     },
     "headers": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "string"
-      }
+      "$ref": "#/definitions/ApiGatewayProxyResponseHeaders"
     },
     "multiValueHeaders": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "array",
-        "items": {
-          "type": "string"
-        }
-      }
+      "$ref": "#/definitions/ApiGatewayProxyMultiValueHeaders"
     },
     "body": {
       "type": "string"
@@ -29,5 +20,22 @@
     }
   },
   "required": [ "statusCode" ],
-  "additionalProperties": false
+  "additionalProperties": false,
+  "definitions": {
+    "ApiGatewayProxyResponseHeaders": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "ApiGatewayProxyMultiValueHeaders": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    }
+  }
 }

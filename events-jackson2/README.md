@@ -2,6 +2,24 @@
 
 Jackson-backed POJOs and `EventsJacksonLambdaSerde` for AWS Lambda event types. Generates event classes from JSON schemas in `events-schemas` via jsonschema2pojo.
 
+## API Gateway Response Headers
+
+Generated API Gateway response events expose typed headers (`ApiGatewayProxyResponseHeaders` for REST and
+`ApiGatewayHttpApiResponseHeaders` for HTTP API). Use builder helpers for IDE-friendly construction when you see
+`setHeaders(...)` signatures:
+
+```java
+var restHeaders = ApiGatewayProxyResponseHeadersBuilder.create()
+        .contentTypeJsonUtf8()
+        .header("Cache-Control", "no-store")
+        .build();
+
+var httpApiHeaders = ApiGatewayHttpApiResponseHeadersBuilder.of(
+        "X-Request-Id", "abc-123");
+```
+
+Both builders also support `from(Map<String, String>)`, and fluent `contentTypeJsonUtf8()` on the builder instance.
+
 ## Adding Event Support
 
 When a new event type is added to `events-schemas`, a **serde test is required** in this module.
