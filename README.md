@@ -29,6 +29,7 @@ For details and examples, see `LICENSE-FAQ.md`. For commercial terms, see
 | rapid-http-client-jdk    | Runtime API HTTP client (java.net.http)                      |
 | rapid-http-client-okhttp | Runtime API HTTP client (OkHttp)                             |
 | rapid-http-client-netty  | Runtime API HTTP client (Netty, supports streaming)          |
+| rapid-http-client-hyper  | Runtime API HTTP client (Rust + JNI for `/next` and `/response`) |
 | bootstrap                | Runtime bootstrap that wires everything together             |
 
 ## Build

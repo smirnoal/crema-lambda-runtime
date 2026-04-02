@@ -71,6 +71,18 @@ class NettyLambdaRapidHttpClientTest {
     }
 
     @Test
+    void setContentType_isSentOnWire() throws Exception {
+        server.enqueue(NettyTestServer.TestResponse.of(202));
+        StreamingResponseHandle handle = client.startStreamingResponse("req-ct");
+        handle.responseStream().setContentType("text/event-stream");
+        handle.responseStream().write("data".getBytes());
+        handle.complete();
+
+        NettyTestServer.RecordedRequest req = server.takeRequest(5, TimeUnit.SECONDS);
+        assertEquals("text/event-stream", req.getHeader("Content-Type"));
+    }
+
+    @Test
     void startStreamingResponse_sendsChunkedRequestWithStreamingHeaders() throws Exception {
         String requestId = "req-456";
         server.enqueue(NettyTestServer.TestResponse.of(202));

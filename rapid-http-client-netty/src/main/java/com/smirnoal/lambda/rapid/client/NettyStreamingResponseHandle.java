@@ -32,9 +32,14 @@ final class NettyStreamingResponseHandle implements StreamingResponseHandle {
     private final Supplier<CompletableFuture<FullHttpResponse>> prepareResponseWait;
     private volatile boolean finished;
 
-    NettyStreamingResponseHandle(Channel channel, Supplier<CompletableFuture<FullHttpResponse>> prepareResponseWait) {
+    NettyStreamingResponseHandle(
+            Channel channel,
+            String path,
+            String host,
+            String userAgent,
+            Supplier<CompletableFuture<FullHttpResponse>> prepareResponseWait) {
         this.channel = channel;
-        this.responseStream = new NettyResponseStream(channel);
+        this.responseStream = new NettyResponseStream(channel, path, host, userAgent);
         this.prepareResponseWait = prepareResponseWait;
     }
 
@@ -71,6 +76,7 @@ final class NettyStreamingResponseHandle implements StreamingResponseHandle {
         if (finished) return;
         finished = true;
         log.message("complete() sending empty last content");
+        responseStream.ensureStarted();
         channel.writeAndFlush(DefaultLastHttpContent.EMPTY_LAST_CONTENT);
         waitFor202();
     }
@@ -85,6 +91,8 @@ final class NettyStreamingResponseHandle implements StreamingResponseHandle {
         String errorType = req.errorType() != null ? req.errorType() : "java.lang.Throwable";
         byte[] errorBodyJson = JsonSerializer.serialize(req);
         String errorBodyBase64 = Base64.getEncoder().encodeToString(errorBodyJson);
+
+        responseStream.ensureStarted();
 
         DefaultLastHttpContent lastContent = new DefaultLastHttpContent(Unpooled.EMPTY_BUFFER);
         lastContent.trailingHeaders()

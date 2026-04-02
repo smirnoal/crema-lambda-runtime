@@ -19,9 +19,10 @@
 
 
 
-# add all jars from /var/task/lib to the classpath
-CLASSPATH=$(printf '%s\n' /var/task/lib/* | sort | paste -sd ':')
-#CLASSPATH=$(ls -1 /var/task/lib/* | tr '\n' ':')
+# Add only application jars from /var/task/lib to the classpath.
+# Using *.jar avoids picking non-jar files (e.g. AppCDS archives) into classpath.
+CLASSPATH=$(printf '%s\n' /var/task/lib/*.jar | sort | paste -sd ':')
+#CLASSPATH=$(ls -1 /var/task/lib/*.jar | tr '\n' ':')
 CLASSPATH=/var/task:"$CLASSPATH"
 export CLASSPATH
 exec /var/lang/bin/java \

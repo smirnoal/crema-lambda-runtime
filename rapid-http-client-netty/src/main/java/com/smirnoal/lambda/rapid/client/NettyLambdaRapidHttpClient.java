@@ -17,8 +17,6 @@ import io.netty.channel.nio.NioIoHandler;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.DefaultFullHttpRequest;
-import io.netty.handler.codec.http.DefaultHttpHeaders;
-import io.netty.handler.codec.http.DefaultHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpHeaderNames;
@@ -213,18 +211,8 @@ final class NettyLambdaRapidHttpClient implements LambdaRapidHttpClient {
         RicLog.getLogger("streaming").message(() -> "startStreamingResponse POST " + path + " (chunked)");
         Channel ch = getChannel();
 
-        HttpHeaders headers = new DefaultHttpHeaders()
-                .set(HEADER_RESPONSE_MODE, VALUE_STREAMING)
-                .set(HttpHeaderNames.HOST, runtimeApiHost)
-                .set(HttpHeaderNames.USER_AGENT, USER_AGENT)
-                .set(HttpHeaderNames.TRANSFER_ENCODING, "chunked")
-                .set(HttpHeaderNames.CONTENT_TYPE, "application/octet-stream")
-                .set(HttpHeaderNames.TRAILER, TRAILER_ERROR_TYPE + ", " + TRAILER_ERROR_BODY);
-
-        DefaultHttpRequest request = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST, path, headers);
-        ch.writeAndFlush(request);
-
-        return new NettyStreamingResponseHandle(ch, responseHandler::prepareStreamingResponseWait);
+        return new NettyStreamingResponseHandle(
+                ch, path, runtimeApiHost, USER_AGENT, responseHandler::prepareStreamingResponseWait);
     }
 
     private void reportLambdaError(String path, LambdaError error) {
