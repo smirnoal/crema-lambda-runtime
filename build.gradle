@@ -3,7 +3,7 @@ plugins {
 }
 
 allprojects {
-    group = 'com.smirnoal'
+    group = 'com.smirnoal.crema'
     version = '1.0-SNAPSHOT'
     
     repositories {

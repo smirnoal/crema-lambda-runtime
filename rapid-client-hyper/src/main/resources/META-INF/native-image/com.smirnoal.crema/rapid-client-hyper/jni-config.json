@@ -1,0 +1,86 @@
+[
+  {
+    "name": "com.smirnoal.crema.rapid.client.HyperLambdaRapidHttpClient",
+    "methods": [
+      {
+        "name": "nativeCreate",
+        "parameterTypes": ["java.lang.String"]
+      },
+      {
+        "name": "nativeDestroy",
+        "parameterTypes": ["long"]
+      },
+      {
+        "name": "nativeNext",
+        "parameterTypes": ["long"]
+      },
+      {
+        "name": "nativeReportInvocationSuccess",
+        "parameterTypes": ["long", "java.lang.String", "byte[]"]
+      },
+      {
+        "name": "nativeStreamingStart",
+        "parameterTypes": ["long", "java.lang.String"]
+      },
+      {
+        "name": "nativeStreamingSetContentType",
+        "parameterTypes": ["long", "long", "java.lang.String"]
+      },
+      {
+        "name": "nativeStreamingWrite",
+        "parameterTypes": ["long", "long", "byte[]", "int", "int"]
+      },
+      {
+        "name": "nativeStreamingComplete",
+        "parameterTypes": ["long", "long"]
+      },
+      {
+        "name": "nativeStreamingFail",
+        "parameterTypes": ["long", "long", "java.lang.String", "java.lang.String"]
+      }
+    ]
+  },
+  {
+    "name": "com.smirnoal.crema.rapid.client.LambdaRapidClientException",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": ["java.lang.String"]
+      },
+      {
+        "name": "<init>",
+        "parameterTypes": ["java.lang.String", "java.lang.Throwable"]
+      },
+      {
+        "name": "<init>",
+        "parameterTypes": ["java.lang.String", "int"]
+      }
+    ]
+  },
+  {
+    "name": "java.io.IOException",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": ["java.lang.String"]
+      }
+    ]
+  },
+  {
+    "name": "com.smirnoal.crema.rapid.client.dto.InvocationRequest",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": [
+          "java.lang.String",
+          "byte[]",
+          "java.lang.String",
+          "java.lang.String",
+          "long",
+          "java.lang.String",
+          "java.lang.String"
+        ]
+      }
+    ]
+  }
+]

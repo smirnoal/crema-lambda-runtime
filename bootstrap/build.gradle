@@ -6,7 +6,7 @@ plugins {
 
 dependencies {
     api project(':common')
-    api project(':rapid-http-client-jdk')
+    api project(':rapid-client-jdk')
 
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.11.4'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.4'
@@ -24,7 +24,7 @@ publishing {
     publications {
         bootstrap(MavenPublication) {
             from components.java
-            groupId = 'com.smirnoal'
+            groupId = 'com.smirnoal.crema'
             artifactId = 'bootstrap'
             version = project.version
         }

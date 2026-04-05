@@ -20,7 +20,7 @@ publishing {
     publications {
         serdeJackson2(MavenPublication) {
             from components.java
-            groupId = 'com.smirnoal'
+            groupId = 'com.smirnoal.crema'
             artifactId = 'serde-jackson2'
             version = project.version
         }

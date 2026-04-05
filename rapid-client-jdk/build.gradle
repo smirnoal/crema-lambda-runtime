@@ -1,0 +1,29 @@
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'maven-publish'
+}
+
+dependencies {
+    implementation project(':common')
+    
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.11.4'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.4'
+    testImplementation 'com.squareup.okhttp3:mockwebserver:4.12.0'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        rapidHttpClient(MavenPublication) {
+            from components.java
+            groupId = 'com.smirnoal.crema'
+            artifactId = 'rapid-client-jdk'
+            version = project.version
+        }
+    }
+    repositories { mavenLocal() }
+} 

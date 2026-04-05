@@ -1,6 +1,6 @@
 # events-schemas
 
-JSON schemas for AWS Lambda event types. Part of smirnoal-ric (custom Lambda runtime). Schemas are consumed by events-jackson2 for POJO codegen and validation.
+JSON schemas for AWS Lambda event types. Part of Crema (`crema-lambda-runtime`). Schemas are consumed by events-jackson2 for POJO codegen and validation.
 
 ## Adding New Events
 

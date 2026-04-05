@@ -6,11 +6,11 @@ This FAQ is informational only. The binding terms are in `LICENSE` (ELv2).
 
 - Internal use at companies of any size
 - Modifying the code for internal purposes
-- Shipping products that include `smirnoal-ric` as a component
+- Shipping products that include Crema (`crema-lambda-runtime`) as a component
 
 ## What is not allowed under ELv2?
 
-- Offering `smirnoal-ric` as a public hosted or managed service to third
+- Offering Crema (`crema-lambda-runtime`) as a public hosted or managed service to third
   parties where users access substantial runtime functionality
 
 ## Can I get an exception for managed/public service use?

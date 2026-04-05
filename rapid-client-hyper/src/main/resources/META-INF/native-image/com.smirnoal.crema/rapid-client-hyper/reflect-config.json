@@ -1,0 +1,53 @@
+[
+  {
+    "name": "com.smirnoal.crema.rapid.client.HyperLambdaRapidHttpClient",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "com.smirnoal.crema.rapid.client.HyperHttpClientProvider",
+    "allDeclaredConstructors": true,
+    "methods": [
+      {
+        "name": "create",
+        "parameterTypes": ["java.lang.String"]
+      },
+      {
+        "name": "priority",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.smirnoal.crema.rapid.client.HyperStreamingResponseHandle",
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.smirnoal.crema.rapid.client.HyperResponseStream",
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.smirnoal.crema.rapid.client.NativeLibraryLoader",
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "com.smirnoal.crema.rapid.client.LambdaRapidClientException",
+    "allDeclaredConstructors": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "java.io.IOException",
+    "allPublicConstructors": true
+  },
+  {
+    "name": "com.smirnoal.crema.rapid.client.dto.InvocationRequest",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "com.smirnoal.crema.rapid.client.dto.ErrorRequest",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  }
+]

@@ -1,13 +1,13 @@
 # Commercial Licensing
 
-`smirnoal-ric` is available under the Elastic License 2.0 (`ELv2`).
+Crema (`crema-lambda-runtime`) is available under the Elastic License 2.0 (`ELv2`).
 
 ELv2 allows internal and self-hosted use, including in commercial environments.
-However, ELv2 does not permit offering `smirnoal-ric` as a hosted or managed
+However, ELv2 does not permit offering Crema as a hosted or managed
 service to third parties when that service exposes a substantial set of
-`smirnoal-ric` functionality.
+Crema functionality.
 
-If you want to offer `smirnoal-ric` as part of a public hosted/managed service,
+If you want to offer Crema as part of a public hosted/managed service,
 you must obtain a separate commercial license.
 
 ## Contact

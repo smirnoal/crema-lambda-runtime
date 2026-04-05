@@ -16,7 +16,7 @@ dependencies {
 jsonSchema2Pojo {
     source = files(project(':events-schemas').file('src/main/resources/schemas'))
     targetDirectory = file("$buildDir/generated/sources/events")
-    targetPackage = 'com.smirnoal.lambda.events'
+    targetPackage = 'com.smirnoal.crema.events'
     includeConstructors = false
     includeSetters = true
     includeGetters = true
@@ -97,7 +97,7 @@ ${entries}
 jar {
     dependsOn tasks.named('generateReflectConfig')
     from(reflectConfigOutputDir) {
-        into 'META-INF/native-image/com.smirnoal/events-jackson2'
+        into 'META-INF/native-image/com.smirnoal.crema/events-jackson2'
     }
 }
 
@@ -105,7 +105,7 @@ publishing {
     publications {
         eventsJackson2(MavenPublication) {
             from components.java
-            groupId = 'com.smirnoal'
+            groupId = 'com.smirnoal.crema'
             artifactId = 'events-jackson2'
             version = project.version
         }

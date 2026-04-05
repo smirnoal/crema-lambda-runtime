@@ -44,7 +44,7 @@ publishing {
         eventsSchemas(MavenPublication) {
             from components.java
             artifact testsJar
-            groupId = 'com.smirnoal'
+            groupId = 'com.smirnoal.crema'
             artifactId = 'events-schemas'
             version = project.version
         }
