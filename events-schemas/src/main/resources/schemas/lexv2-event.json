@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "LexV2Event",
+  "type": "object",
+  "properties": {
+    "sessionId": {
+      "type": "string"
+    },
+    "inputTranscript": {
+      "type": "string"
+    },
+    "interpretations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "responseContentType": {
+      "type": "string"
+    },
+    "invocationSource": {
+      "type": "string"
+    },
+    "messageVersion": {
+      "type": "string"
+    },
+    "sessionState": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "inputMode": {
+      "type": "string"
+    },
+    "bot": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

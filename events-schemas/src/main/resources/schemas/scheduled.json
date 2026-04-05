@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ScheduledEvent",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string"
+    },
+    "account": {
+      "type": "string"
+    },
+    "region": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string"
+    },
+    "detail-type": {
+      "type": "string"
+    },
+    "time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "resources": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "detail": {
+      "oneOf": [ {
+        "type": "string"
+      }, {
+        "type": "object"
+      } ]
+    }
+  },
+  "required": [ "version", "id", "account", "region", "source", "detail-type", "time", "resources", "detail" ],
+  "additionalProperties": false
+}

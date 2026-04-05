@@ -1,0 +1,8 @@
+{
+  "isAuthorized": true,
+  "context": {
+    "stringKey": "value",
+    "numberKey": 1,
+    "booleanKey": true
+  }
+}

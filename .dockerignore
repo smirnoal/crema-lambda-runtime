@@ -1,0 +1,5 @@
+# Small context for :rapid-client-hyper:buildTestLinuxImage (repo root is the build context).
+.git
+**/.gradle
+**/build
+**/rapid-client-hyper/rust/target

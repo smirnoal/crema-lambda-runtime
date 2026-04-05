@@ -1,0 +1,118 @@
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'maven-publish'
+    id 'org.jsonschema2pojo' version '1.2.1'
+}
+
+dependencies {
+    api project(':events-schemas')
+    api project(':serde-jackson2')
+    testImplementation project(path: ':events-schemas', configuration: 'tests')
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.4'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.4'
+}
+
+jsonSchema2Pojo {
+    source = files(project(':events-schemas').file('src/main/resources/schemas'))
+    targetDirectory = file("$buildDir/generated/sources/events")
+    targetPackage = 'com.smirnoal.crema.events'
+    includeConstructors = false
+    includeSetters = true
+    includeGetters = true
+    useInnerClassBuilders = false
+    serializable = false
+    useBigDecimals = false
+    usePrimitives = false
+    useLongIntegers = true
+    useTitleAsClassname = true
+    dateTimeType = 'java.time.Instant'
+    annotationStyle = 'JACKSON2'
+    includeJsr303Annotations = false
+    includeGeneratedAnnotation = false
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir "$buildDir/generated/sources/events"
+        }
+    }
+}
+
+tasks.named('compileJava') {
+    dependsOn tasks.named('generateJsonSchema2Pojo')
+}
+
+// Generate reflect-config.json for GraalVM native-image from all jsonschema2pojo-generated event classes.
+// Consuming projects get this config automatically via the JAR.
+def generatedEventsDir = layout.buildDirectory.dir('generated/sources/events')
+def reflectConfigOutputDir = layout.buildDirectory.dir('generated/resources/reflect-config')
+
+tasks.register('generateReflectConfig') {
+    group = 'build'
+    description = 'Generate reflect-config.json for GraalVM native-image from generated event POJOs'
+    dependsOn tasks.named('generateJsonSchema2Pojo')
+    def outputFile = reflectConfigOutputDir.map { it.file('reflect-config.json') }
+    inputs.dir(generatedEventsDir)
+    outputs.file(outputFile)
+    doLast {
+        def eventsPath = file("$buildDir/generated/sources/events")
+        if (!eventsPath.exists()) {
+            throw new GradleException("Generated events dir not found. Run generateJsonSchema2Pojo first.")
+        }
+        def classNames = fileTree(eventsPath) {
+            include '**/*.java'
+        }
+            .collect { f ->
+                def relativePath = eventsPath.toPath().relativize(f.toPath()).toString()
+                relativePath.replace(File.separator, '.').replace('.java', '')
+            }
+            .findAll { it.contains('.') }  // only package-qualified (exclude any stray files)
+            .sort()
+
+        def entries = classNames.collect { name ->
+            """  {
+    "name": "${name}",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  }"""
+        }.join(',\n')
+
+        def json = """[
+${entries}
+]
+"""
+
+        def outFile = outputFile.get().asFile
+        outFile.parentFile.mkdirs()
+        outFile.text = json
+    }
+}
+
+jar {
+    dependsOn tasks.named('generateReflectConfig')
+    from(reflectConfigOutputDir) {
+        into 'META-INF/native-image/com.smirnoal.crema/events-jackson2'
+    }
+}
+
+publishing {
+    publications {
+        eventsJackson2(MavenPublication) {
+            from components.java
+            groupId = 'com.smirnoal.crema'
+            artifactId = 'events-jackson2'
+            version = project.version
+        }
+    }
+    repositories { mavenLocal() }
+}
+
+test {
+    useJUnitPlatform()
+}

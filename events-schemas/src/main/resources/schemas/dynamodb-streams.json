@@ -1,0 +1,149 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DynamodbEvent",
+  "type": "object",
+  "properties": {
+    "Records": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/DynamodbStreamRecord"
+      }
+    }
+  },
+  "required": [ "Records" ],
+  "additionalProperties": false,
+  "definitions": {
+    "DynamodbStreamRecord": {
+      "type": "object",
+      "properties": {
+        "eventID": {
+          "type": "string"
+        },
+        "eventName": {
+          "type": "string"
+        },
+        "eventVersion": {
+          "type": "string"
+        },
+        "eventSource": {
+          "type": "string"
+        },
+        "awsRegion": {
+          "type": "string"
+        },
+        "eventSourceARN": {
+          "type": "string"
+        },
+        "dynamodb": {
+          "$ref": "#/definitions/StreamRecord"
+        },
+        "userIdentity": {
+          "$ref": "#/definitions/StreamRecordUserIdentity"
+        }
+      },
+      "required": [ "eventID", "eventName", "eventSource", "awsRegion", "dynamodb" ]
+    },
+    "StreamRecordUserIdentity": {
+      "type": "object",
+      "properties": {
+        "principalId": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "StreamRecord": {
+      "type": "object",
+      "properties": {
+        "Keys": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/AttributeValue"
+          }
+        },
+        "NewImage": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/AttributeValue"
+          }
+        },
+        "OldImage": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/AttributeValue"
+          }
+        },
+        "ApproximateCreationDateTime": {
+          "type": "number"
+        },
+        "SequenceNumber": {
+          "type": "string"
+        },
+        "SizeBytes": {
+          "type": "integer"
+        },
+        "StreamViewType": {
+          "type": "string"
+        }
+      }
+    },
+    "AttributeValue": {
+      "type": "object",
+      "properties": {
+        "S": {
+          "type": "string"
+        },
+        "N": {
+          "type": "string"
+        },
+        "B": {
+          "type": "string",
+          "contentEncoding": "base64",
+          "existingJavaType": "java.nio.ByteBuffer"
+        },
+        "BOOL": {
+          "type": "boolean"
+        },
+        "NULL": {
+          "type": "boolean"
+        },
+        "M": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/AttributeValue"
+          }
+        },
+        "L": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AttributeValue"
+          }
+        },
+        "SS": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "NS": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "BS": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "existingJavaType": "java.nio.ByteBuffer"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

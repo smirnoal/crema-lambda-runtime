@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "S3BatchEventV2",
+  "type": "object",
+  "properties": {
+    "invocationSchemaVersion": {
+      "type": "string"
+    },
+    "invocationId": {
+      "type": "string"
+    },
+    "job": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "userArguments": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "taskId": {
+            "type": "string"
+          },
+          "s3Key": {
+            "type": "string"
+          },
+          "s3VersionId": {
+            "type": [ "string", "null" ]
+          },
+          "s3Bucket": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CognitoEvent",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "integer"
+    },
+    "eventType": {
+      "type": "string"
+    },
+    "region": {
+      "type": "string"
+    },
+    "identityPoolId": {
+      "type": "string"
+    },
+    "identityId": {
+      "type": "string"
+    },
+    "datasetName": {
+      "type": "string"
+    },
+    "datasetRecords": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/DatasetRecord"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "DatasetRecord": {
+      "type": "object",
+      "properties": {
+        "oldValue": {
+          "type": "string"
+        },
+        "newValue": {
+          "type": "string"
+        },
+        "op": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

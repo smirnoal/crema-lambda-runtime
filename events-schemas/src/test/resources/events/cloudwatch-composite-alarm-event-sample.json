@@ -1,0 +1,28 @@
+{
+  "source": "aws.cloudwatch",
+  "alarmArn": "arn:aws:cloudwatch:us-east-1:123456789012:alarm:CompositeAlarm",
+  "accountId": "123456789012",
+  "time": "2020-04-28T12:00:00.000Z",
+  "region": "us-east-1",
+  "alarmData": {
+    "alarmName": "CompositeAlarm",
+    "state": {
+      "value": "ALARM",
+      "reason": "Composite alarm entered ALARM state",
+      "reasonData": "{}",
+      "timestamp": "2020-04-28T12:00:00.000Z"
+    },
+    "previousState": {
+      "value": "OK",
+      "reason": "OK",
+      "reasonData": "{}",
+      "timestamp": "2020-04-28T11:55:00.000Z"
+    },
+    "configuration": {
+      "alarmRule": "ALARM(Alarm1) OR ALARM(Alarm2)",
+      "actionsSuppressor": "",
+      "actionsSuppressorWaitPeriod": 0,
+      "actionsSuppressorExtensionPeriod": 0
+    }
+  }
+}

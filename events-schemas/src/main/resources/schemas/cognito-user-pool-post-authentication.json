@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CognitoUserPoolPostAuthenticationEvent",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string"
+    },
+    "triggerSource": {
+      "type": "string"
+    },
+    "region": {
+      "type": "string"
+    },
+    "userPoolId": {
+      "type": "string"
+    },
+    "userName": {
+      "type": "string"
+    },
+    "callerContext": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "request": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "response": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,170 @@
+import java.util.Locale
+
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'maven-publish'
+}
+
+def rustDir = layout.projectDirectory.dir('rust')
+def rustRelease = project.findProperty('rustRelease') == 'true'
+def profileDir = rustRelease ? 'release' : 'debug'
+
+def osName = System.getProperty('os.name', '').toLowerCase(Locale.US)
+def osArch = System.getProperty('os.arch', '')
+String cargoTargetTriple = System.getenv('CREMA_RAPID_HYPER_CARGO_TARGET')
+if (cargoTargetTriple == null || cargoTargetTriple.isBlank()) {
+    if (osName.contains('mac') && (osArch == 'aarch64' || osArch == 'arm64')) {
+        cargoTargetTriple = 'aarch64-apple-darwin'
+    } else {
+        cargoTargetTriple = null
+    }
+}
+
+def rustTargetPath = cargoTargetTriple != null
+        ? rustDir.file("target/${cargoTargetTriple}/${profileDir}").asFile.path
+        : rustDir.file("target/${profileDir}").asFile.path
+def nativeResourceDir = layout.buildDirectory.dir('generated/native-resources')
+
+/** Docker platform for testLinux / buildTestLinuxImage (arm64 on Apple Silicon avoids QEMU). */
+def testLinuxPlatformProp = project.findProperty('testLinuxPlatform')
+def testLinuxPlatform = (testLinuxPlatformProp != null && !testLinuxPlatformProp.toString().isBlank())
+        ? testLinuxPlatformProp.toString()
+        : (osName.contains('mac') && (osArch == 'aarch64' || osArch == 'arm64')
+            ? 'linux/arm64'
+            : 'linux/amd64')
+
+/** Image tag for test Linux JNI runs; override with -PtestLinuxImage=... */
+def testLinuxImage = project.findProperty('testLinuxImage') ?: 'rapid-hyper-test-linux:local'
+
+def testLinuxDockerfile = layout.projectDirectory.file('docker/test-linux/Dockerfile').asFile
+
+def testLinuxRustSubdir = 'rapid-client-hyper/rust'
+def testLinuxInnerScript = "set -euo pipefail; cd ${testLinuxRustSubdir} && cargo build && cd /work; " +
+        "NATIVE_DIR=${testLinuxRustSubdir}/target/debug; " +
+        'ARCH=$(uname -m); ' +
+        'if [ "$ARCH" = "aarch64" ]; then cp $NATIVE_DIR/libcrema_rapid_hyper.so $NATIVE_DIR/libcrema_rapid_hyper_arm64.so; ' +
+        'else cp $NATIVE_DIR/libcrema_rapid_hyper.so $NATIVE_DIR/libcrema_rapid_hyper_amd64.so; fi; ' +
+        './gradlew :rapid-client-hyper:test -x prepareJarNativeLibs -x compileRust'
+
+dependencies {
+    implementation project(':common')
+    implementation project(':rapid-client-jdk')
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.11.4'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.4'
+    testImplementation 'org.hamcrest:hamcrest:2.2'
+    testImplementation 'com.squareup.okhttp3:mockwebserver:4.12.0'
+    testImplementation 'io.netty:netty-codec-http:4.2.8.Final'
+}
+
+tasks.register('compileRust', Exec) {
+    description = 'Build libcrema_rapid_hyper native library'
+    workingDir = rustDir
+    def args = ['cargo', 'build']
+    if (rustRelease) {
+        args << '--release'
+    }
+    if (cargoTargetTriple != null) {
+        args.addAll(['--target', cargoTargetTriple])
+    }
+    commandLine = args
+    environment 'CARGO_TERM_COLOR', 'never'
+}
+
+tasks.register('compileRustLinuxX86', Exec) {
+    description = 'Build Linux x86_64 JNI native library with Docker'
+    workingDir = rustDir
+    commandLine 'docker', 'run', '--rm',
+            '--platform', 'linux/amd64',
+            '-v', "${rustDir.asFile.absolutePath}:/work",
+            '-w', '/work',
+            'amazonlinux:2',
+            'bash',
+            '-lc',
+            '''set -euo pipefail;
+               yum install -y gcc curl >/dev/null;
+               curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain 1.89.0 --no-modify-path;
+               /root/.cargo/bin/cargo build --release;
+               cp target/release/libcrema_rapid_hyper.so target/libcrema_rapid_hyper_amd64.so'''
+    environment 'CARGO_TERM_COLOR', 'never'
+}
+
+tasks.register('compileRustLinuxArm64', Exec) {
+    description = 'Build Linux arm64 JNI native library with Docker'
+    workingDir = rustDir
+    commandLine 'docker', 'run', '--rm',
+            '--platform', 'linux/arm64',
+            '-v', "${rustDir.asFile.absolutePath}:/work",
+            '-w', '/work',
+            'amazonlinux:2',
+            'bash',
+            '-lc',
+            '''set -euo pipefail;
+               yum install -y gcc curl >/dev/null;
+               curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain 1.89.0 --no-modify-path;
+               /root/.cargo/bin/cargo build --release;
+               cp target/release/libcrema_rapid_hyper.so target/libcrema_rapid_hyper_arm64.so'''
+    environment 'CARGO_TERM_COLOR', 'never'
+}
+
+tasks.register('prepareJarNativeLibs', Copy) {
+    dependsOn tasks.named('compileRustLinuxX86'), tasks.named('compileRustLinuxArm64')
+    into nativeResourceDir
+    from(rustDir.file('target/libcrema_rapid_hyper_amd64.so')) {
+        into 'native'
+    }
+    from(rustDir.file('target/libcrema_rapid_hyper_arm64.so')) {
+        into 'native'
+    }
+}
+
+tasks.named('processResources') {
+    dependsOn tasks.named('prepareJarNativeLibs')
+    from(nativeResourceDir)
+}
+
+tasks.named('test') {
+    dependsOn compileRust
+    useJUnitPlatform()
+    systemProperty 'crema.rapid.hyper.native.dir', rustTargetPath
+    environment 'CREMA_RAPID_HYPER_NATIVE_DIR', rustTargetPath
+}
+
+tasks.register('buildTestLinuxImage', Exec) {
+    group = 'verification'
+    description = 'Build Docker image with JDK + Rust + Gradle wrapper dist (context: Gradle root for COPY gradle/)'
+    workingDir = rootProject.projectDir
+    commandLine 'docker', 'build',
+            '--platform', testLinuxPlatform,
+            '-t', testLinuxImage,
+            '-f', testLinuxDockerfile.absolutePath,
+            rootProject.projectDir.absolutePath
+}
+
+tasks.register('testLinux', Exec) {
+    group = 'verification'
+    description = 'Run JNI tests in Linux Docker with a single repo bind mount (native arm64 on Apple Silicon by default; use -PtestLinuxPlatform=linux/amd64 for x86 parity)'
+    dependsOn tasks.named('buildTestLinuxImage')
+    workingDir = rootProject.projectDir
+    def projRoot = rootProject.projectDir.absolutePath
+    def workMount = osName.contains('mac') ? "${projRoot}:/work:cached" : "${projRoot}:/work"
+
+    def args = new ArrayList<String>()
+    args.addAll(['docker', 'run', '--rm', '--platform', testLinuxPlatform])
+    args.addAll(['-v', workMount])
+    args.addAll(['-w', '/work', testLinuxImage, 'bash', '-lc', testLinuxInnerScript])
+    commandLine = args
+}
+
+publishing {
+    publications {
+        rapidHttpClientHyper(MavenPublication) {
+            from components.java
+            groupId = 'com.smirnoal.crema'
+            artifactId = 'rapid-client-hyper'
+            version = project.version
+        }
+    }
+    repositories { mavenLocal() }
+}

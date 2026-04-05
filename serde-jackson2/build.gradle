@@ -1,0 +1,29 @@
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'maven-publish'
+}
+
+dependencies {
+    api project(':common')
+    api 'com.fasterxml.jackson.core:jackson-databind:2.21.1'
+    api 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.21.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.4'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.4'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        serdeJackson2(MavenPublication) {
+            from components.java
+            groupId = 'com.smirnoal.crema'
+            artifactId = 'serde-jackson2'
+            version = project.version
+        }
+    }
+    repositories { mavenLocal() }
+}

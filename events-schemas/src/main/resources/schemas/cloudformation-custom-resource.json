@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CloudFormationCustomResourceEvent",
+  "type": "object",
+  "properties": {
+    "RequestType": {
+      "type": "string"
+    },
+    "ServiceToken": {
+      "type": "string"
+    },
+    "ResponseURL": {
+      "type": "string"
+    },
+    "StackId": {
+      "type": "string"
+    },
+    "RequestId": {
+      "type": "string"
+    },
+    "LogicalResourceId": {
+      "type": "string"
+    },
+    "ResourceType": {
+      "type": "string"
+    },
+    "ResourceProperties": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

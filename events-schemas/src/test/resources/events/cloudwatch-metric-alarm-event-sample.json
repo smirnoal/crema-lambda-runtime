@@ -1,0 +1,40 @@
+{
+  "source": "aws.cloudwatch",
+  "alarmArn": "arn:aws:cloudwatch:us-east-1:123456789012:alarm:HighCPUUtilization",
+  "accountId": "123456789012",
+  "time": "2020-04-28T12:00:00.000Z",
+  "region": "us-east-1",
+  "alarmData": {
+    "alarmName": "HighCPUUtilization",
+    "state": {
+      "value": "ALARM",
+      "reason": "Threshold Crossed: 1 datapoint [85.0] was greater than the threshold (80.0).",
+      "timestamp": "2020-04-28T12:00:00.000Z"
+    },
+    "previousState": {
+      "value": "OK",
+      "reason": "Threshold Crossed: 1 datapoint [75.0] was not greater than the threshold (80.0).",
+      "reasonData": "{}",
+      "timestamp": "2020-04-28T11:55:00.000Z"
+    },
+    "configuration": {
+      "description": "Alarm when CPU exceeds 80%",
+      "metrics": [ {
+        "id": "m1",
+        "metricStat": {
+          "metric": {
+            "namespace": "AWS/EC2",
+            "name": "CPUUtilization",
+            "dimensions": {
+              "InstanceId": "i-0123456789abcdef0"
+            }
+          },
+          "period": 300,
+          "stat": "Average",
+          "unit": "Percent"
+        },
+        "returnData": true
+      } ]
+    }
+  }
+}

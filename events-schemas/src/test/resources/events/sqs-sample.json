@@ -1,0 +1,27 @@
+{
+  "Records": [ {
+    "messageId": "d9144555-9a4f-4ec3-99a0-fc4e625a8db2",
+    "receiptHandle": "7kam5bfzbDsjtcjElvhSbxeLJbeey3A==",
+    "body": "Test message",
+    "attributes": {
+      "ApproximateReceiveCount": "1",
+      "SentTimestamp": "1601975709495",
+      "SenderId": "AROAIFU457DVZ5L2J53F2",
+      "ApproximateFirstReceiveTimestamp": "1601975709499"
+    },
+    "messageAttributes": {
+      "binaryAttr": {
+        "binaryValue": "SGVsbG8=",
+        "dataType": "Binary"
+      },
+      "binaryListAttr": {
+        "binaryListValues": [ "YQ==", "YmM=" ],
+        "dataType": "Binary"
+      }
+    },
+    "md5OfBody": "5c182b413120a2696541321a5e05b1f2",
+    "eventSource": "aws:sqs",
+    "eventSourceARN": "arn:aws:sqs:eu-central-1:123456789012:TestLambda",
+    "awsRegion": "eu-central-1"
+  } ]
+}
