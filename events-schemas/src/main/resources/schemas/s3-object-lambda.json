@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "S3ObjectLambdaEvent",
+  "type": "object",
+  "properties": {
+    "xAmzRequestId": {
+      "type": "string"
+    },
+    "getObjectContext": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "configuration": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "userRequest": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "userIdentity": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "protocolVersion": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

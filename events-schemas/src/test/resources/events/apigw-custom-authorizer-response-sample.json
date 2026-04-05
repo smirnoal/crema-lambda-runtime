@@ -1,0 +1,14 @@
+{
+  "principalId": "abcdef",
+  "policyDocument": {
+    "Version": "2012-10-17",
+    "Statement": [ {
+      "Action": "execute-api:Invoke",
+      "Effect": "Allow",
+      "Resource": "arn:aws:execute-api:us-east-1:123456789012:abcdef123/test/GET/request"
+    } ]
+  },
+  "context": {
+    "exampleKey": "exampleValue"
+  }
+}

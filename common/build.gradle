@@ -1,0 +1,27 @@
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'maven-publish'
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.4'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.4'
+}
+
+test {
+    useJUnitPlatform()
+    environment 'CREMA_DEBUG_LOGS', 'riclog-enabled-test'
+}
+
+publishing {
+    publications {
+        common(MavenPublication) {
+            from components.java
+            groupId = 'com.smirnoal.crema'
+            artifactId = 'common'
+            version = project.version
+        }
+    }
+    repositories { mavenLocal() }
+}

@@ -1,0 +1,176 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ApiGatewayProxyRequestEvent",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string"
+    },
+    "resource": {
+      "type": "string"
+    },
+    "path": {
+      "type": "string"
+    },
+    "httpMethod": {
+      "type": "string"
+    },
+    "headers": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "multiValueHeaders": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "queryStringParameters": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "multiValueQueryStringParameters": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "pathParameters": {
+      "type": [ "object", "null" ],
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "stageVariables": {
+      "type": [ "object", "null" ],
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "requestContext": {
+      "$ref": "#/definitions/ProxyRequestContext"
+    },
+    "body": {
+      "type": "string"
+    },
+    "isBase64Encoded": {
+      "type": "boolean"
+    }
+  },
+  "required": [ "path", "httpMethod" ],
+  "additionalProperties": false,
+  "definitions": {
+    "ProxyRequestContext": {
+      "type": "object",
+      "properties": {
+        "accountId": {
+          "type": "string"
+        },
+        "stage": {
+          "type": "string"
+        },
+        "resourceId": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "operationName": {
+          "type": "string"
+        },
+        "identity": {
+          "$ref": "#/definitions/RequestIdentity"
+        },
+        "resourcePath": {
+          "type": "string"
+        },
+        "httpMethod": {
+          "type": "string"
+        },
+        "apiId": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "authorizer": {
+          "type": "object"
+        },
+        "extendedRequestId": {
+          "type": "string"
+        },
+        "requestTime": {
+          "type": "string"
+        },
+        "requestTimeEpoch": {
+          "type": "integer"
+        },
+        "domainName": {
+          "type": "string"
+        },
+        "domainPrefix": {
+          "type": "string"
+        },
+        "protocol": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "RequestIdentity": {
+      "type": "object",
+      "properties": {
+        "accessKey": {
+          "type": "string"
+        },
+        "accountId": {
+          "type": "string"
+        },
+        "apiKey": {
+          "type": "string"
+        },
+        "caller": {
+          "type": "string"
+        },
+        "cognitoIdentityId": {
+          "type": "string"
+        },
+        "cognitoIdentityPoolId": {
+          "type": "string"
+        },
+        "cognitoAuthenticationType": {
+          "type": "string"
+        },
+        "cognitoAuthenticationProvider": {
+          "type": "string"
+        },
+        "principalOrgId": {
+          "type": "string"
+        },
+        "sourceIp": {
+          "type": "string"
+        },
+        "user": {
+          "type": "string"
+        },
+        "userAgent": {
+          "type": "string"
+        },
+        "userArn": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

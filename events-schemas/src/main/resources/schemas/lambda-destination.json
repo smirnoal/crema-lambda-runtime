@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "LambdaDestinationEvent",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "requestContext": {
+      "$ref": "#/definitions/RequestContext"
+    },
+    "requestPayload": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "responseContext": { },
+    "responsePayload": { }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "RequestContext": {
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "type": "string"
+        },
+        "functionArn": {
+          "type": "string"
+        },
+        "condition": {
+          "type": "string"
+        },
+        "approximateInvokeCount": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

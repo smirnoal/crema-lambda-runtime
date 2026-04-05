@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "KafkaEvent",
+  "type": "object",
+  "properties": {
+    "eventSource": {
+      "type": "string"
+    },
+    "eventSourceArn": {
+      "type": "string"
+    },
+    "bootstrapServers": {
+      "type": "string"
+    },
+    "records": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

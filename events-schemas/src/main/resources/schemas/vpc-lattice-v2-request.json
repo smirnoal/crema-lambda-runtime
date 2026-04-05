@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "VpcLatticeV2RequestEvent",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string"
+    },
+    "path": {
+      "type": "string"
+    },
+    "method": {
+      "type": "string"
+    },
+    "headers": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "queryStringParameters": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "body": {
+      "type": "string"
+    },
+    "requestContext": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

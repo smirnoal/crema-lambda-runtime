@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CognitoUserPoolInboundFederationEvent",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string"
+    },
+    "triggerSource": {
+      "type": "string"
+    },
+    "region": {
+      "type": "string"
+    },
+    "userPoolId": {
+      "type": "string"
+    },
+    "userName": {
+      "type": "string"
+    },
+    "callerContext": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "request": {
+      "type": "object",
+      "properties": {
+        "providerName": {
+          "type": "string"
+        },
+        "providerType": {
+          "type": "string"
+        },
+        "attributes": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "response": {
+      "type": "object",
+      "properties": {
+        "userAttributesToMap": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

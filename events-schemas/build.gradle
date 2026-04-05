@@ -1,0 +1,57 @@
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'maven-publish'
+    id 'com.diffplug.spotless' version '8.4.0'
+}
+
+spotless {
+    json {
+        target 'src/main/resources/schemas/*.json', 'src/test/resources/events/*.json'
+        jackson()
+                .feature("INDENT_OUTPUT", true)
+                .feature("ORDER_MAP_ENTRIES_BY_KEYS", false)
+    }
+}
+
+configurations {
+    tests {
+        canBeConsumed = true
+        canBeResolved = false
+    }
+}
+
+def testsJar = tasks.register('testsJar', Jar) {
+    archiveClassifier = 'tests'
+    from(sourceSets.test.resources) {
+        include 'events/**'
+    }
+}
+
+artifacts {
+    tests testsJar
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.4'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.11.4'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.4'
+    testImplementation 'com.github.erosb:everit-json-schema:1.14.6'
+}
+
+publishing {
+    publications {
+        eventsSchemas(MavenPublication) {
+            from components.java
+            artifact testsJar
+            groupId = 'com.smirnoal.crema'
+            artifactId = 'events-schemas'
+            version = project.version
+        }
+    }
+    repositories { mavenLocal() }
+}
+
+test {
+    useJUnitPlatform()
+}

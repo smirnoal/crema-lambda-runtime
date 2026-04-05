@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "S3BatchEvent",
+  "type": "object",
+  "properties": {
+    "invocationSchemaVersion": {
+      "type": "string"
+    },
+    "invocationId": {
+      "type": "string"
+    },
+    "job": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": false
+}

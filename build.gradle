@@ -1,0 +1,34 @@
+plugins {
+    id 'java'
+}
+
+allprojects {
+    group = 'com.smirnoal.crema'
+    version = '1.0-SNAPSHOT'
+    
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(17)
+        }
+    }
+    
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+
+    // Some IDEs (notably Eclipse/VS Code Java) compile into ./bin by default.
+    // Keep `gradle clean` effective by deleting those outputs too.
+    tasks.named('clean') {
+        delete layout.projectDirectory.dir('bin')
+    }
+} 

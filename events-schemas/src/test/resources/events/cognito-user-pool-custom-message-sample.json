@@ -1,0 +1,23 @@
+{
+  "version": "1",
+  "triggerSource": "CustomMessage_SignUp",
+  "region": "us-east-1",
+  "userPoolId": "us-east-1_EXAMPLE",
+  "userName": "JaneDoe",
+  "callerContext": {
+    "awsSdkVersion": "aws-sdk-unknown-unknown",
+    "clientId": "1example23456789"
+  },
+  "request": {
+    "userAttributes": {
+      "email": "jane@example.com"
+    },
+    "codeParameter": "{####}",
+    "usernameParameter": "jane"
+  },
+  "response": {
+    "smsMessage": "",
+    "emailMessage": "Welcome! Your code is {####}.",
+    "emailSubject": "Welcome"
+  }
+}

@@ -1,0 +1,29 @@
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'maven-publish'
+}
+
+dependencies {
+    implementation project(':common')
+    implementation 'io.netty:netty-codec-http:4.2.8.Final'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.11.4'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.4'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        rapidHttpClientNetty(MavenPublication) {
+            from components.java
+            groupId = 'com.smirnoal.crema'
+            artifactId = 'rapid-client-netty'
+            version = project.version
+        }
+    }
+    repositories { mavenLocal() }
+}
