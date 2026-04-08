@@ -2,10 +2,12 @@ plugins {
     id 'java'
 }
 
+group = 'com.smirnoal.crema'
+version = findProperty('crema.platform.version') ?: '0.1.0-SNAPSHOT'
+
 allprojects {
     group = 'com.smirnoal.crema'
-    version = '1.0-SNAPSHOT'
-    
+
     repositories {
         mavenLocal()
         mavenCentral()
@@ -14,6 +16,33 @@ allprojects {
 }
 
 subprojects {
+    switch (name) {
+        case ['common', 'bootstrap', 'rapid-client-jdk']:
+            version = findProperty('crema.platform.version') ?: '0.1.0-SNAPSHOT'
+            break
+        case 'events-schemas':
+            version = findProperty('crema.artifact.eventsSchemas.version') ?: '0.1.0-SNAPSHOT'
+            break
+        case 'serde-jackson2':
+            version = findProperty('crema.artifact.serdeJackson.version') ?: '0.1.0-SNAPSHOT'
+            break
+        case 'serde-gson':
+            version = findProperty('crema.artifact.serdeGson.version') ?: '0.1.0-SNAPSHOT'
+            break
+        case 'events-jackson2':
+            version = findProperty('crema.artifact.eventsJackson.version') ?: '0.1.0-SNAPSHOT'
+            break
+        case 'rapid-client-netty':
+            version = findProperty('crema.artifact.rapidNetty.version') ?: '0.1.0-SNAPSHOT'
+            break
+        case 'rapid-client-hyper':
+            version = findProperty('crema.artifact.rapidHyper.version') ?: '0.1.0-SNAPSHOT'
+            break
+        default:
+            version = findProperty('crema.platform.version') ?: '0.1.0-SNAPSHOT'
+            break
+    }
+
     apply plugin: 'java'
     
     java {
@@ -31,4 +60,6 @@ subprojects {
     tasks.named('clean') {
         delete layout.projectDirectory.dir('bin')
     }
-} 
+}
+
+apply from: rootProject.file('gradle/crema-publishing.gradle')

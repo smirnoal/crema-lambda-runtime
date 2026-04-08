@@ -166,5 +166,4 @@ publishing {
             version = project.version
         }
     }
-    repositories { mavenLocal() }
 }

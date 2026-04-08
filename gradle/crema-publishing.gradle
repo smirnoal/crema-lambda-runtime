@@ -1,0 +1,141 @@
+import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.tasks.javadoc.Javadoc
+
+/** Gradle's PGP layer accepts short key ids (e.g. {@code FDF480F7} or {@code 0xFDF480F7}), not 16+ hex digit "long" ids. */
+static String normalizePgpKeyId(String keyId) {
+    if (keyId == null || keyId.isBlank()) {
+        return keyId
+    }
+    def hex = keyId.startsWith('0x') || keyId.startsWith('0X') ? keyId.substring(2) : keyId
+    if (hex.length() > 8) {
+        return hex.substring(hex.length() - 8)
+    }
+    return hex
+}
+
+subprojects { Project sub ->
+    sub.afterEvaluate {
+        if (!sub.plugins.hasPlugin('maven-publish')) {
+            return
+        }
+
+        sub.plugins.apply('signing')
+
+        sub.java {
+            withJavadocJar()
+            withSourcesJar()
+        }
+
+        if (sub.name == 'events-jackson2') {
+            sub.tasks.named('sourcesJar').configure {
+                dependsOn sub.tasks.named('generateJsonSchema2Pojo')
+            }
+        }
+
+        sub.tasks.named('javadoc', Javadoc).configure { jdoc ->
+            jdoc.options.encoding = 'UTF-8'
+            jdoc.options.addStringOption('Xdoclint:none', '-quiet')
+        }
+
+        def releaseRepoUrl = sub.findProperty('crema.maven.releaseRepoUrl')
+        def snapshotRepoUrl = sub.findProperty('crema.maven.snapshotRepoUrl')
+        def mavenUser = sub.findProperty('crema.maven.username') ?: System.getenv('MAVEN_CENTRAL_USERNAME') ?: ''
+        def mavenPass = sub.findProperty('crema.maven.password') ?: System.getenv('MAVEN_CENTRAL_PASSWORD') ?: ''
+
+        sub.publishing.repositories {
+            mavenLocal()
+            def release = releaseRepoUrl?.toString()?.trim()
+            def snapshot = snapshotRepoUrl?.toString()?.trim()
+            if ((release || snapshot) && !mavenUser.isBlank()) {
+                maven {
+                    name = 'cremaRemote'
+                    def isSnapshot = sub.version.toString().endsWith('SNAPSHOT')
+                    url = sub.uri(isSnapshot ? (snapshot ?: release) : (release ?: snapshot))
+                    credentials {
+                        username = mavenUser
+                        password = mavenPass
+                    }
+                }
+            }
+        }
+
+        sub.publishing.publications.withType(MavenPublication).configureEach { pub ->
+            pub.pom {
+                name = pub.artifactId
+                description = sub.description ?: "Crema module ${pub.artifactId}"
+                url = 'https://github.com/smirnoal/crema-lambda-runtime'
+                licenses {
+                    license {
+                        name = 'Elastic License 2.0 (ELv2)'
+                        url = 'https://github.com/smirnoal/crema-lambda-runtime/blob/main/LICENSE'
+                        distribution = 'repo'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'smirnoal'
+                        name = 'Alexander Smirnov'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:https://github.com/smirnoal/crema-lambda-runtime.git'
+                    developerConnection = 'scm:git:ssh://git@github.com/smirnoal/crema-lambda-runtime.git'
+                    url = 'https://github.com/smirnoal/crema-lambda-runtime'
+                }
+            }
+        }
+
+        // Signing: Gradle properties first, then env (e.g. direnv + staging/.env — single secret store).
+        def signingEnabled = sub.findProperty('crema.signing.enabled') == 'true'
+                || System.getenv('CREMA_SIGNING_ENABLED') == 'true'
+        def ringPath = sub.findProperty('signing.secretKeyRingFile') ?: System.getenv('CREMA_GPG_SECRET_KEY_FILE')
+        def signingPassword = (sub.findProperty('signing.password') ?: System.getenv('CREMA_GPG_PASSPHRASE'))?.toString()
+        def signingKeyId = (sub.findProperty('signing.keyId') ?: System.getenv('CREMA_GPG_KEY_ID'))?.toString()
+
+        sub.signing {
+            required = signingEnabled
+
+            // Armored "BEGIN PGP PRIVATE KEY" exports are not readable as a legacy secretKeyRingFile;
+            // load them with useInMemoryPgpKeys instead (see Gradle SigningExtension).
+            if (signingEnabled && ringPath && signingPassword && !signingPassword.isBlank()) {
+                def ringFile = sub.file(ringPath)
+                if (ringFile.exists()) {
+                    def armored = ringFile.getText('UTF-8').trim()
+                    if (armored.contains('BEGIN PGP PRIVATE KEY')) {
+                        if (signingKeyId && !signingKeyId.isBlank()) {
+                            useInMemoryPgpKeys(normalizePgpKeyId(signingKeyId), armored, signingPassword)
+                        } else {
+                            useInMemoryPgpKeys(armored, signingPassword)
+                        }
+                    }
+                }
+            }
+            sign sub.publishing.publications
+        }
+
+        def toCremaRemote = sub.tasks.findByName('publishAllPublicationsToCremaRemoteRepository')
+        if (toCremaRemote != null) {
+            sub.tasks.register('publishRemote') {
+                group = 'publishing'
+                description = 'Publishes all Maven publications from this project to cremaRemote.'
+                dependsOn toCremaRemote
+            }
+        }
+    }
+}
+
+rootProject.tasks.register('publishRemote') {
+    group = 'publishing'
+    description = 'Publish every Crema subproject to cremaRemote (requires URL + token in Gradle properties).'
+}
+
+gradle.projectsEvaluated {
+    rootProject.tasks.named('publishRemote').configure { t ->
+        rootProject.subprojects.each { Project p ->
+            def pr = p.tasks.findByName('publishRemote')
+            if (pr != null) {
+                t.dependsOn(pr)
+            }
+        }
+    }
+}
