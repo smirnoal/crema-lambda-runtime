@@ -27,7 +27,6 @@ For details and examples, see `LICENSE-FAQ.md`. For commercial terms, see
 | serde-jackson2     | Jackson 2 serializers/deserializers for runtime integration  |
 | serde-gson         | Gson serializers/deserializers for runtime integration     |
 | rapid-client-jdk   | Runtime API HTTP client (java.net.http)                        |
-| rapid-client-okhttp | Runtime API HTTP client (OkHttp)                            |
 | rapid-client-netty | Runtime API HTTP client (Netty, supports streaming)          |
 | rapid-client-hyper | Runtime API HTTP client (Rust + JNI for `/next` and `/response`) |
 | bootstrap          | Runtime bootstrap that wires everything together             |
