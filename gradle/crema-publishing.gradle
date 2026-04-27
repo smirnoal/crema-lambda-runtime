@@ -1,6 +1,46 @@
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.javadoc.Javadoc
 
+/** Rich Maven Central POM name + description per subproject (artifactId defaults to project name). */
+def cremaMavenPom = [
+        bootstrap          : [
+                name       : 'Crema Lambda Bootstrap',
+                description: 'AWS Lambda Runtime Interface Client (RIC) bootstrap for Java: runtime API polling loop, handler dispatch, and ServiceLoader-based HTTP client selection.',
+        ],
+        common             : [
+                name       : 'Crema Common',
+                description: 'Shared types and interfaces for Crema (com.smirnoal.crema) Lambda RIC libraries.',
+        ],
+        'rapid-client-jdk' : [
+                name       : 'Crema Rapid Client (JDK)',
+                description: 'Lambda Runtime API HTTP client implementation using java.net.http (default stack for bootstrap).',
+        ],
+        'rapid-client-netty': [
+                name       : 'Crema Rapid Client (Netty)',
+                description: 'Lambda Runtime API HTTP client using Netty; supports streaming-oriented use cases.',
+        ],
+        'rapid-client-hyper': [
+                name       : 'Crema Rapid Client (Hyper JNI)',
+                description: 'Lambda Runtime API HTTP client using native Hyper via JNI for /next and /response.',
+        ],
+        'events-schemas'   : [
+                name       : 'Crema Events (JSON Schema)',
+                description: 'JSON Schema artifacts for AWS Lambda event and response payloads used by Crema.',
+        ],
+        'events-jackson2'  : [
+                name       : 'Crema Events (Jackson 2)',
+                description: 'Jackson 2 model classes and helpers for AWS Lambda events with Crema.',
+        ],
+        'serde-jackson2'   : [
+                name       : 'Crema Serde (Jackson 2)',
+                description: 'Jackson 2 Lambda serde integration for Crema handlers.',
+        ],
+        'serde-gson'       : [
+                name       : 'Crema Serde (Gson)',
+                description: 'Gson Lambda serde integration for Crema handlers.',
+        ],
+].asImmutable() as Map<String, Map<String, String>>
+
 /** Gradle's PGP layer accepts short key ids (e.g. {@code FDF480F7} or {@code 0xFDF480F7}), not 16+ hex digit "long" ids. */
 static String normalizePgpKeyId(String keyId) {
     if (keyId == null || keyId.isBlank()) {
@@ -61,8 +101,9 @@ subprojects { Project sub ->
 
         sub.publishing.publications.withType(MavenPublication).configureEach { pub ->
             pub.pom {
-                name = pub.artifactId
-                description = sub.description ?: "Crema module ${pub.artifactId}"
+                def meta = cremaMavenPom[sub.name]
+                name = meta?.name ?: pub.artifactId
+                description = meta?.description ?: (sub.description ?: "Crema (${pub.artifactId}): AWS Lambda RIC library, groupId com.smirnoal.crema.")
                 url = 'https://github.com/smirnoal/crema-lambda-runtime'
                 licenses {
                     license {
