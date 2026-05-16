@@ -84,7 +84,7 @@ Typical consumer dependency: **`bootstrap`** (pulls `common` + `rapid-client-jdk
 
 ### ZIP (managed Java runtime)
 
-Deploy a ZIP to Lambda with a supported managed Java runtime. Set `AWS_LAMBDA_EXEC_WRAPPER` to Crema’s provided `bootstrap.sh`, which sets `CLASSPATH` and runs your `main`. Lambda’s `_HANDLER` should be your main class.
+Deploy a ZIP to Lambda with a supported managed Java runtime. Set `AWS_LAMBDA_EXEC_WRAPPER` to Crema’s provided `crema-bootstrap`, which sets `CLASSPATH` and runs your `main`. Lambda’s `_HANDLER` should be your main class.
 
 Choose this path first for normal JVM deployments, when you want the smallest packaging change from managed Java Lambda, or when you need AWS SnapStart.
 
@@ -108,12 +108,12 @@ Choose this path when several ZIP functions should share the same Crema runtime 
 
 ## License
 
-This project is licensed under **Elastic License 2.0 (`ELv2`)**. See `LICENSE`.
+This project is licensed under **Elastic License 2.0 (`ELv2`)**. See `LICENSE`
 
 In short:
 
 - Internal and self-hosted use is allowed, including commercial use.
 - You may not offer Crema as a public managed runtime service for third parties under ELv2.
-- If you want that kind of public managed service, contact the licensor for commercial terms (`COMMERCIAL-LICENSE.md`).
+- If you want that kind of public managed service, contact the licensor for commercial terms (`COMMERCIAL-LICENSE.md`)
 
-Details: `LICENSE-FAQ.md`.
+Details: `LICENSE-FAQ.md`

@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Add only application jars from /var/task/lib to the classpath.
+# Using *.jar avoids picking non-jar files (e.g. AppCDS archives) into classpath.
+CLASSPATH=$(printf '%s\n' /var/task/lib/*.jar | sort | paste -sd ':')
+CLASSPATH=/var/task:"$CLASSPATH"
+export CLASSPATH
+
+exec /var/lang/bin/java \
+  -XX:+TieredCompilation -XX:TieredStopAtLevel=1 \
+  -XX:+UseSerialGC \
+  -XX:+ErrorFileToStderr \
+  --add-opens=java.base/java.io=ALL-UNNAMED \
+  --add-opens=java.base/java.net=ALL-UNNAMED \
+  "$_HANDLER"
